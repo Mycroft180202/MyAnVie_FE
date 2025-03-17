@@ -1,6 +1,4 @@
-import React from 'react';
 import { useParams } from 'react-router-dom'; // Để lấy CategoryId từ URL
-import Layout from '../../components/Layout'; // Đường dẫn có thể khác tùy thuộc cấu trúc thư mục của bạn
 import SectionTitle from '../../components/shared/SectionTitle'; // Đường dẫn có thể khác
 import ProductCard from '../../components/shared/ProductCard'; // Đường dẫn có thể khác
 import { Container, Grid, Box, Typography } from '@mui/material';
