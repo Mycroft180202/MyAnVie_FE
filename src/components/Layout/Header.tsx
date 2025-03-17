@@ -62,7 +62,7 @@ const Header = () => {
                 fontWeight: 'bold',
               }}
             >
-              MyAnVie
+              Myanvie
             </Typography>
           </Box>
 

@@ -15,7 +15,7 @@ const Footer = () => {
         <Grid container spacing={4}>
           <Grid item xs={12} sm={4}>
             <Typography variant="h6" gutterBottom>
-              MyAnVie
+            Myanvie
             </Typography>
             <Typography variant="body2">
               Nơi hội tụ tinh hoa nghề thủ công Việt Nam

@@ -53,7 +53,7 @@ const ContactSection = () => {
                     label="Họ và tên"
                     required
                   />
-                </Grid>s
+                </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
