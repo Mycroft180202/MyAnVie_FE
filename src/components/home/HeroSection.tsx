@@ -21,14 +21,19 @@ const HeroSection = () => {
             sx={{
               mb: 3,
               fontWeight: 'bold',
-              fontSize: { xs: '2.5rem', md: '3.5rem' }
+              fontSize: { xs: '2.5rem', md: '3.5rem' },
+              ml: { xs: 2, md: 4 },
             }}
           >
             Tinh hoa nghề thủ công Việt Nam
           </Typography>
           <Typography
             variant="h5"
-            sx={{ mb: 4, fontWeight: 'normal' }}
+            sx={{
+               mb: 4,
+               fontWeight: 'normal' ,
+               ml: { xs: 2, md: 4 },
+          }}
           >
             Khám phá bộ sưu tập độc đáo các sản phẩm thủ công mỹ nghệ truyền thống
           </Typography>
@@ -42,7 +47,8 @@ const HeroSection = () => {
               color: 'white',
               '&:hover': {
                 bgcolor: 'primary.dark',
-              }
+              },
+              ml: { xs: 2, md: 4 },
             }}
           >
             Khám phá ngay

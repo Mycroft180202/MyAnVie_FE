@@ -6,7 +6,7 @@ const featuredProducts = [
   {
     id: 1,
     image: '/images/products/ceramic-vase.jpg',
-    title: 'Bình gốm trang trí họa tiết lá',
+    title: 'Bình gốm vân lá',
     price: 1200000,
     rating: 4.5,
     category: 'Đồ gốm'

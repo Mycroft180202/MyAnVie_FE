@@ -37,7 +37,7 @@ const ContactSection = () => {
               src="/images/contact-image.jpg"
               alt="Contact"
               sx={{
-                width: '100%',
+                width: '70%',
                 height: 'auto',
                 borderRadius: 2,
                 boxShadow: 3
@@ -53,7 +53,7 @@ const ContactSection = () => {
                     label="Họ và tên"
                     required
                   />
-                </Grid>
+                </Grid>s
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth

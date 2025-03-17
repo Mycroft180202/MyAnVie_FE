@@ -222,12 +222,21 @@ const sortOptions = [
 
 const ProductPage: React.FC = () => {
   const [selectedSort, setSelectedSort] = useState<string>('alphabetical');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handleSortChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedSort(event.target.value);
   };
 
-  const sortedProducts = [...products].sort((a, b) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredProducts = products.filter(product =>
+    product.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
     if (selectedSort === 'alphabetical') {
       return a.title.localeCompare(b.title);
     } else if (selectedSort === 'priceAsc') {
@@ -260,6 +269,15 @@ const ProductPage: React.FC = () => {
                   </MenuItem>
                 ))}
               </TextField>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                label="Search Products"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                fullWidth
+                placeholder="Enter product name..."
+              />
             </Grid>
           </Grid>
         </Box>
