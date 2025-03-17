@@ -6,6 +6,7 @@ import Login from '../pages/Auth/Login';
 import Register from '../pages/Auth/Register';
 import Profile from '../pages/Profile';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
+import ProductPage from '../pages/Product/Product';
 
 const AppRoutes = () => {
   return (
@@ -13,6 +14,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="category/:categoryId" element={<CategoryPage />} /> 
+        <Route path="products" element={<ProductPage />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route
