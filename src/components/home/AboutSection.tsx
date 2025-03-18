@@ -21,14 +21,15 @@ const AboutSection = () => {
           </Grid>
           <Grid item xs={12} md={6}>
             <SectionTitle 
-              title="Về MyAnVie"
+              title="Câu chuyện về MYANVIE"
               subtitle="Nơi hội tụ tinh hoa nghề thủ công Việt Nam"
             />
             <Typography paragraph>
-              MyAnVie là nơi kết nối những người thợ thủ công tài hoa với những người yêu thích nghệ thuật truyền thống Việt Nam. Chúng tôi mang đến những sản phẩm thủ công mỹ nghệ chất lượng cao, được chế tác tỉ mỉ bởi các nghệ nhân từ các làng nghề nổi tiếng.
+            Từ những lò nung rực lửa ở Bát Tràng, những khung cửi miệt mài của làng lụa Vạn Phúc đến những nghệ nhân cặm cụi vót tre, đan mây, các làng nghề thủ công Việt Nam đã lưu giữ tinh hoa qua bao thế hệ. Mỗi sản phẩm không chỉ là một món đồ sử dụng hằng ngày mà còn chứa đựng câu chuyện của bàn tay người thợ, của truyền thống và sự sáng tạo.
+MYANVIE ra đời để tiếp nối những giá trị ấy, mang đến những sản phẩm thủ công tinh xảo từ gốm, lụa, mây tre đan – không chỉ giữ nguyên nét đẹp truyền thống mà còn phù hợp với không gian sống hiện đại. Những chiếc đèn mây thanh thoát, những món đồ décor từ tre, những chiếc bình gốm hay tấm lụa mềm mại, tất cả đều được làm từ tâm huyết của nghệ nhân, từ những chất liệu tự nhiên, bền vững.
             </Typography>
             <Typography paragraph>
-              Mỗi sản phẩm tại MyAnVie đều là một tác phẩm nghệ thuật độc đáo, mang đậm bản sắc văn hóa Việt Nam. Chúng tôi cam kết mang đến những sản phẩm chất lượng nhất, đồng thời góp phần bảo tồn và phát triển các làng nghề truyền thống.
+            Chúng tôi tin rằng mỗi sản phẩm thủ công không chỉ có giá trị sử dụng mà còn là sự kết nối giữa con người với văn hóa, giữa quá khứ và hiện tại. MYANVIE mang tinh hoa làng nghề đến gần hơn với bạn, để nét đẹp Việt không chỉ dừng lại ở một miền ký ức mà còn hiện diện trong từng không gian sống, từng câu chuyện đời thường.
             </Typography>
           </Grid>
         </Grid>
