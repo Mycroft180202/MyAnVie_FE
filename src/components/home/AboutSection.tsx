@@ -3,7 +3,7 @@ import SectionTitle from '../shared/SectionTitle';
 
 const AboutSection = () => {
   return (
-    <Box sx={{ bgcolor: 'background.paper', py: 8 }}>
+    <Box id="about" sx={{ bgcolor: 'background.paper', py: 8 }}>
       <Container>
         <Grid container spacing={6} alignItems="center">
           <Grid item xs={12} md={6}>

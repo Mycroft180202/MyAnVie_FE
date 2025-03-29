@@ -7,6 +7,10 @@ import Register from '../pages/Auth/Register';
 import Profile from '../pages/Profile';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import ProductPage from '../pages/Product/Product';
+import News from '../pages/News';
+import AdminDashboard from '../pages/Admin';
+import AdminRoute from '../components/auth/AdminRoute';
+import NotFound from '../pages/NotFound';
 
 const AppRoutes = () => {
   return (
@@ -17,6 +21,7 @@ const AppRoutes = () => {
         <Route path="products" element={<ProductPage />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="news" element={<News />} />
         <Route
           path="profile"
           element={
@@ -25,7 +30,16 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="admin"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

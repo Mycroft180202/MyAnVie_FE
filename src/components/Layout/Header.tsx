@@ -9,14 +9,20 @@ import {
   Menu,
   MenuItem,
   Avatar,
+  Select,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const categories = [
     { name: 'Đồ gốm', path: '/category/pottery' },
@@ -33,13 +39,51 @@ const Header = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
     handleMenuClose();
   };
 
+  const handleCategoryChange = (event: any) => {
+    const selectedCategory = categories.find(cat => cat.name === event.target.value);
+    if (selectedCategory) {
+      navigate(selectedCategory.path);
+    }
+  };
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleSectionClick = (sectionId: string) => {
+    if (location.pathname === '/') {
+      scrollToSection(sectionId);
+    } else {
+      navigate('/');
+      // Đợi cho trang chủ load xong rồi mới scroll
+      setTimeout(() => {
+        scrollToSection(sectionId);
+      }, 100);
+    }
+  };
+
   return (
-    <AppBar position="static" color="default" elevation={1}>
+    <AppBar 
+      position="sticky" 
+      sx={{ 
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+        bgcolor: 'white',
+        boxShadow: 1,
+      }}
+    >
       <Container maxWidth="lg">
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -54,7 +98,7 @@ const Header = () => {
             />
             <Typography
               variant="h6"
-                component={RouterLink}
+              component={RouterLink}
               to="/"
               sx={{
                 textDecoration: 'none',
@@ -62,62 +106,82 @@ const Header = () => {
                 fontWeight: 'bold',
               }}
             >
-              Myanvie
+              MYANVIE
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            {categories.map((category) => (
-              <Button
-                key={category.path}
-                component={RouterLink}
-                to={category.path}
-                color="inherit"
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel>Danh mục</InputLabel>
+              <Select
+                label="Danh mục"
+                onChange={handleCategoryChange}
+                defaultValue=""
               >
-                {category.name}
-              </Button>
-            ))}
-          </Box>
+                {categories.map((category) => (
+                  <MenuItem key={category.path} value={category.name}>
+                    {category.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Button color="primary" onClick={() => handleSectionClick('about')}>
+              About
+            </Button>
+            <Button color="primary" onClick={() => handleSectionClick('contact')}>
+              Contact
+            </Button>
+            <Button
+              component={RouterLink}
+              to="/news"
+              color="primary"
+            >
+              News
+            </Button>
+
             {isAuthenticated ? (
               <>
-                <IconButton onClick={handleMenuOpen}>
-                  <Avatar
-                    src={user?.avatar}
-                    alt={user?.fullName}
-                    sx={{ width: 32, height: 32 }}
+                {user?.role === 'ADMIN' && (
+                  <Button
+                    component={RouterLink}
+                    to="/admin"
+                    color="primary"
+                    variant="outlined"
                   >
-                    {user?.fullName?.charAt(0)}
-                  </Avatar>
+                    Admin Dashboard
+                  </Button>
+                )}
+                <IconButton color="primary" component={RouterLink} to="/cart">
+                  <ShoppingCartIcon />
+                </IconButton>
+                <IconButton
+                  onClick={handleMenuOpen}
+                  color="primary"
+                >
+                  <Avatar sx={{ width: 32, height: 32 }} />
                 </IconButton>
                 <Menu
                   anchorEl={anchorEl}
                   open={Boolean(anchorEl)}
                   onClose={handleMenuClose}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
                 >
                   <MenuItem
                     component={RouterLink}
                     to="/profile"
                     onClick={handleMenuClose}
                   >
-                    Tài khoản của tôi
+                    Hồ sơ
                   </MenuItem>
-                  <MenuItem
-                    component={RouterLink}
-                    to="/orders"
-                    onClick={handleMenuClose}
-                  >
-                    Đơn hàng
-                  </MenuItem>
+                  {user?.role === 'ADMIN' && (
+                    <MenuItem
+                      component={RouterLink}
+                      to="/admin"
+                      onClick={handleMenuClose}
+                    >
+                      Quản trị
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
                 </Menu>
               </>
@@ -126,7 +190,6 @@ const Header = () => {
                 <Button
                   component={RouterLink}
                   to="/login"
-                  variant="outlined"
                   color="primary"
                 >
                   Đăng nhập
@@ -134,7 +197,6 @@ const Header = () => {
                 <Button
                   component={RouterLink}
                   to="/register"
-                  variant="contained"
                   color="primary"
                 >
                   Đăng ký

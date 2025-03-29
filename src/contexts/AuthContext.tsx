@@ -7,6 +7,7 @@ const initialState: AuthState = {
   token: null,
   isAuthenticated: false,
   isLoading: true,
+  error: null,
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,6 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           token,
           isAuthenticated: true,
           isLoading: false,
+          error: null,
         });
       } else {
         setState({ ...initialState, isLoading: false });
@@ -45,6 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       token,
       isAuthenticated: true,
       isLoading: false,
+      error: null,
     });
   };
 
@@ -56,16 +59,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       token,
       isAuthenticated: true,
       isLoading: false,
+      error: null,
     });
   };
 
-  const logout = () => {
+  const logout = async () => {
     localStorage.removeItem('token');
     setState({
       user: null,
       token: null,
       isAuthenticated: false,
       isLoading: false,
+      error: null,
     });
   };
 
@@ -76,6 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         register,
         logout,
+        setUser: (user) => setState(prev => ({ ...prev, user })),
       }}
     >
       {children}

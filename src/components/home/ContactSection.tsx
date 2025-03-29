@@ -6,7 +6,7 @@ import EmailIcon from '@mui/icons-material/Email';
 
 const ContactSection = () => {
   return (
-    <Box sx={{ py: 8 }}>
+    <Box id="contact" sx={{ py: 8 }}>
       <Container>
         <SectionTitle
           title="Liên hệ với chúng tôi"
