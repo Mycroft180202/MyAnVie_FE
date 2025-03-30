@@ -113,6 +113,14 @@ const UserManagement = () => {
     }));
   };
 
+  const handleSelectChange = (e: SelectChangeEvent) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const handleOpenDialog = (user?: User) => {
     if (user) {
       setSelectedUser(user);
@@ -228,7 +236,7 @@ const UserManagement = () => {
               <Select
                 name="role"
                 value={filters.role}
-                onChange={handleFilterChange}
+                onChange={handleSelectChange}
                 label="Vai trò"
               >
                 <MenuItem value="ALL">Tất cả</MenuItem>
@@ -243,7 +251,7 @@ const UserManagement = () => {
               <Select
                 name="status"
                 value={filters.status}
-                onChange={handleFilterChange}
+                onChange={handleSelectChange}
                 label="Trạng thái"
               >
                 <MenuItem value="ALL">Tất cả</MenuItem>
