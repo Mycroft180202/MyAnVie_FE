@@ -41,8 +41,7 @@ const UserManagement = () => {
   const [filters, setFilters] = useState({
     role: 'ALL',
     status: 'ALL',
-    id: '',
-    fullName: ''
+    id: ''
   });
   const [formData, setFormData] = useState<CreateUserData>({
     username: '',
@@ -82,11 +81,6 @@ const UserManagement = () => {
     }
     if (filters.id) {
       filtered = filtered.filter(user => user.id.toLowerCase().includes(filters.id.toLowerCase()));
-    }
-    if (filters.fullName) {
-      filtered = filtered.filter(user => 
-        (user.fullName?.toLowerCase().includes(filters.fullName.toLowerCase()) || false)
-      );
     }
 
     setFilteredUsers(filtered);
@@ -221,7 +215,7 @@ const UserManagement = () => {
       {/* Thanh tìm kiếm và bộ lọc */}
       <Paper sx={{ p: 2, mb: 2 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={4}>
             <TextField
               fullWidth
               label="Tìm kiếm"
@@ -230,7 +224,7 @@ const UserManagement = () => {
               placeholder="ID, Tên đăng nhập, Email, SĐT"
             />
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={4}>
             <FormControl fullWidth>
               <InputLabel>Vai trò</InputLabel>
               <Select
@@ -245,7 +239,7 @@ const UserManagement = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={4}>
             <FormControl fullWidth>
               <InputLabel>Trạng thái</InputLabel>
               <Select
@@ -260,21 +254,12 @@ const UserManagement = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={4}>
             <TextField
               fullWidth
               label="Lọc theo ID"
               name="id"
               value={filters.id}
-              onChange={handleFilterChange}
-            />
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <TextField
-              fullWidth
-              label="Lọc theo họ tên"
-              name="fullName"
-              value={filters.fullName}
               onChange={handleFilterChange}
             />
           </Grid>
