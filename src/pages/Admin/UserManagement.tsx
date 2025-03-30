@@ -197,7 +197,7 @@ const UserManagement = () => {
                     color="primary"
                     onClick={() => handleOpenDialog(user)}
                   >
-                  
+                    <EditIcon />
                   </IconButton>
                   <IconButton
                     color="error"

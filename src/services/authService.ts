@@ -11,7 +11,7 @@ interface LoginResponse {
 export const authService = {
   async login(credentials: LoginCredentials): Promise<{ user: User; token: string }> {
     try {
-      const response = await axios.post<LoginResponse>(`${API_URL}/auth/login`, {
+      const response = await axios.post<LoginResponse>(`${API_URL}/authenticate`, {
         identifier: credentials.identifier,
         password: credentials.password
       });
@@ -70,7 +70,7 @@ export const authService = {
     }
     
     try {
-      const response = await axios.get(`${API_URL}/auth/me`, {
+      const response = await axios.get(`${API_URL}/users/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return response.data;

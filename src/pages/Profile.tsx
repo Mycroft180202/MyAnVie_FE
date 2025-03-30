@@ -81,7 +81,11 @@ const Profile = () => {
     setSuccess(null);
 
     try {
-      const updatedUser = await userService.updateProfile(formData);
+      const updatedUser = await userService.updateProfile({
+        fullName: formData.fullName,
+        phoneNumber: formData.phoneNumber,
+        address: formData.address
+      });
       setUser(updatedUser);
       setSuccess('Cập nhật thông tin thành công!');
       toast.success('Cập nhật thông tin thành công!');
