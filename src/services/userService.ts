@@ -28,12 +28,12 @@ export interface CreateUserData {
 }
 
 export interface User {
-  id: number;
+  id: string;
   username: string;
   fullName: string;
   email: string;
-  phoneNumber?: string;
-  address?: string;
+  phoneNumber: string | null;
+  address: string | null;
   role: 'USER' | 'ADMIN';
   active: boolean;
 }
@@ -66,7 +66,7 @@ export const userService = {
     return response.data;
   },
 
-  async getUserById(id: number) {
+  async getUserById(id: string) {
     const response = await api.get(`/users/${id}`);
     return response.data;
   },
@@ -76,12 +76,12 @@ export const userService = {
     return response.data;
   },
 
-  async updateUser(id: number, data: UpdateUserData) {
+  async updateUser(id: string, data: UpdateUserData) {
     const response = await api.put(`/users/${id}`, data);
     return response.data;
   },
 
-  async deleteUser(id: number) {
+  async deleteUser(id: string) {
     await api.delete(`/users/${id}`);
   },
 }; 

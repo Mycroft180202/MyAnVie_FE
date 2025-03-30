@@ -128,7 +128,7 @@ const UserManagement = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
       try {
         await userService.deleteUser(id);
@@ -201,7 +201,7 @@ const UserManagement = () => {
                   </IconButton>
                   <IconButton
                     color="error"
-                    onClick={() => handleDelete(user.id)}
+                    onClick={() => handleDelete(user.id.toString())}
                   >
                     <DeleteIcon />
                   </IconButton>

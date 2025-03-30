@@ -40,15 +40,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = async (credentials: LoginCredentials) => {
-    const { token, user } = await authService.login(credentials);
-    localStorage.setItem('token', token);
-    setState({
-      user,
-      token,
-      isAuthenticated: true,
-      isLoading: false,
-      error: null,
-    });
+    try {
+      const { token, user } = await authService.login(credentials);
+      console.log('Login successful:', { token, user });
+      localStorage.setItem('token', token);
+      console.log('Token saved in context:', localStorage.getItem('token'));
+      setState({
+        user,
+        token,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      });
+    } catch (error) {
+      console.error('Login error in context:', error);
+      setState({
+        ...initialState,
+        isLoading: false,
+        error: error instanceof Error ? error.message : 'Đăng nhập thất bại',
+      });
+      throw error;
+    }
   };
 
   const register = async (data: RegisterData) => {

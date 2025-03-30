@@ -1,12 +1,12 @@
 export interface User {
-  id: number;
+  id: string;
   username: string;
   email: string;
   fullName: string;
-  phoneNumber?: string;
-  address?: string;
-  avatar?: string;
+  phoneNumber: string | null;
+  address: string | null;
   role: 'USER' | 'ADMIN';
+  active: boolean;
 }
 
 export interface AuthState {
