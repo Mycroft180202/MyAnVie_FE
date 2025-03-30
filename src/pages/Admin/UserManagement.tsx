@@ -22,6 +22,7 @@ import {
   Chip,
   Alert,
   SelectChangeEvent,
+  Grid,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import EditIcon from '@mui/icons-material/Edit';
@@ -32,9 +33,17 @@ import { toast } from 'react-toastify';
 
 const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isCreateMode, setIsCreateMode] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    role: 'ALL',
+    status: 'ALL',
+    id: '',
+    fullName: ''
+  });
   const [formData, setFormData] = useState<CreateUserData>({
     username: '',
     password: '',
@@ -51,6 +60,38 @@ const UserManagement = () => {
     loadUsers();
   }, []);
 
+  useEffect(() => {
+    let filtered = [...users].sort((a, b) => parseInt(a.id) - parseInt(b.id));
+
+    // Áp dụng tìm kiếm
+    if (searchTerm) {
+      filtered = filtered.filter(user => 
+        user.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (user.phoneNumber?.toLowerCase().includes(searchTerm.toLowerCase()) || false)
+      );
+    }
+
+    // Áp dụng bộ lọc
+    if (filters.role !== 'ALL') {
+      filtered = filtered.filter(user => user.role === filters.role);
+    }
+    if (filters.status !== 'ALL') {
+      filtered = filtered.filter(user => user.active === (filters.status === 'ACTIVE'));
+    }
+    if (filters.id) {
+      filtered = filtered.filter(user => user.id.toLowerCase().includes(filters.id.toLowerCase()));
+    }
+    if (filters.fullName) {
+      filtered = filtered.filter(user => 
+        (user.fullName?.toLowerCase().includes(filters.fullName.toLowerCase()) || false)
+      );
+    }
+
+    setFilteredUsers(filtered);
+  }, [users, searchTerm, filters]);
+
   const loadUsers = async () => {
     try {
       const data = await userService.getAllUsers();
@@ -58,6 +99,18 @@ const UserManagement = () => {
     } catch (error: any) {
       toast.error('Không thể tải danh sách người dùng');
     }
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name as string]: value
+    }));
   };
 
   const handleOpenDialog = (user?: User) => {
@@ -157,6 +210,69 @@ const UserManagement = () => {
         </Button>
       </Box>
 
+      {/* Thanh tìm kiếm và bộ lọc */}
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={3}>
+            <TextField
+              fullWidth
+              label="Tìm kiếm"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="ID, Tên đăng nhập, Email, SĐT"
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Vai trò</InputLabel>
+              <Select
+                name="role"
+                value={filters.role}
+                onChange={handleFilterChange}
+                label="Vai trò"
+              >
+                <MenuItem value="ALL">Tất cả</MenuItem>
+                <MenuItem value="USER">Người dùng</MenuItem>
+                <MenuItem value="ADMIN">Quản trị viên</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Trạng thái</InputLabel>
+              <Select
+                name="status"
+                value={filters.status}
+                onChange={handleFilterChange}
+                label="Trạng thái"
+              >
+                <MenuItem value="ALL">Tất cả</MenuItem>
+                <MenuItem value="ACTIVE">Hoạt động</MenuItem>
+                <MenuItem value="INACTIVE">Không hoạt động</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <TextField
+              fullWidth
+              label="Lọc theo ID"
+              name="id"
+              value={filters.id}
+              onChange={handleFilterChange}
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <TextField
+              fullWidth
+              label="Lọc theo họ tên"
+              name="fullName"
+              value={filters.fullName}
+              onChange={handleFilterChange}
+            />
+          </Grid>
+        </Grid>
+      </Paper>
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -173,7 +289,7 @@ const UserManagement = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>{user.id}</TableCell>
                 <TableCell>{user.username}</TableCell>
