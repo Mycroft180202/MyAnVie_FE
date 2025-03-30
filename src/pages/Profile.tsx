@@ -20,11 +20,11 @@ import { toast } from 'react-toastify';
 
 const Profile = () => {
   const { user, setUser } = useAuth();
-  const [formData, setFormData] = useState<UpdateUserData>({
-    fullName: '',
-    email: '',
-    phoneNumber: '',
-    address: '',
+  const [formData, setFormData] = useState({
+    fullName: user?.fullName || '',
+    email: user?.email || '',
+    phoneNumber: user?.phoneNumber || '',
+    address: user?.address || '',
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -83,6 +83,7 @@ const Profile = () => {
     try {
       const updatedUser = await userService.updateProfile({
         fullName: formData.fullName,
+        email: formData.email,
         phoneNumber: formData.phoneNumber,
         address: formData.address
       });
