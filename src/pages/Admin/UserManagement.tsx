@@ -40,8 +40,7 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
     role: 'ALL',
-    status: 'ALL',
-    id: ''
+    status: 'ALL'
   });
   const [formData, setFormData] = useState<CreateUserData>({
     username: '',
@@ -78,9 +77,6 @@ const UserManagement = () => {
     }
     if (filters.status !== 'ALL') {
       filtered = filtered.filter(user => user.active === (filters.status === 'ACTIVE'));
-    }
-    if (filters.id) {
-      filtered = filtered.filter(user => user.id.toLowerCase().includes(filters.id.toLowerCase()));
     }
 
     setFilteredUsers(filtered);
@@ -253,15 +249,6 @@ const UserManagement = () => {
                 <MenuItem value="INACTIVE">Không hoạt động</MenuItem>
               </Select>
             </FormControl>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              label="Lọc theo ID"
-              name="id"
-              value={filters.id}
-              onChange={handleFilterChange}
-            />
           </Grid>
         </Grid>
       </Paper>
