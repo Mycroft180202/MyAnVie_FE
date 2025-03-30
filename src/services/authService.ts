@@ -49,7 +49,7 @@ export const authService = {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
-    const response = await axios.get(`${API_URL}/auth/me`);
+    const response = await axios.get(`${API_URL}/authenticate`);
     return response.data;
   },
 };
