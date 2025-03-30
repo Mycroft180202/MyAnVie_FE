@@ -8,6 +8,7 @@ export const authService = {
       const response = await axios.post(`${API_URL}/authenticate`, credentials);
       const { user, token } = response.data;
       localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       return { user, token };
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Đăng nhập thất bại');
@@ -19,6 +20,7 @@ export const authService = {
       const response = await axios.post(`${API_URL}/register`, data);
       const { user, token } = response.data;
       localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       return { user, token };
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Đăng ký thất bại');
@@ -27,6 +29,7 @@ export const authService = {
 
   logout(): void {
     localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
   },
 
   getToken(): string | null {
@@ -42,15 +45,11 @@ export const authService = {
   },
 
   async getCurrentUser(): Promise<User> {
-    const { data } = await axios.get(`${API_URL}/auth/me`);
-    return {
-      id: data.id,
-      username: data.username,
-      email: data.email,
-      fullName: data.fullName,
-      role: data.role,
-      phoneNumber: data.phoneNumber,
-      address: data.address,
-    };
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await axios.get(`${API_URL}/auth/me`);
+    return response.data;
   },
 };
