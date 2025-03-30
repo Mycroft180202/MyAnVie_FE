@@ -1,19 +1,25 @@
 import axios from 'axios';
+import { API_URL } from '../config/api';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://myanvie.up.railway.app',
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
 api.interceptors.response.use(
   (response) => response,
@@ -25,5 +31,5 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
- 
+
 export default api;
