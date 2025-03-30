@@ -5,6 +5,7 @@ export interface UpdateUserData {
   email?: string;
   phoneNumber?: string;
   address?: string;
+  active?: boolean;
 }
 
 export interface PasswordChangeRequest {
@@ -25,6 +26,7 @@ export interface CreateUserData {
   phoneNumber?: string;
   address?: string;
   role: 'USER' | 'ADMIN';
+  active: boolean;
 }
 
 export interface User {

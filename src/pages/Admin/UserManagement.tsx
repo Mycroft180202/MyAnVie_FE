@@ -43,6 +43,7 @@ const UserManagement = () => {
     phoneNumber: '',
     address: '',
     role: 'USER',
+    active: true,
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -70,6 +71,7 @@ const UserManagement = () => {
         phoneNumber: user.phoneNumber || '',
         address: user.address || '',
         role: user.role,
+        active: user.active,
       });
       setIsCreateMode(false);
     } else {
@@ -82,6 +84,7 @@ const UserManagement = () => {
         phoneNumber: '',
         address: '',
         role: 'USER',
+        active: true,
       });
       setIsCreateMode(true);
     }
@@ -286,6 +289,21 @@ const UserManagement = () => {
               >
                 <MenuItem value="USER">Người dùng</MenuItem>
                 <MenuItem value="ADMIN">Quản trị viên</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth sx={{ mt: 2 }}>
+              <InputLabel>Trạng thái</InputLabel>
+              <Select
+                name="active"
+                value={formData.active ? 'true' : 'false'}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  active: e.target.value === 'true'
+                }))}
+                label="Trạng thái"
+              >
+                <MenuItem value="true">Hoạt động</MenuItem>
+                <MenuItem value="false">Không hoạt động</MenuItem>
               </Select>
             </FormControl>
           </Box>
