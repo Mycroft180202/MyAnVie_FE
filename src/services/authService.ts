@@ -2,25 +2,25 @@ import axios from 'axios';
 import { LoginCredentials, RegisterData, User } from '../types/auth';
 import { API_URL } from '../config/api';
 
+interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: User;
+}
+
 export const authService = {
   async login(credentials: LoginCredentials): Promise<{ user: User; token: string }> {
     try {
-      const response = await axios.post(`${API_URL}/authenticate`, {
+      const response = await axios.post<LoginResponse>(`${API_URL}/auth/login`, {
         identifier: credentials.identifier,
         password: credentials.password
       });
       
-      const { token } = response.data;
-      localStorage.setItem('token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-      // Sau khi có token, gọi API lấy thông tin user
-      const userResponse = await axios.get(`${API_URL}/users/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const { accessToken, user } = response.data;
+      localStorage.setItem('token', accessToken);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
       
-      const user = userResponse.data;
-      return { user, token };
+      return { user, token: accessToken };
     } catch (error: any) {
       console.error('Login error:', error.response?.data || error.message);
       throw new Error(error.response?.data?.message || 'Đăng nhập thất bại');
@@ -69,9 +69,15 @@ export const authService = {
       throw new Error('No token found');
     }
     
-    const response = await axios.get(`${API_URL}/users/me`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    return response.data;
+    try {
+      const response = await axios.get(`${API_URL}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data;
+    } catch (error) {
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
+      throw error;
+    }
   },
 };
