@@ -163,6 +163,7 @@ const UserManagement = () => {
               <TableCell>Họ tên</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Số điện thoại</TableCell>
+              <TableCell>Địa chỉ</TableCell>
               <TableCell>Vai trò</TableCell>
               <TableCell>Trạng thái</TableCell>
               <TableCell>Thao tác</TableCell>
@@ -176,6 +177,7 @@ const UserManagement = () => {
                 <TableCell>{user.fullName}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.phoneNumber || '-'}</TableCell>
+                <TableCell>{user.address || '-'}</TableCell>
                 <TableCell>
                   <Chip
                     label={user.role === 'ADMIN' ? 'Quản trị viên' : 'Người dùng'}
