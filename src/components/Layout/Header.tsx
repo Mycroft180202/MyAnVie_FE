@@ -84,10 +84,10 @@ const Header = () => {
         zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth={false} sx={{ px: 2 }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           {/* Logo và Menu */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-start' }}>
             {/* Logo */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box
@@ -191,7 +191,7 @@ const Header = () => {
           </Box>
 
           {/* Icons và Đăng nhập */}
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
             {/* Tìm kiếm và Giỏ hàng */}
             <IconButton 
               color="inherit" 

@@ -11,7 +11,7 @@ const Footer = () => {
         mt: 'auto'
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Box
             component="img"
@@ -131,15 +131,15 @@ const Footer = () => {
                   sx={{
                     bgcolor: '#950B0B', // Màu nền nút
                     color: 'white',
-                    width: 'auto',
+                    width: '200px',
                     '&:hover': {
                       bgcolor: '#7A0909', // Màu nền khi hover
                     },
                     '& .MuiButton-label': {
-                      fontSize: '14px', // Kích thước chữ cho Button
+                      fontSize: '10px', // Kích thước chữ cho Button
                       fontWeight: 'bold', // Đậm chữ
                     },
-                    padding: '10px 5px', // Điều chỉnh padding cho nút
+                    padding: '10px 20px', // Điều chỉnh padding cho nút
                   }}
                 >
                   Đăng ký
