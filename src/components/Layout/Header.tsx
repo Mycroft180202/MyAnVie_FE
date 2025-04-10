@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -9,14 +10,14 @@ import {
   Menu,
   MenuItem,
   Avatar,
-  Select,
   FormControl,
   InputLabel,
+  Select,
 } from '@mui/material';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
-import { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import SearchIcon from '@mui/icons-material/Search';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -68,7 +69,6 @@ const Header = () => {
       scrollToSection(sectionId);
     } else {
       navigate('/');
-      // Đợi cho trang chủ load xong rồi mới scroll
       setTimeout(() => {
         scrollToSection(sectionId);
       }, 100);
@@ -79,85 +79,157 @@ const Header = () => {
     <AppBar 
       position="sticky" 
       sx={{ 
+        bgcolor: '#ffffff',
+        boxShadow: 0,
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        bgcolor: 'white',
-        boxShadow: 1,
       }}
     >
       <Container maxWidth="lg">
         <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box
-              component="img"
-              src="/images/logo/myanvie-logo.png"
-              alt="MyAnVie Logo"
-              sx={{
-                height: 40,
-                width: 'auto',
-              }}
-            />
-            <Typography
-              variant="h6"
-              component={RouterLink}
-              to="/"
-              sx={{
-                textDecoration: 'none',
-                color: 'primary.main',
-                fontWeight: 'bold',
-              }}
-            >
-              MYANVIE
-            </Typography>
+          {/* Logo và Menu */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {/* Logo */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box
+                component="img"
+                src="/images/logo/logo.svg"
+                alt="MyAnVie Logo"
+                sx={{
+                  height: 40,
+                  width: 'auto',
+                }}
+              />
+              <Typography
+                variant="h6"
+                component={RouterLink}
+                to="/"
+                sx={{
+                  textDecoration: 'none',
+                  color: '#950B0B',  // Màu đỏ đậm cho chữ MYANVIE
+                  fontWeight: 'bold',
+                }}
+              >
+                MYANVIE
+              </Typography>
+            </Box>
+
+            {/* Menu */}
+            <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+              <Button 
+                color="inherit" 
+                onClick={() => handleSectionClick('home')} 
+                sx={{ 
+                  color: '#2c2c2c',
+                  '&:hover': {
+                    color: '#950B0B',
+                  }
+                }}
+              >
+                Trang chủ
+              </Button>
+              <Button 
+                color="inherit" 
+                onClick={() => handleSectionClick('about')} 
+                sx={{ 
+                  color: '#2c2c2c',
+                  '&:hover': {
+                    color: '#950B0B',
+                  }
+                }}
+              >
+                Về chúng tôi
+              </Button>
+              <Button 
+                color="inherit" 
+                onClick={() => handleSectionClick('store')} 
+                sx={{ 
+                  color: '#2c2c2c',
+                  '&:hover': {
+                    color: '#950B0B',
+                  }
+                }}
+              >
+                Cửa hàng
+              </Button>
+              <Button 
+                color="inherit" 
+                onClick={() => handleSectionClick('news')} 
+                sx={{ 
+                  color: '#2c2c2c',
+                  '&:hover': {
+                    color: '#950B0B',
+                  }
+                }}
+              >
+                Tin tức
+              </Button>
+              <Button 
+                color="inherit" 
+                onClick={() => handleSectionClick('policy')} 
+                sx={{ 
+                  color: '#2c2c2c',
+                  '&:hover': {
+                    color: '#950B0B',
+                  }
+                }}
+              >
+                Chính sách
+              </Button>
+              <Button 
+                color="inherit" 
+                onClick={() => handleSectionClick('contact')} 
+                sx={{ 
+                  color: '#2c2c2c',
+                  '&:hover': {
+                    color: '#950B0B',
+                  }
+                }}
+              >
+                Liên hệ
+              </Button>
+            </Box>
           </Box>
 
+          {/* Icons và Đăng nhập */}
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel>Danh mục</InputLabel>
-              <Select
-                label="Danh mục"
-                onChange={handleCategoryChange}
-                defaultValue=""
-              >
-                {categories.map((category) => (
-                  <MenuItem key={category.path} value={category.name}>
-                    {category.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <Button color="primary" onClick={() => handleSectionClick('about')}>
-              About
-            </Button>
-            <Button color="primary" onClick={() => handleSectionClick('contact')}>
-              Contact
-            </Button>
-            <Button
-              component={RouterLink}
-              to="/news"
-              color="primary"
+            {/* Tìm kiếm và Giỏ hàng */}
+            <IconButton 
+              color="inherit" 
+              sx={{ 
+                color: '#2c2c2c',
+                '&:hover': {
+                  color: '#950B0B',
+                }
+              }}
             >
-              News
-            </Button>
+              <ShoppingCartIcon />
+            </IconButton>
 
+            {/* Ngôn ngữ */}
+            <IconButton 
+              color="inherit" 
+              sx={{ 
+                color: '#2c2c2c',
+                '&:hover': {
+                  color: '#950B0B',
+                }
+              }}
+            >
+              <SearchIcon />
+            </IconButton>
+
+            {/* Đăng nhập/Đăng ký */}
             {isAuthenticated ? (
               <>
-                {user?.role === 'ADMIN' && (
-                  <Button
-                    component={RouterLink}
-                    to="/admin"
-                    color="primary"
-                    variant="outlined"
-                  >
-                    Admin Dashboard
-                  </Button>
-                )}
-                <IconButton color="primary" component={RouterLink} to="/cart">
-                  <ShoppingCartIcon />
-                </IconButton>
-                <IconButton
-                  onClick={handleMenuOpen}
-                  color="primary"
+                <IconButton 
+                  onClick={handleMenuOpen} 
+                  color="inherit"
+                  sx={{ 
+                    color: '#2c2c2c',
+                    '&:hover': {
+                      color: '#950B0B',
+                    }
+                  }}
                 >
                   <Avatar sx={{ width: 32, height: 32 }} />
                 </IconButton>
@@ -190,17 +262,27 @@ const Header = () => {
                 <Button
                   component={RouterLink}
                   to="/login"
-                  color="primary"
+                  variant="contained"
+                  sx={{
+                    bgcolor: '#950B0B',
+                    '&:hover': {
+                      bgcolor: '#7A0909',
+                    }
+                  }}
                 >
                   Đăng nhập
                 </Button>
-                <Button
-                  component={RouterLink}
-                  to="/register"
-                  color="primary"
-                >
-                  Đăng ký
-                </Button>
+                <Box
+                  component="img"
+                  src="/images/logo/VNFlag.svg"
+                  alt="Việt Nam Flag"
+                  sx={{
+                    height: 24,
+                    width: 'auto',
+                    marginLeft: 1,
+                    cursor: 'pointer'
+                  }}
+                />
               </>
             )}
           </Box>
