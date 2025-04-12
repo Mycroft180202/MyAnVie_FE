@@ -20,15 +20,19 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import Footer from './components/Layout/Footer';
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
         <Router>
-          <div className="min-h-screen bg-gray-100">
+          <div className="flex flex-col min-h-screen bg-gray-100">
             <Header />
-            <main className="container mx-auto px-4 py-8">
+            <main
+              className="container mx-auto px-4 py-8 flex-grow"
+              style={{ paddingTop: '30px', paddingBottom: '100px' }} // Tăng khoảng cách trên/dưới
+            >
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />

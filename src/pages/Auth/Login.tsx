@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import {
-  Container,
   Box,
   Typography,
   TextField,
   Button,
   Link,
-  Paper,
   InputAdornment,
   IconButton,
+  Paper,
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { toast } from 'react-toastify';
+import ImageSlider from '../../components/Layout/ImageSlider';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -35,35 +35,58 @@ const Login = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Box
+      display="flex"
+      sx={{
+        minHeight: '85vh', // Chiếm toàn bộ chiều cao của container cha (main)
+        width: '100%',
+        mx: 'auto',
+        maxWidth: '1400px', // Giới hạn chiều rộng tối đa
+        borderRadius: 2,
+        overflow: 'hidden',
+        bgcolor: 'white', // Thêm nền trắng cho toàn bộ phần Login
+        boxShadow: 3, // Thêm bóng nhẹ
+      }}
+    >
+      {/* Left: Image slideshow */}
+      <Box flex={1} sx={{ display: { xs: 'none', md: 'block' } }}>
+        <ImageSlider />
+      </Box>
+
+      {/* Right: Login form */}
       <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
+        flex={1}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        sx={{ p: { xs: 2, md: 4 } }}
       >
         <Paper
           elevation={3}
           sx={{
             padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
             width: '100%',
+            maxWidth: 400,
+            borderRadius: 2,
           }}
         >
-          <Typography component="h1" variant="h5" gutterBottom>
+          <Typography
+            component="h1"
+            variant="h5"
+            gutterBottom
+            color="error"
+            fontWeight="bold"
+            textAlign="center"
+          >
             Đăng nhập
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
               fullWidth
               id="email"
-              label="Email"
+              label="Email / Tên đăng nhập"
               name="email"
               autoComplete="email"
               autoFocus
@@ -95,23 +118,32 @@ const Login = () => {
                 ),
               }}
             />
+
+            <Box textAlign="right">
+              <Link href="#" variant="body2" color="primary">
+                Quên mật khẩu?
+              </Link>
+            </Box>
+
             <Button
               type="submit"
               fullWidth
               variant="contained"
+              color="error"
               sx={{ mt: 3, mb: 2 }}
             >
               Đăng nhập
             </Button>
+
             <Box sx={{ textAlign: 'center' }}>
               <Link component={RouterLink} to="/register" variant="body2">
-                Chưa có tài khoản? Đăng ký ngay
+                Chưa có tài khoản? <b>Đăng ký</b>
               </Link>
             </Box>
           </Box>
         </Paper>
       </Box>
-    </Container>
+    </Box>
   );
 };
 

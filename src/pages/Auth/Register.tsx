@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  Container,
   Box,
   Typography,
   TextField,
@@ -16,6 +15,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { toast } from 'react-toastify';
+import ImageSlider from '../../components/Layout/ImageSlider'; // Đảm bảo đường dẫn đúng
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -40,7 +40,7 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
       toast.error('Mật khẩu xác nhận không khớp!');
       return;
@@ -62,26 +62,49 @@ const Register = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Box
+      display="flex"
+      sx={{
+        minHeight: '80vh', // Tương tự Login, kéo dài xuống dưới một chút
+        width: '100%',
+        mx: 'auto',
+        maxWidth: '1400px', // Giới hạn chiều rộng tối đa
+        borderRadius: 2,
+        overflow: 'hidden',
+        bgcolor: 'white',
+        boxShadow: 3,
+      }}
+    >
+      {/* Left: Image slideshow */}
+      <Box flex={1} sx={{ display: { xs: 'none', md: 'block' } }}>
+        <ImageSlider />
+      </Box>
+
+      {/* Right: Register form */}
       <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
+        flex={1}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        sx={{ p: { xs: 2, md: 4 } }}
       >
         <Paper
           elevation={3}
           sx={{
             padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
             width: '100%',
+            maxWidth: 400,
+            borderRadius: 2,
           }}
         >
-          <Typography component="h1" variant="h5" gutterBottom>
+          <Typography
+            component="h1"
+            variant="h5"
+            gutterBottom
+            color="error" // Đổi màu để phù hợp với thiết kế
+            fontWeight="bold"
+            textAlign="center"
+          >
             Đăng ký tài khoản
           </Typography>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
@@ -178,19 +201,20 @@ const Register = () => {
               type="submit"
               fullWidth
               variant="contained"
+              color="error" // Đổi màu nút để phù hợp với thiết kế
               sx={{ mt: 3, mb: 2 }}
             >
               Đăng ký
             </Button>
             <Box sx={{ textAlign: 'center' }}>
               <Link component={RouterLink} to="/login" variant="body2">
-                Đã có tài khoản? Đăng nhập
+                Đã có tài khoản? <b>Đăng nhập</b>
               </Link>
             </Box>
           </Box>
         </Paper>
       </Box>
-    </Container>
+    </Box>
   );
 };
 
