@@ -1,0 +1,36 @@
+.custom-dots {
+  position: absolute;
+  bottom: 40px !important;
+  display: flex !important;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  z-index: 1;
+}
+
+.custom-dots li {
+  margin: 0 4px !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.custom-dots li button {
+  display: none;
+}
+
+/* Hide default slick-slider arrows */
+.slick-prev,
+.slick-next {
+  display: none !important;
+}
+
+/* Ensure slider container takes full width */
+.slick-slider,
+.slick-list,
+.slick-track {
+  width: 100%;
+  height: 100%;
+}
