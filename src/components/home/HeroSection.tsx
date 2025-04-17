@@ -64,7 +64,7 @@ const HeroSection = () => {
             key={slide.id}
             sx={{
               position: 'relative',
-              background: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${slide.image}) no-repeat center center`,
+              background: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(${slide.image}) no-repeat center center`,
               backgroundSize: 'cover',
               height: { xs: '60vh', md: '80vh' },
               display: 'flex',
