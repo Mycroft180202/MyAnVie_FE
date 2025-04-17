@@ -46,6 +46,8 @@ const Login = () => {
         overflow: 'hidden',
         bgcolor: 'white', // Thêm nền trắng cho toàn bộ phần Login
         boxShadow: 3, // Thêm bóng nhẹ
+        mb: 10, // Thêm khoảng cách phía dưới để cách footer
+        mt: 3, // Thêm khoảng cách phía trên để cách header
       }}
     >
       {/* Left: Image slideshow */}
