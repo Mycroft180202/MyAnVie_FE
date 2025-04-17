@@ -31,7 +31,7 @@ function App() {
             <Header />
             <main
               className="container mx-auto px-4 py-8 flex-grow"
-              style={{ paddingTop: '30px', paddingBottom: '100px' }} // Tăng khoảng cách trên/dưới
+              style={{ paddingTop: '10px', paddingBottom: '0px' }} // Tăng khoảng cách trên/dưới
             >
               <Routes>
                 <Route path="/" element={<Home />} />

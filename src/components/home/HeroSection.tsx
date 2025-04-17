@@ -17,6 +17,8 @@ const HeroSection = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: false,
+    autoplay: true, // Thêm tính năng tự động chuyển slide
+    autoplaySpeed: 3000, // Thời gian giữa các slide (3 giây)
     dotsClass: 'slick-dots custom-dots',
     customPaging: () => (
       <Box
@@ -55,7 +57,7 @@ const HeroSection = () => {
   ];
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box sx={{ position: 'relative', mt: 0 }}>
       <Slider ref={(c) => setSlider(c)} {...settings}>
         {slides.map((slide) => (
           <Box

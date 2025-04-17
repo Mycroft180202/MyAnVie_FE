@@ -1,69 +1,59 @@
-import { Box, Typography, IconButton } from '@mui/material';
+import { Box, Typography, Avatar, IconButton } from '@mui/material';
 import { useRef } from 'react';
 import Slider from 'react-slick';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import '../../styles/FeaturedProducts.css';
+import '../../styles/CommentSection.css';
 
-const products = [
+const comments = [
   {
     id: 1,
-    image: '/images/products/Pottery1.jpg',
-    name: 'Bình hoa gốm men lam',
-    price: '300.000đ',
+    avatar: '/images/users/user1.svg',
+    name: 'Nguyễn Văn A',
     rating: 5,
+    content:
+      'Tôi đã mua sản phẩm của Myanvie được 2 lần rồi và lần nào cũng rất hài lòng. Dịch vụ chăm sóc khách hàng rất tốt, rất chu đáo.',
   },
   {
     id: 2,
-    image: '/images/products/Bamboo1.jpg',
-    name: 'Bình hoa gốm men lam',
-    price: '300.000đ',
+    avatar: '/images/users/user2.svg',
+    name: 'Nguyễn Văn A',
     rating: 5,
+    content:
+      'Tôi đã mua sản phẩm của Myanvie được 2 lần rồi và lần nào cũng rất hài lòng. Dịch vụ chăm sóc khách hàng rất tốt, rất chu đáo.',
   },
   {
     id: 3,
-    image: '/images/products/Silk1.jpg',
-    name: 'Bình hoa gốm men lam',
-    price: '300.000đ',
-    rating: 4,
-  },
-  {
-    id: 4,
-    image: '/images/products/Silk2.jpg',
-    name: 'Bình hoa gốm men lam',
-    price: '300.000đ',
+    avatar: '/images/users/user3.svg',
+    name: 'Nguyễn Văn A',
     rating: 5,
+    content:
+      'Tôi đã mua sản phẩm của Myanvie được 2 lần rồi và lần nào cũng rất hài lòng. Dịch vụ chăm sóc khách hàng rất tốt, rất chu đáo.',
   },
 ];
 
-const FeaturedProducts = () => {
+const CommentSection = () => {
   const sliderRef = useRef<Slider | null>(null);
 
   const settings = {
-    centerMode: true,
-    centerPadding: '0px',
     infinite: true,
-    speed: 600,
+    speed: 500,
     slidesToShow: 3,
     arrows: false,
     dots: true,
     autoplay: true,
-    autoplaySpeed: 3000,
-    dotsClass: 'slick-dots featured-dots',
+    autoplaySpeed: 4000,
+    dotsClass: 'slick-dots comment-dots',
     responsive: [
       {
         breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-        },
+        settings: { slidesToShow: 2 },
       },
       {
         breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-        },
+        settings: { slidesToShow: 1 },
       },
     ],
   };
@@ -72,10 +62,10 @@ const FeaturedProducts = () => {
     <Box
       sx={{
         py: 10,
+        background: '#f5f5dc',
         textAlign: 'center',
-        background: '#FFF9EC',
         position: 'relative',
-        minHeight: '800px',
+        minHeight: '500px',
       }}
     >
       <Typography
@@ -86,28 +76,25 @@ const FeaturedProducts = () => {
           fontFamily: 'Hoaico2',
           mb: 5,
           textTransform: 'uppercase',
-          letterSpacing: '0.1em',
+          letterSpacing: '0.05em',
         }}
       >
-        CÁC SẢN PHẨM NỔI BẬT
+        KHÁCH HÀNG CỦA MYANVIE ĐÃ NÓI GÌ?
       </Typography>
 
-      <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 2, pb: 10 }}>
+      <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 2, pb: 6 }}>
         <Slider ref={sliderRef} {...settings}>
-          {products.map((product) => (
-            <Box key={product.id} px={2}>
-              <Box className="product-card">
-                <Box
-                  component="img"
-                  src={product.image}
-                  alt={product.name}
-                  className="product-image"
+          {comments.map((comment) => (
+            <Box key={comment.id} px={2}>
+              <Box className="comment-card">
+                <Avatar
+                  src={comment.avatar}
+                  alt={comment.name}
+                  sx={{ width: 60, height: 60, mx: 'auto', mb: 2 }}
                 />
-                <Typography sx={{ fontWeight: 500, mt: 2 }}>{product.name}</Typography>
-                <Typography sx={{ color: '#950B0B', fontWeight: 'bold', my: 1 }}>
-                  {product.price}
-                </Typography>
-                <Box>{'⭐'.repeat(product.rating)}</Box>
+                <Typography sx={{ fontWeight: 600 }}>{comment.name}</Typography>
+                <Box sx={{ my: 1 }}>{'⭐'.repeat(comment.rating)}</Box>
+                <Typography sx={{ fontSize: '14px', color: '#333' }}>{comment.content}</Typography>
               </Box>
             </Box>
           ))}
@@ -153,4 +140,4 @@ const FeaturedProducts = () => {
   );
 };
 
-export default FeaturedProducts;
+export default CommentSection;
