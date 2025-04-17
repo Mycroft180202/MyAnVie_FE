@@ -19,6 +19,7 @@ export const theme = createTheme({
   },
   typography: {
     fontFamily: [
+      'TH Hoaico 2',
       'Roboto',
       '-apple-system',
       'BlinkMacSystemFont',

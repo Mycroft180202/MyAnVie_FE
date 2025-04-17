@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Slider from 'react-slick';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import 'slick-carousel/slick/slick.css'; 
+import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import '../../styles/HeroSection.css';
 
@@ -17,21 +17,17 @@ const HeroSection = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: false,
-    dotsClass: "slick-dots custom-dots",
-    customPaging: (i: number) => (
+    dotsClass: 'slick-dots custom-dots',
+    customPaging: () => (
       <Box
         sx={{
-          width: '10px',
-          height: '10px',
+          width: '12px',
+          height: '12px',
           borderRadius: '50%',
           backgroundColor: 'white',
-          opacity: 0.5,
-          '&.slick-active': {
-            opacity: 1
-          }
         }}
       />
-    )
+    ),
   };
 
   const slides = [
@@ -39,7 +35,7 @@ const HeroSection = () => {
       id: 1,
       image: '/images/img/Slider/img1.svg',
       title: 'Khám phá không gian văn hóa',
-      subtitle: 'Làng lụa Vạn Phúc',
+      subtitle: 'LÀNG LỤA VẠN PHÚC',
       buttonText: 'Khám phá',
     },
     {
@@ -71,7 +67,7 @@ const HeroSection = () => {
               height: { xs: '60vh', md: '80vh' },
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
             }}
           >
             <Box
@@ -81,7 +77,7 @@ const HeroSection = () => {
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
                 width: '100%',
-                textAlign: 'center'
+                textAlign: 'center',
               }}
             >
               <Container maxWidth="lg">
@@ -98,10 +94,11 @@ const HeroSection = () => {
                     sx={{
                       fontSize: '24px',
                       fontWeight: 400,
+                      fontFamily: 'Roboto',
                       letterSpacing: '0.05em',
                       margin: 0,
                       color: 'white',
-                      textTransform: 'uppercase'
+                      textTransform: 'uppercase',
                     }}
                   >
                     {slide.title}
@@ -110,7 +107,7 @@ const HeroSection = () => {
                     component="p"
                     sx={{
                       fontSize: '44px',
-                      fontFamily: 'TH Hoaico 2, sans-serif',
+                      fontFamily: 'Hoaico2',
                       letterSpacing: '0.05em',
                       margin: '12px 0',
                       color: 'white',
@@ -130,7 +127,7 @@ const HeroSection = () => {
                         opacity: 0.9,
                       },
                       marginTop: '40px',
-                      textTransform: 'none'
+                      textTransform: 'none',
                     }}
                   >
                     {slide.buttonText}
@@ -157,7 +154,7 @@ const HeroSection = () => {
           '&:hover': {
             bgcolor: 'rgba(255, 255, 255, 0.1)',
           },
-          zIndex: 1
+          zIndex: 1,
         }}
       >
         <ArrowBackIosIcon />
@@ -176,7 +173,7 @@ const HeroSection = () => {
           '&:hover': {
             bgcolor: 'rgba(255, 255, 255, 0.1)',
           },
-          zIndex: 1
+          zIndex: 1,
         }}
       >
         <ArrowForwardIosIcon />

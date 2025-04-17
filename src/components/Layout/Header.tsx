@@ -104,9 +104,11 @@ const Header = () => {
                 component={RouterLink}
                 to="/"
                 sx={{
+                  fontFamily: 'Hoaico2',
                   textDecoration: 'none',
                   color: '#950B0B',  // Màu đỏ đậm cho chữ MYANVIE
                   fontWeight: 'bold',
+                  letterSpacing: '0.1em', // Thêm khoảng cách giữa các chữ cái
                 }}
               >
                 MYANVIE
@@ -120,6 +122,7 @@ const Header = () => {
                 onClick={() => handleSectionClick('home')} 
                 sx={{ 
                   color: '#2c2c2c',
+                  fontFamily: 'Roboto', // Đặt font chữ Roboto
                   '&:hover': {
                     color: '#950B0B',
                   }
@@ -132,6 +135,7 @@ const Header = () => {
                 onClick={() => handleSectionClick('about')} 
                 sx={{ 
                   color: '#2c2c2c',
+                  fontFamily: 'Roboto', // Đặt font chữ Roboto
                   '&:hover': {
                     color: '#950B0B',
                   }
@@ -144,6 +148,7 @@ const Header = () => {
                 onClick={() => handleSectionClick('store')} 
                 sx={{ 
                   color: '#2c2c2c',
+                  fontFamily: 'Roboto', // Đặt font chữ Roboto
                   '&:hover': {
                     color: '#950B0B',
                   }
@@ -156,6 +161,7 @@ const Header = () => {
                 onClick={() => handleSectionClick('news')} 
                 sx={{ 
                   color: '#2c2c2c',
+                  fontFamily: 'Roboto', // Đặt font chữ Roboto
                   '&:hover': {
                     color: '#950B0B',
                   }
@@ -168,6 +174,7 @@ const Header = () => {
                 onClick={() => handleSectionClick('policy')} 
                 sx={{ 
                   color: '#2c2c2c',
+                  fontFamily: 'Roboto', // Đặt font chữ Roboto
                   '&:hover': {
                     color: '#950B0B',
                   }
@@ -180,6 +187,7 @@ const Header = () => {
                 onClick={() => handleSectionClick('contact')} 
                 sx={{ 
                   color: '#2c2c2c',
+                  fontFamily: 'Roboto', // Đặt font chữ Roboto
                   '&:hover': {
                     color: '#950B0B',
                   }
