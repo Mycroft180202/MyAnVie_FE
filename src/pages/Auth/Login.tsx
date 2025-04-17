@@ -122,7 +122,7 @@ const Login = () => {
             />
 
             <Box textAlign="right">
-              <Link href="#" variant="body2" color="primary">
+              <Link component={RouterLink} to="/forgot-password" variant="body2" color="primary">
                 Quên mật khẩu?
               </Link>
             </Box>

@@ -11,6 +11,7 @@ import News from '../pages/News';
 import AdminDashboard from '../pages/Admin';
 import AdminRoute from '../components/auth/AdminRoute';
 import NotFound from '../pages/NotFound';
+import ForgotPassword from '../pages/Auth/ForgotPassword';
 
 const AppRoutes = () => {
   return (
@@ -22,6 +23,7 @@ const AppRoutes = () => {
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="news" element={<News />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
         <Route
           path="profile"
           element={
