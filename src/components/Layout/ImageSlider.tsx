@@ -41,11 +41,19 @@ const ImageSlider = () => {
         transition: 'background-image 0.5s ease-in-out',
       }}
     >
-      <Typography variant="h5" sx={{ textShadow: '1px 1px 4px black' }}>
+      <Typography variant="h5" sx={{
+         textShadow: '1px 1px 4px black',
+         fontFamily: 'Hoaico2',
+         letterSpacing: '3px',
+         }}>
         CHÀO MỪNG QUAY TRỞ LẠI
       </Typography>
-      <Typography variant="h3" fontWeight="bold" sx={{ textShadow: '2px 2px 6px black' }}>
-        MYANVIE!
+      <Typography variant="h3" fontWeight="bold" sx={{ 
+        textShadow: '2px 2px 6px black',
+        fontFamily: 'Hoaico2',
+         letterSpacing: '3px',
+        }}>
+        MYANVIE
       </Typography>
     </Box>
   );

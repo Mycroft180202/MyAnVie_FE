@@ -10,6 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import ProductCard from '../../components/shared/ProductCard';
+import Breadcrumbs from '../../components/shared/Breadcrumbs';
 
 const products = [
   {

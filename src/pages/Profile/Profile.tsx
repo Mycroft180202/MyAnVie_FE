@@ -14,8 +14,8 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { useAuth } from '../contexts/AuthContext';
-import { userService, UpdateUserData, PasswordChangeRequest, VerificationRequest } from '../services/userService';
+import { useAuth } from '../../contexts/AuthContext';
+import { userService, UpdateUserData, PasswordChangeRequest, VerificationRequest } from '../../services/userService';
 import { toast } from 'react-toastify';
 
 const Profile = () => {

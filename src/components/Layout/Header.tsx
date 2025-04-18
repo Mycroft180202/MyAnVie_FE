@@ -10,9 +10,7 @@ import {
   Menu,
   MenuItem,
   Avatar,
-  FormControl,
-  InputLabel,
-  Select,
+  Popover,
 } from '@mui/material';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -22,15 +20,17 @@ import { useAuth } from '../../contexts/AuthContext';
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [policyAnchorEl, setPolicyAnchorEl] = useState<null | HTMLElement>(null);
+  const [shopAnchorEl, setShopAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const categories = [
-    { name: 'Đồ gốm', path: '/category/pottery' },
-    { name: 'Mây tre đan', path: '/category/bamboo' },
-    { name: 'Lụa', path: '/category/silk' },
-    { name: 'Nón lá', path: '/category/conical-hat' },
-  ];
+  // Xác định trang hiện tại
+  const isActive = (path: string) => {
+    if (path === '/' && location.pathname === '/') return true;
+    if (path !== '/' && location.pathname.startsWith(path)) return true;
+    return false;
+  };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -38,6 +38,22 @@ const Header = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handlePolicyClick = (event: React.MouseEvent<HTMLElement>) => {
+    setPolicyAnchorEl(event.currentTarget);
+  };
+
+  const handlePolicyClose = () => {
+    setPolicyAnchorEl(null);
+  };
+
+  const handleShopClick = (event: React.MouseEvent<HTMLElement>) => {
+    setShopAnchorEl(event.currentTarget);
+  };
+
+  const handleShopClose = () => {
+    setShopAnchorEl(null);
   };
 
   const handleLogout = async () => {
@@ -48,13 +64,6 @@ const Header = () => {
       console.error('Logout failed:', error);
     }
     handleMenuClose();
-  };
-
-  const handleCategoryChange = (event: any) => {
-    const selectedCategory = categories.find(cat => cat.name === event.target.value);
-    if (selectedCategory) {
-      navigate(selectedCategory.path);
-    }
   };
 
   const scrollToSection = (sectionId: string) => {
@@ -118,11 +127,11 @@ const Header = () => {
             {/* Menu */}
             <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
               <Button 
-                color="inherit" 
-                onClick={() => handleSectionClick('home')} 
+                component={RouterLink}
+                to="/"
                 sx={{ 
-                  color: '#2c2c2c',
-                  fontFamily: 'Roboto', // Đặt font chữ Roboto
+                  color: isActive('/') ? '#950B0B' : '#2c2c2c',
+                  fontFamily: 'Roboto',
                   '&:hover': {
                     color: '#950B0B',
                   }
@@ -131,11 +140,11 @@ const Header = () => {
                 Trang chủ
               </Button>
               <Button 
-                color="inherit" 
-                onClick={() => handleSectionClick('about')} 
+                component={RouterLink}
+                to="/about"
                 sx={{ 
-                  color: '#2c2c2c',
-                  fontFamily: 'Roboto', // Đặt font chữ Roboto
+                  color: isActive('/about') ? '#950B0B' : '#2c2c2c',
+                  fontFamily: 'Roboto',
                   '&:hover': {
                     color: '#950B0B',
                   }
@@ -144,11 +153,10 @@ const Header = () => {
                 Về chúng tôi
               </Button>
               <Button 
-                color="inherit" 
-                onClick={() => handleSectionClick('store')} 
+                onClick={handleShopClick}
                 sx={{ 
-                  color: '#2c2c2c',
-                  fontFamily: 'Roboto', // Đặt font chữ Roboto
+                  color: isActive('/category') ? '#950B0B' : '#2c2c2c',
+                  fontFamily: 'Roboto',
                   '&:hover': {
                     color: '#950B0B',
                   }
@@ -156,12 +164,66 @@ const Header = () => {
               >
                 Cửa hàng
               </Button>
+              <Popover
+                open={Boolean(shopAnchorEl)}
+                anchorEl={shopAnchorEl}
+                onClose={handleShopClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                sx={{
+                  '& .MuiPaper-root': {
+                    mt: 1,
+                    minWidth: 180,
+                  }
+                }}
+              >
+                <MenuItem 
+                  component={RouterLink} 
+                  to="/category/pottery" 
+                  onClick={handleShopClose}
+                  sx={{ 
+                    color: isActive('/category/pottery') ? '#950B0B' : '#2c2c2c',
+                    '&:hover': { color: '#950B0B' } 
+                  }}
+                >
+                  Gốm
+                </MenuItem>
+                <MenuItem 
+                  component={RouterLink} 
+                  to="/category/silk" 
+                  onClick={handleShopClose}
+                  sx={{ 
+                    color: isActive('/category/silk') ? '#950B0B' : '#2c2c2c',
+                    '&:hover': { color: '#950B0B' } 
+                  }}
+                >
+                  Lụa
+                </MenuItem>
+                <MenuItem 
+                  component={RouterLink} 
+                  to="/category/bamboo" 
+                  onClick={handleShopClose}
+                  sx={{ 
+                    color: isActive('/category/bamboo') ? '#950B0B' : '#2c2c2c',
+                    '&:hover': { color: '#950B0B' } 
+                  }}
+                >
+                  Mây tre đan
+                </MenuItem>
+              </Popover>
+
               <Button 
-                color="inherit" 
-                onClick={() => handleSectionClick('news')} 
+                component={RouterLink}
+                to="/news"
                 sx={{ 
-                  color: '#2c2c2c',
-                  fontFamily: 'Roboto', // Đặt font chữ Roboto
+                  color: isActive('/news') ? '#950B0B' : '#2c2c2c',
+                  fontFamily: 'Roboto',
                   '&:hover': {
                     color: '#950B0B',
                   }
@@ -170,11 +232,10 @@ const Header = () => {
                 Tin tức
               </Button>
               <Button 
-                color="inherit" 
-                onClick={() => handleSectionClick('policy')} 
+                onClick={handlePolicyClick}
                 sx={{ 
                   color: '#2c2c2c',
-                  fontFamily: 'Roboto', // Đặt font chữ Roboto
+                  fontFamily: 'Roboto',
                   '&:hover': {
                     color: '#950B0B',
                   }
@@ -182,12 +243,51 @@ const Header = () => {
               >
                 Chính sách
               </Button>
+              <Popover
+                open={Boolean(policyAnchorEl)}
+                anchorEl={policyAnchorEl}
+                onClose={handlePolicyClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                sx={{
+                  '& .MuiPaper-root': {
+                    mt: 1,
+                    minWidth: 180,
+                  }
+                }}
+              >
+                <MenuItem 
+                  onClick={handlePolicyClose}
+                  sx={{ '&:hover': { color: '#950B0B' } }}
+                >
+                  Chính sách đổi trả
+                </MenuItem>
+                <MenuItem 
+                  onClick={handlePolicyClose}
+                  sx={{ '&:hover': { color: '#950B0B' } }}
+                >
+                  Chính sách vận chuyển
+                </MenuItem>
+                <MenuItem 
+                  onClick={handlePolicyClose}
+                  sx={{ '&:hover': { color: '#950B0B' } }}
+                >
+                  Chính sách bảo hành
+                </MenuItem>
+              </Popover>
+
               <Button 
-                color="inherit" 
-                onClick={() => handleSectionClick('contact')} 
+                component={RouterLink}
+                to="/contact"
                 sx={{ 
-                  color: '#2c2c2c',
-                  fontFamily: 'Roboto', // Đặt font chữ Roboto
+                  color: isActive('/contact') ? '#950B0B' : '#2c2c2c',
+                  fontFamily: 'Roboto',
                   '&:hover': {
                     color: '#950B0B',
                   }
@@ -250,6 +350,10 @@ const Header = () => {
                     component={RouterLink}
                     to="/profile"
                     onClick={handleMenuClose}
+                    sx={{ 
+                      color: isActive('/profile') ? '#950B0B' : '#2c2c2c',
+                      '&:hover': { color: '#950B0B' } 
+                    }}
                   >
                     Hồ sơ
                   </MenuItem>
@@ -258,6 +362,10 @@ const Header = () => {
                       component={RouterLink}
                       to="/admin"
                       onClick={handleMenuClose}
+                      sx={{ 
+                        color: isActive('/admin') ? '#950B0B' : '#2c2c2c',
+                        '&:hover': { color: '#950B0B' } 
+                      }}
                     >
                       Quản trị
                     </MenuItem>
@@ -272,7 +380,7 @@ const Header = () => {
                   to="/login"
                   variant="contained"
                   sx={{
-                    bgcolor: '#950B0B',
+                    bgcolor: isActive('/login') ? '#7A0909' : '#950B0B',
                     '&:hover': {
                       bgcolor: '#7A0909',
                     }

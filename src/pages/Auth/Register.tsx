@@ -102,6 +102,8 @@ const Register = () => {
           <Typography
             component="h1"
             variant="h5"
+            fontFamily={'Hoaico2'}
+            letterSpacing={3}
             gutterBottom
             color="error" // Đổi màu để phù hợp với thiết kế
             fontWeight="bold"

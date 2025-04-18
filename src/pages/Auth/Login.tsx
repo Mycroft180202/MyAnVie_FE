@@ -75,10 +75,13 @@ const Login = () => {
           <Typography
             component="h1"
             variant="h5"
+            fontFamily={'Hoaico2'}
+            letterSpacing={3}
             gutterBottom
             color="error"
             fontWeight="bold"
             textAlign="center"
+
           >
             Đăng nhập
           </Typography>

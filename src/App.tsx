@@ -21,6 +21,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import Footer from './components/Layout/Footer';
 import ForgotPassword from './pages/Auth/ForgotPassword';
+import AboutUs from './pages/AboutUs';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             >
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="about" element={<AboutUs />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
