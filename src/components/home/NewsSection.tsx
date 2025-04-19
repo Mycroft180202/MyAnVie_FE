@@ -66,114 +66,141 @@ const NewsSection = () => {
     <Box
       sx={{
         py: 10,
-        background: '#FFF9EC',
-        textAlign: 'center',
+        bgcolor: '#FFF9EC',
         position: 'relative',
-        minHeight: '600px',
+        overflow: 'hidden',
       }}
     >
-      <Typography
-        variant="h4"
-        sx={{
-          fontWeight: 'bold',
-          color: '#5B0101',
-          fontFamily: 'Hoaico2',
-          mb: 5,
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-        }}
-      >
-        Tin tức nổi bật
-      </Typography>
+      {/* Flower decorations */}
+      {[...Array(8)].map((_, index) => (
+        <Box
+          key={index}
+          component="img"
+          src={index % 2 === 0 ? "/images/icons/hoa-left.svg" : "/images/icons/hoa-right.svg"}
+          alt=""
+          sx={{
+            position: 'absolute',
+            opacity: 0.5,
+            transform: `rotate(${index * 45}deg)`,
+            width: '150px',
+            height: '150px',
+            ...(index === 0 && { top: '5%', left: '5%' }),
+            ...(index === 1 && { top: '15%', right: '10%' }),
+            ...(index === 2 && { bottom: '20%', left: '15%' }),
+            ...(index === 3 && { bottom: '10%', right: '5%' }),
+            ...(index === 4 && { top: '50%', left: '8%' }),
+            ...(index === 5 && { top: '40%', right: '12%' }),
+            ...(index === 6 && { bottom: '40%', left: '20%' }),
+            ...(index === 7 && { top: '30%', right: '25%' }),
+          }}
+        />
+      ))}
 
-      <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 2, pb: 6 }}>
-        <Slider ref={sliderRef} {...settings}>
-          {news.map((item) => (
-            <Box key={item.id} px={2}>
-              <Box className="news-card">
-                <Box
-                  component="img"
-                  src={item.image}
-                  alt={item.title}
-                  className="news-image"
-                />
-                <Typography
-                  variant="caption"
-                  sx={{ display: 'block', mt: 1, color: '#555', fontSize: '13px' }}
-                >
-                  {item.date}
-                </Typography>
-                <Typography
-                  sx={{
-                    mt: 1,
-                    fontWeight: 500,
-                    fontSize: '15px',
-                    color: '#000',
-                  }}
-                >
-                  {item.title}
-                </Typography>
-                <Box className="arrow-icon">→</Box>
+      <Box sx={{ position: 'relative', zIndex: 1 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 'bold',
+            color: '#5B0101',
+            fontFamily: 'Hoaico2',
+            textAlign: 'center',
+            mb: 5,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+          }}
+        >
+          Tin tức nổi bật
+        </Typography>
+
+        <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 2, pb: 6 }}>
+          <Slider ref={sliderRef} {...settings}>
+            {news.map((item) => (
+              <Box key={item.id} px={2}>
+                <Box className="news-card">
+                  <Box
+                    component="img"
+                    src={item.image}
+                    alt={item.title}
+                    className="news-image"
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ display: 'block', mt: 1, color: '#555', fontSize: '13px' }}
+                  >
+                    {item.date}
+                  </Typography>
+                  <Typography
+                    sx={{
+                      mt: 1,
+                      fontWeight: 500,
+                      fontSize: '15px',
+                      color: '#000',
+                    }}
+                  >
+                    {item.title}
+                  </Typography>
+                  <Box className="arrow-icon">→</Box>
+                </Box>
               </Box>
-            </Box>
-          ))}
-        </Slider>
+            ))}
+          </Slider>
 
-        {/* Arrows */}
-        <IconButton
-          onClick={() => sliderRef.current?.slickPrev()}
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: 0,
-            transform: 'translateY(-50%)',
-            zIndex: 2,
-            bgcolor: '#fff',
-            border: '1px solid #ccc',
-            '&:hover': {
-              bgcolor: '#f5f5f5',
-            },
-          }}
-        >
-          <ArrowBackIosNewIcon />
-        </IconButton>
-        <IconButton
-          onClick={() => sliderRef.current?.slickNext()}
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            right: 0,
-            transform: 'translateY(-50%)',
-            zIndex: 2,
-            bgcolor: '#fff',
-            border: '1px solid #ccc',
-            '&:hover': {
-              bgcolor: '#f5f5f5',
-            },
-          }}
-        >
-          <ArrowForwardIosIcon />
-        </IconButton>
-
-        {/* Xem thêm */}
-        <Box sx={{ mt: 6 }}>
-          <Button
-            variant="contained"
+          {/* Arrows */}
+          <IconButton
+            onClick={() => sliderRef.current?.slickPrev()}
             sx={{
-              backgroundColor: '#950B0B',
-              color: '#fff',
-              px: 4,
-              py: 1,
-              borderRadius: '20px',
-              textTransform: 'none',
-              fontWeight: 500,
+              position: 'absolute',
+              top: '50%',
+              left: 0,
+              transform: 'translateY(-50%)',
+              zIndex: 2,
+              bgcolor: '#fff',
+              border: '1px solid #ccc',
               '&:hover': {
-                backgroundColor: '#750909',
+                bgcolor: '#f5f5f5',
               },
             }}
           >
-            Xem thêm
-          </Button>
+            <ArrowBackIosNewIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => sliderRef.current?.slickNext()}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              right: 0,
+              transform: 'translateY(-50%)',
+              zIndex: 2,
+              bgcolor: '#fff',
+              border: '1px solid #ccc',
+              '&:hover': {
+                bgcolor: '#f5f5f5',
+              },
+            }}
+          >
+            <ArrowForwardIosIcon />
+          </IconButton>
+
+          {/* Xem thêm */}
+          <Box sx={{ mt: 6, display: 'flex', justifyContent: 'center' }}>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: '#950B0B',
+                color: '#fff',
+                px: 4,
+                py: 1,
+                borderRadius: '20px',
+                textTransform: 'none',
+                fontWeight: 500,
+                '&:hover': {
+                  backgroundColor: '#750909',
+                },
+              }}
+            >
+              Xem thêm
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Box>

@@ -71,83 +71,110 @@ const FeaturedProducts = () => {
   return (
     <Box
       sx={{
-        py: 10,
-        textAlign: 'center',
-        background: '#FFF9EC',
+        py: 8,
+        bgcolor: '#FFF9EC',
         position: 'relative',
-        minHeight: '800px',
+        overflow: 'hidden',
       }}
     >
-      <Typography
-        variant="h4"
-        sx={{
-          fontWeight: 'bold',
-          color: '#5B0101',
-          fontFamily: 'Hoaico2',
-          mb: 5,
-          textTransform: 'uppercase',
-          letterSpacing: '0.1em',
-        }}
-      >
-        CÁC SẢN PHẨM NỔI BẬT
-      </Typography>
+      {/* Flower decorations */}
+      {[...Array(8)].map((_, index) => (
+        <Box
+          key={index}
+          component="img"
+          src={index % 2 === 0 ? "/images/icons/hoa-left.svg" : "/images/icons/hoa-right.svg"}
+          alt=""
+          sx={{
+            position: 'absolute',
+            opacity: 0.5,
+            transform: `rotate(${index * 45}deg)`,
+            width: '150px',
+            height: '150px',
+            ...(index === 0 && { top: '5%', left: '5%' }),
+            ...(index === 1 && { top: '15%', right: '10%' }),
+            ...(index === 2 && { bottom: '20%', left: '15%' }),
+            ...(index === 3 && { bottom: '10%', right: '5%' }),
+            ...(index === 4 && { top: '50%', left: '8%' }),
+            ...(index === 5 && { top: '40%', right: '12%' }),
+            ...(index === 6 && { bottom: '40%', left: '20%' }),
+            ...(index === 7 && { top: '30%', right: '25%' }),
+          }}
+        />
+      ))}
 
-      <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 2, pb: 10 }}>
-        <Slider ref={sliderRef} {...settings}>
-          {products.map((product) => (
-            <Box key={product.id} px={2}>
-              <Box className="product-card">
-                <Box
-                  component="img"
-                  src={product.image}
-                  alt={product.name}
-                  className="product-image"
-                />
-                <Typography sx={{ fontWeight: 500, mt: 2 }}>{product.name}</Typography>
-                <Typography sx={{ color: '#950B0B', fontWeight: 'bold', my: 1 }}>
-                  {product.price}
-                </Typography>
-                <Box>{'⭐'.repeat(product.rating)}</Box>
+      <Box sx={{ position: 'relative', zIndex: 1 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 'bold',
+            color: '#5B0101',
+            fontFamily: 'Hoaico2',
+            mb: 5,
+            textAlign: 'center',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+          }}
+        >
+          CÁC SẢN PHẨM NỔI BẬT
+        </Typography>
+
+        <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 2, pb: 10 }}>
+          <Slider ref={sliderRef} {...settings}>
+            {products.map((product) => (
+              <Box key={product.id} px={2}>
+                <Box className="product-card">
+                  <Box
+                    component="img"
+                    src={product.image}
+                    alt={product.name}
+                    className="product-image"
+                  />
+                  <Typography sx={{ fontWeight: 500, mt: 2 }}>{product.name}</Typography>
+                  <Typography sx={{ color: '#950B0B', fontWeight: 'bold', my: 1 }}>
+                    {product.price}
+                  </Typography>
+                  <Box>{'⭐'.repeat(product.rating)}</Box>
+                </Box>
               </Box>
-            </Box>
-          ))}
-        </Slider>
+            ))}
+          </Slider>
 
-        {/* Arrows */}
-        <IconButton
-          onClick={() => sliderRef.current?.slickPrev()}
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: 0,
-            transform: 'translateY(-50%)',
-            zIndex: 2,
-            bgcolor: '#fff',
-            border: '1px solid #ccc',
-            '&:hover': {
-              bgcolor: '#f5f5f5',
-            },
-          }}
-        >
-          <ArrowBackIosNewIcon />
-        </IconButton>
-        <IconButton
-          onClick={() => sliderRef.current?.slickNext()}
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            right: 0,
-            transform: 'translateY(-50%)',
-            zIndex: 2,
-            bgcolor: '#fff',
-            border: '1px solid #ccc',
-            '&:hover': {
-              bgcolor: '#f5f5f5',
-            },
-          }}
-        >
-          <ArrowForwardIosIcon />
-        </IconButton>
+          {/* Arrows */}
+          <IconButton
+            onClick={() => sliderRef.current?.slickPrev()}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: 0,
+              transform: 'translateY(-50%)',
+              zIndex: 2,
+              bgcolor: '#fff',
+              border: '1px solid #ccc',
+              '&:hover': {
+                bgcolor: '#f5f5f5',
+              },
+            }}
+          >
+            <ArrowBackIosNewIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => sliderRef.current?.slickNext()}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              right: 0,
+              transform: 'translateY(-50%)',
+              zIndex: 2,
+              bgcolor: '#fff',
+              border: '1px solid #ccc',
+              '&:hover': {
+                bgcolor: '#f5f5f5',
+              },
+            }}
+          >
+            <ArrowForwardIosIcon />
+          </IconButton>
+        </Box>
       </Box>
     </Box>
   );

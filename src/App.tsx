@@ -11,10 +11,10 @@ import Header from './components/Layout/Header';
 import Home from './pages/Home';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
+import CategoryIndex from './pages/Category';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/Admin/Dashboard';
 import NotFound from './pages/NotFound';
-import CategoryPage from './pages/Category/CategoryId';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
@@ -22,6 +22,7 @@ import '@fontsource/roboto/700.css';
 import Footer from './components/Layout/Footer';
 import ForgotPassword from './pages/Auth/ForgotPassword';
 import AboutUs from './pages/AboutUs';
+import ScrollToTop from './components/shared/ScrollToTop';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
       <CssBaseline />
       <AuthProvider>
         <Router>
+          <ScrollToTop />
           <div className="flex flex-col min-h-screen bg-gray-100">
             <Header />
             <main
@@ -41,7 +43,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/category/:categoryId" element={<CategoryPage />} />
+                <Route path="/category/:categoryId" element={ <CategoryIndex />} />
                 <Route
                   path="/profile"
                   element={

@@ -69,7 +69,29 @@ const Header = () => {
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const headerOffset = 80; // Chiều cao của header
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
+  const handleHomeClick = () => {
+    if (location.pathname === '/') {
+      scrollToTop();
+    } else {
+      navigate('/');
     }
   };
 
@@ -78,9 +100,10 @@ const Header = () => {
       scrollToSection(sectionId);
     } else {
       navigate('/');
+      // Tăng timeout một chút để đảm bảo trang đã load xong
       setTimeout(() => {
         scrollToSection(sectionId);
-      }, 100);
+      }, 300);
     }
   };
 
@@ -127,8 +150,7 @@ const Header = () => {
             {/* Menu */}
             <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
               <Button 
-                component={RouterLink}
-                to="/"
+                onClick={handleHomeClick}
                 sx={{ 
                   color: isActive('/') ? '#950B0B' : '#2c2c2c',
                   fontFamily: 'Roboto',
@@ -283,8 +305,7 @@ const Header = () => {
               </Popover>
 
               <Button 
-                component={RouterLink}
-                to="/contact"
+                onClick={() => handleSectionClick('contact')}
                 sx={{ 
                   color: isActive('/contact') ? '#950B0B' : '#2c2c2c',
                   fontFamily: 'Roboto',

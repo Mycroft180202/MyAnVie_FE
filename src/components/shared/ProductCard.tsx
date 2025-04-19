@@ -24,19 +24,8 @@ interface ProductCardProps {
 const ProductCard = ({ image, title, price, rating, category }: ProductCardProps) => {
   const [open, setOpen] = useState(false);
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleAddToCart = () => {
-    // Logic thêm vào giỏ hàng ở đây
-    console.log(`Added ${title} to cart`);
-    handleClose(); // Đóng popup sau khi thêm
-  };
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   return (
     <>
@@ -45,46 +34,51 @@ const ProductCard = ({ image, title, price, rating, category }: ProductCardProps
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          transition: 'transform 0.2s',
+          borderRadius: '12px',
+          border: '1px solid #DDD',
+          cursor: 'pointer',
+          transition: 'transform 0.2s, box-shadow 0.2s',
           '&:hover': {
             transform: 'translateY(-4px)',
-            boxShadow: 3
-          },
-          cursor: 'pointer' // Thêm con trỏ để báo hiệu có thể click
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+          }
         }}
-        onClick={handleOpen} // Thêm sự kiện click
+        onClick={handleOpen}
       >
         <CardMedia
           component="img"
-          height="200"
+          height="300"
           image={image}
           alt={title}
-          sx={{ objectFit: 'cover' }}
+          sx={{ 
+            objectFit: 'cover',
+            borderBottom: '1px solid #DDD'
+          }}
         />
-        <CardContent sx={{ flexGrow: 1 }}>
-          <Typography 
-            variant="subtitle2" 
-            color="text.secondary" 
-            gutterBottom
-          >
-            {category}
-          </Typography>
+        <CardContent sx={{ flexGrow: 1, p: 2 }}>
           <Typography 
             variant="h6" 
-            component="h3" 
-            gutterBottom 
             sx={{ 
+              fontSize: '1rem',
+              mb: 1,
+              height: '3rem',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               display: '-webkit-box',
               WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
+              WebkitBoxOrient: 'vertical'
             }}
           >
             {title}
           </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
-            <Typography variant="h6" color="primary.main">
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography 
+              variant="subtitle1" 
+              sx={{ 
+                color: '#950B0B',
+                fontWeight: 'bold'
+              }}
+            >
               {price.toLocaleString('vi-VN')}₫
             </Typography>
             <Rating value={rating} readOnly size="small" />
@@ -92,48 +86,34 @@ const ProductCard = ({ image, title, price, rating, category }: ProductCardProps
         </CardContent>
       </Card>
 
-      {/* Popup Dialog */}
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        maxWidth="sm"
-        fullWidth
-      >
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <CardMedia
               component="img"
-              height="300"
+              height="400"
               image={image}
               alt={title}
-              sx={{ objectFit: 'cover' }}
+              sx={{ objectFit: 'contain' }}
             />
-            <Typography variant="subtitle1" color="text.secondary">
+            <Typography variant="subtitle1">
               Danh mục: {category}
             </Typography>
-            <Typography variant="h5" color="primary.main">
+            <Typography variant="h6" color="primary">
               Giá: {price.toLocaleString('vi-VN')}₫
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="body1">Đánh giá:</Typography>
+              <Typography>Đánh giá:</Typography>
               <Rating value={rating} readOnly />
             </Box>
-            <Typography variant="body2" color="text.secondary">
-              Mô tả sản phẩm: Đây là một sản phẩm tuyệt vời thuộc danh mục {category}. 
-              Chất lượng đảm bảo, giá cả hợp lý!
-            </Typography>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="secondary">
+          <Button onClick={handleClose} color="inherit">
             Đóng
           </Button>
-          <Button 
-            onClick={handleAddToCart} 
-            variant="contained" 
-            color="primary"
-          >
+          <Button variant="contained" color="primary" onClick={handleClose}>
             Thêm vào giỏ hàng
           </Button>
         </DialogActions>

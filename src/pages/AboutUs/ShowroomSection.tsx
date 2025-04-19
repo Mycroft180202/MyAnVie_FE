@@ -3,6 +3,7 @@ import { Box, Container, Typography, Grid } from '@mui/material';
 const ShowroomSection = () => {
   return (
     <Box sx={{ bgcolor: '#FFF9EC', py: 10 }}>
+        
       <Container maxWidth="lg">
         <Typography
           variant="h4"
@@ -61,7 +62,7 @@ const ShowroomSection = () => {
               alt="Showroom MYANVIE Interior"
               sx={{
                 width: '500px',
-                height: '500px',
+                height: '490px',
                 objectFit: 'cover',
                 borderRadius: '12px',
                 border: '1px solid #000',
