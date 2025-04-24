@@ -11,10 +11,12 @@ import {
   MenuItem,
   Avatar,
   Popover,
+  Drawer,
 } from '@mui/material';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import SearchIcon from '@mui/icons-material/Search';
+import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Header = () => {
@@ -22,10 +24,10 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [policyAnchorEl, setPolicyAnchorEl] = useState<null | HTMLElement>(null);
   const [shopAnchorEl, setShopAnchorEl] = useState<null | HTMLElement>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Xác định trang hiện tại
   const isActive = (path: string) => {
     if (path === '/' && location.pathname === '/') return true;
     if (path !== '/' && location.pathname.startsWith(path)) return true;
@@ -69,7 +71,7 @@ const Header = () => {
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const headerOffset = 80; // Chiều cao của header
+      const headerOffset = 80;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -100,11 +102,14 @@ const Header = () => {
       scrollToSection(sectionId);
     } else {
       navigate('/');
-      // Tăng timeout một chút để đảm bảo trang đã load xong
       setTimeout(() => {
         scrollToSection(sectionId);
       }, 300);
     }
+  };
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
   };
 
   return (
@@ -116,10 +121,10 @@ const Header = () => {
         zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
     >
-      <Container maxWidth={false} sx={{ px: 2 }}>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
+      <Container maxWidth={false} sx={{ px: { xs: 1, sm: 2 } }}>
+        <Toolbar sx={{ justifyContent: 'space-between', minHeight: { xs: 56, sm: 64 } }}>
           {/* Logo và Menu */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-start' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 4 }, justifyContent: 'flex-start' }}>
             {/* Logo */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box
@@ -127,7 +132,7 @@ const Header = () => {
                 src="/images/logo/logo.svg"
                 alt="MyAnVie Logo"
                 sx={{
-                  height: 40,
+                  height: { xs: 32, sm: 40 },
                   width: 'auto',
                 }}
               />
@@ -138,17 +143,18 @@ const Header = () => {
                 sx={{
                   fontFamily: 'Hoaico2',
                   textDecoration: 'none',
-                  color: '#950B0B',  // Màu đỏ đậm cho chữ MYANVIE
+                  color: '#950B0B',
                   fontWeight: 'bold',
-                  letterSpacing: '0.1em', // Thêm khoảng cách giữa các chữ cái
+                  letterSpacing: '0.1em',
+                  fontSize: { xs: 18, sm: 24 },
                 }}
               >
                 MYANVIE
               </Typography>
             </Box>
 
-            {/* Menu */}
-            <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+            {/* Menu cho desktop */}
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3, alignItems: 'center' }}>
               <Button 
                 onClick={handleHomeClick}
                 sx={{ 
@@ -319,9 +325,15 @@ const Header = () => {
             </Box>
           </Box>
 
+          {/* Nút menu mobile */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+            <IconButton onClick={handleDrawerToggle} color="inherit" edge="end">
+              <MenuIcon />
+            </IconButton>
+          </Box>
+
           {/* Icons và Đăng nhập */}
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
-            {/* Tìm kiếm và Giỏ hàng */}
             <IconButton 
               color="inherit" 
               sx={{ 
@@ -334,7 +346,6 @@ const Header = () => {
               <ShoppingCartIcon />
             </IconButton>
 
-            {/* Ngôn ngữ */}
             <IconButton 
               color="inherit" 
               sx={{ 
@@ -347,7 +358,6 @@ const Header = () => {
               <SearchIcon />
             </IconButton>
 
-            {/* Đăng nhập/Đăng ký */}
             {isAuthenticated ? (
               <>
                 <IconButton 
@@ -425,6 +435,31 @@ const Header = () => {
           </Box>
         </Toolbar>
       </Container>
+      {/* Drawer cho mobile menu */}
+      <Drawer
+        anchor="left"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': { width: 240, boxSizing: 'border-box' },
+        }}
+      >
+        <Box sx={{ width: 240, p: 2 }}>
+          {/* Menu dọc cho mobile */}
+          <Button fullWidth onClick={handleHomeClick} sx={{ justifyContent: 'flex-start', color: isActive('/') ? '#950B0B' : '#2c2c2c' }}>Trang chủ</Button>
+          <Button fullWidth component={RouterLink} to="/about" onClick={handleDrawerToggle} sx={{ justifyContent: 'flex-start', color: isActive('/about') ? '#950B0B' : '#2c2c2c' }}>Về chúng tôi</Button>
+          <Button fullWidth onClick={handleShopClick} sx={{ justifyContent: 'flex-start', color: isActive('/category') ? '#950B0B' : '#2c2c2c' }}>Cửa hàng</Button>
+          <Box sx={{ pl: 2 }}>
+            <Button fullWidth component={RouterLink} to="/category/pottery" onClick={handleDrawerToggle} sx={{ justifyContent: 'flex-start', color: isActive('/category/pottery') ? '#950B0B' : '#2c2c2c' }}>Gốm</Button>
+            <Button fullWidth component={RouterLink} to="/category/silk" onClick={handleDrawerToggle} sx={{ justifyContent: 'flex-start', color: isActive('/category/silk') ? '#950B0B' : '#2c2c2c' }}>Lụa</Button>
+            <Button fullWidth component={RouterLink} to="/category/bamboo" onClick={handleDrawerToggle} sx={{ justifyContent: 'flex-start', color: isActive('/category/bamboo') ? '#950B0B' : '#2c2c2c' }}>Mây tre đan</Button>
+          </Box>
+          <Button fullWidth component={RouterLink} to="/news" onClick={handleDrawerToggle} sx={{ justifyContent: 'flex-start', color: isActive('/news') ? '#950B0B' : '#2c2c2c' }}>Tin tức</Button>
+          <Button fullWidth onClick={handlePolicyClick} sx={{ justifyContent: 'flex-start', color: '#2c2c2c' }}>Chính sách</Button>
+          <Button fullWidth onClick={() => handleSectionClick('contact')} sx={{ justifyContent: 'flex-start', color: isActive('/contact') ? '#950B0B' : '#2c2c2c' }}>Liên hệ</Button>
+        </Box>
+      </Drawer>
     </AppBar>
   );
 };

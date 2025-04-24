@@ -9,13 +9,26 @@ import NewsSection from '../../components/home/NewsSection';
 
 const Home = () => {
   return (
-    <Box>
-      <HeroSection />
-      <CategoryShowcase />
-      <FeaturedProducts />
-      <CommentSection />
-      <NewsSection />
-      <ContactSection />
+    <Box sx={{ width: '100%', px: { xs: 0, sm: 0, md: 0 } }}>
+      <Box sx={{ mb: { xs: 4, md: 8 } }}>
+        <HeroSection />
+      </Box>
+      <Box sx={{ mb: { xs: 4, md: 8 } }}>
+        <CategoryShowcase />
+      </Box>
+      <Box sx={{ mb: { xs: 4, md: 8 } }}>
+        <FeaturedProducts />
+      </Box>
+      <Box sx={{ mb: { xs: 4, md: 8 } }}>
+        <CommentSection />
+      </Box>
+      <Box sx={{ mb: { xs: 4, md: 8 } }}>
+        <NewsSection />
+      </Box>
+      <Box sx={{ mb: { xs: 4, md: 8 } }}>
+        <ContactSection />
+      </Box>
+      {/* Có thể thêm sx cho Box cha nếu muốn padding nhỏ trên mobile */}
     </Box>
   );
 };
