@@ -77,31 +77,6 @@ const FeaturedProducts = () => {
         overflow: 'hidden',
       }}
     >
-      {/* Flower decorations */}
-      {[...Array(8)].map((_, index) => (
-        <Box
-          key={index}
-          component="img"
-          src={index % 2 === 0 ? "/images/icons/hoa-left.svg" : "/images/icons/hoa-right.svg"}
-          alt=""
-          sx={{
-            position: 'absolute',
-            opacity: 0.5,
-            transform: `rotate(${index * 45}deg)`,
-            width: '150px',
-            height: '150px',
-            ...(index === 0 && { top: '5%', left: '5%' }),
-            ...(index === 1 && { top: '15%', right: '10%' }),
-            ...(index === 2 && { bottom: '20%', left: '15%' }),
-            ...(index === 3 && { bottom: '10%', right: '5%' }),
-            ...(index === 4 && { top: '50%', left: '8%' }),
-            ...(index === 5 && { top: '40%', right: '12%' }),
-            ...(index === 6 && { bottom: '40%', left: '20%' }),
-            ...(index === 7 && { top: '30%', right: '25%' }),
-          }}
-        />
-      ))}
-
       <Box sx={{ position: 'relative', zIndex: 1 }}>
         <Typography
           variant="h4"
@@ -121,21 +96,22 @@ const FeaturedProducts = () => {
         <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 2, pb: 10 }}>
           <Slider ref={sliderRef} {...settings}>
             {products.map((product) => (
-              <Box key={product.id} px={2}>
-                <Box className="product-card">
-                  <Box
-                    component="img"
-                    src={product.image}
-                    alt={product.name}
-                    className="product-image"
-                  />
-                  <Typography sx={{ fontWeight: 500, mt: 2 }}>{product.name}</Typography>
-                  <Typography sx={{ color: '#950B0B', fontWeight: 'bold', my: 1 }}>
-                    {product.price}
-                  </Typography>
-                  <Box>{'⭐'.repeat(product.rating)}</Box>
-                </Box>
+              <Box className="product-card">
+              <Box className="image-container">
+                <Box
+                  component="img"
+                  src={product.image}
+                  alt={product.name}
+                  className="product-image"
+                />
               </Box>
+              <Typography sx={{ fontWeight: 500, mt: 2 }}>{product.name}</Typography>
+              <Typography sx={{ color: '#950B0B', fontWeight: 'bold', my: 1 }}>
+                {product.price}
+              </Typography>
+              <Box>{'⭐'.repeat(product.rating)}</Box>
+            </Box>
+            
             ))}
           </Slider>
 

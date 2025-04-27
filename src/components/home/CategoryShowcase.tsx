@@ -51,31 +51,7 @@ const CategoryShowcase = () => {
         overflow: 'hidden',
       }}
     >
-      {/* Flower decorations */}
-      {[...Array(8)].map((_, index) => (
-        <Box
-          key={index}
-          component="img"
-          src={index % 2 === 0 ? '/images/icons/hoa-left.svg' : '/images/icons/hoa-right.svg'}
-          alt=""
-          sx={{
-            position: 'absolute',
-            opacity: 0.5,
-            transform: `rotate(${index * 45}deg)`,
-            width: '150px',
-            height: '150px',
-            ...(index === 0 && { top: '5%', left: '5%' }),
-            ...(index === 1 && { top: '15%', right: '10%' }),
-            ...(index === 2 && { bottom: '20%', left: '15%' }),
-            ...(index === 3 && { bottom: '10%', right: '5%' }),
-            ...(index === 4 && { top: '50%', left: '8%' }),
-            ...(index === 5 && { top: '40%', right: '12%' }),
-            ...(index === 6 && { bottom: '40%', left: '20%' }),
-            ...(index === 7 && { top: '30%', right: '25%' }),
-          }}
-        />
-      ))}
-
+      
       <Container maxWidth="lg" sx={{ py: 10, position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <Box sx={{ textAlign: 'center', mb: 8 }}>
