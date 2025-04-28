@@ -49,6 +49,7 @@ const CategoryShowcase = () => {
         background: '#f5f5dc',
         position: 'relative',
         overflow: 'hidden',
+        mt:-1
       }}
     >
       
