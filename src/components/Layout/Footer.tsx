@@ -35,7 +35,7 @@ const Footer = () => {
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Typography>
-                <Box component="span" sx={{ fontWeight: 'bold' }}>📞</Box> 0886330503
+                <Box component="span" sx={{ fontWeight: 'bold', src:"icon/phone.svg" }}>📞</Box> 0886330503
               </Typography>
               <Typography>
                 <Box component="span" sx={{ fontWeight: 'bold' }}>✉️</Box> myanvieofical@gmail.com

@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { Box, Container, Typography, Button } from '@mui/material';
 import Breadcrumbs from '../../components/shared/Breadcrumbs';
 import ProductList from './ProductList';
 import CloseIcon from '@mui/icons-material/Close';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 const categoryImages: string[] = [
   '/images/products/Pottery1.jpg',
@@ -10,6 +13,13 @@ const categoryImages: string[] = [
 ];
 
 const CategoryIndex = () => {
+  const [activeTab, setActiveTab] = useState<'do-gia-dung' | 'binh-lo'>('do-gia-dung');
+  const [openDropdown, setOpenDropdown] = useState<'time' | 'price' | 'sort' | null>(null);
+
+  const toggleDropdown = (dropdown: 'time' | 'price' | 'sort') => {
+    setOpenDropdown(openDropdown === dropdown ? null : dropdown);
+  };
+
   return (
     <Box sx={{ bgcolor: '#FFFCF3', minHeight: '100vh', pb: 6 }}>
       <Breadcrumbs />
@@ -100,131 +110,228 @@ const CategoryIndex = () => {
         {/* Category Tabs */}
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderBottom: '1px solid #000',
+            position: 'relative',
             pb: 1,
             mb: 4,
           }}
         >
-          {/* Left Section */}
           <Box
             sx={{
               display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
-              justifyContent: 'center',
-              width: '50%',
-              textAlign: 'center',
             }}
           >
-            <Typography
+            {/* Left Section */}
+            <Box
               sx={{
-                fontSize: 18,
-                fontWeight: 500,
-                color: '#950B0B',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                textAlign: 'center',
+                cursor: 'pointer',
                 position: 'relative',
-                '&::after': {
-                  content: '""',
-                  position: 'absolute',
-                  bottom: -1,
-                  left: 0,
-                  width: '100%',
-                  height: 2,
-                  bgcolor: '#950B0B',
-                },
               }}
+              onClick={() => setActiveTab('do-gia-dung')}
             >
-              Đồ gia dụng
-            </Typography>
+              <Typography
+                sx={{
+                  fontSize: 18,
+                  fontWeight: 500,
+                  color: activeTab === 'do-gia-dung' ? '#950B0B' : '#000',
+                }}
+              >
+                Đồ gia dụng
+              </Typography>
+            </Box>
+
+            {/* Right Section */}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '50%',
+                textAlign: 'center',
+                cursor: 'pointer',
+                position: 'relative',
+              }}
+              onClick={() => setActiveTab('binh-lo')}
+            >
+              <Typography
+                sx={{
+                  fontSize: 18,
+                  fontWeight: 500,
+                  color: activeTab === 'binh-lo' ? '#950B0B' : '#000',
+                }}
+              >
+                Bình lọ
+              </Typography>
+            </Box>
           </Box>
 
-          {/* Right Section */}
+          {/* Line Separator */}
           <Box
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '50%',
-              textAlign: 'center',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              width: '100%',
+              height: 2,
+              background: `linear-gradient(
+                to right,
+                ${activeTab === 'do-gia-dung' ? '#950B0B' : '#fff'} 50%,
+                ${activeTab === 'binh-lo' ? '#950B0B' : '#fff'} 50%
+              )`,
+              transition: 'background 0.5s ease',
             }}
-          >
-            <Typography
-              sx={{
-                fontSize: 18,
-                fontWeight: 500,
-                color: '#000',
-              }}
-            >
-              Bình lọ
-            </Typography>
-          </Box>
+          />
         </Box>
 
         {/* Filter Section */}
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center',
-          gap: 2
-        }}>
+        <Box
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            gap: 3, // Tăng khoảng cách giữa các button
+            mt: 2,
+            mb: 5
+          }}
+        >
           <Typography sx={{ 
             fontSize: 18,
             fontWeight: 500,
-            color: '#000'
+            color: '#000',
+            mr: 40,
           }}>
             Filter
           </Typography>
 
-          <Button
-            variant="outlined"
-            sx={{
-              borderRadius: '100px',
-              height: 40,
-              px: 2,
-              borderColor: '#000',
-              color: '#ADB6BD',
-              textTransform: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1
-            }}
-          >
-            Thời gian
-          </Button>
+          {/* Time Dropdown */}
+          <Box sx={{ position: 'relative' }}>
+            <Button
+              variant="outlined"
+              onClick={() => toggleDropdown('time')}
+              sx={{
+                borderRadius: '100px',
+                height: 40,
+                px: 2,
+                borderColor: '#000',
+                color: '#ADB6BD',
+                textTransform: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
+              Thời gian {openDropdown === 'time' ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+            </Button>
+            {openDropdown === 'time' && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: '100%', // Đặt dropdown bên phải button
+                  transform: 'translateX(-100%)', // Điều chỉnh vị trí để dropdown không bị lệch
+                  bgcolor: '#fff',
+                  boxShadow: 2,
+                  borderRadius: '12px', // Bo tròn các góc của dropdown
+                  zIndex: 10,
+                  gap: 2, // Khoảng cách giữa các mục
+                  p: 1, // Padding bên trong dropdown
+                  width: '120px', // Tự động điều chỉnh chiều rộng
+                }}
+              >
+                <Box sx={{ p: 1, cursor: 'pointer' }}>Mới nhất</Box>
+                <Box sx={{ p: 1, cursor: 'pointer' }}>Cũ nhất</Box>
+              </Box>
+            )}
+          </Box>
 
-          <Button
-            variant="outlined"
-            sx={{
-              borderRadius: '100px',
-              height: 40,
-              px: 2,
-              borderColor: '#000',
-              color: '#ADB6BD',
-              textTransform: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1
-            }}
-          >
-            Khoảng giá
-          </Button>
+          {/* Price Dropdown */}
+          <Box sx={{ position: 'relative' }}>
+            <Button
+              variant="outlined"
+              onClick={() => toggleDropdown('price')}
+              sx={{
+                borderRadius: '100px',
+                height: 40,
+                px: 2,
+                borderColor: '#000',
+                color: '#ADB6BD',
+                textTransform: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
+              Khoảng giá {openDropdown === 'price' ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+            </Button>
+            {openDropdown === 'price' && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: '100%', // Đặt dropdown bên phải button
+                  transform: 'translateX(-100%)', // Điều chỉnh vị trí để dropdown không bị lệch
+                  bgcolor: '#fff',
+                  boxShadow: 2,
+                  borderRadius: '12px', // Bo tròn các góc của dropdown
+                  zIndex: 10,
+                  gap: 2, // Khoảng cách giữa các mục
+                  p: 1, // Padding bên trong dropdown
+                  width: '130px', // Tự động điều chỉnh chiều rộng
+                }}
+              >
+                <Box sx={{ p: 1, cursor: 'pointer' }}>Dưới 100K</Box>
+                <Box sx={{ p: 1, cursor: 'pointer' }}>100-300K</Box>
+                <Box sx={{ p: 1, cursor: 'pointer' }}>300-500K</Box>
+                <Box sx={{ p: 1, cursor: 'pointer' }}>Trên 500K</Box>
+              </Box>
+            )}
+          </Box>
 
-          <Button
-            variant="outlined"
-            sx={{
-              borderRadius: '100px',
-              height: 40,
-              px: 2,
-              borderColor: '#000',
-              color: '#ADB6BD',
-              textTransform: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1
-            }}
-          >
-            Sắp xếp theo
-          </Button>
+          {/* Sort Dropdown */}
+          <Box sx={{ position: 'relative' }}>
+            <Button
+              variant="outlined"
+              onClick={() => toggleDropdown('sort')}
+              sx={{
+                borderRadius: '100px',
+                height: 40,
+                px: 2,
+                borderColor: '#000',
+                color: '#ADB6BD',
+                textTransform: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
+              Sắp xếp theo {openDropdown === 'sort' ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+            </Button>
+            {openDropdown === 'sort' && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: '100%', // Đặt dropdown bên phải button
+                  transform: 'translateX(-100%)', // Điều chỉnh vị trí để dropdown không bị lệch
+                  bgcolor: '#fff',
+                  boxShadow: 2,
+                  borderRadius: '12px', // Bo tròn các góc của dropdown
+                  zIndex: 10,
+                  gap: 2, // Khoảng cách giữa các mục
+                  p: 1, // Padding bên trong dropdown
+                  width: '145px', // Tự động điều chỉnh chiều rộng
+                }}
+              >
+                <Box sx={{ p: 1, cursor: 'pointer' }}>Thấp tới cao</Box>
+                <Box sx={{ p: 1, cursor: 'pointer' }}>Cao tới thấp</Box>
+              </Box>
+            )}
+          </Box>
 
           <Button
             variant="outlined"
@@ -234,10 +341,15 @@ const CategoryIndex = () => {
               height: 32,
               borderRadius: '100px',
               border: '1px solid #000',
-              p: 0
+              p: 0,
+              ml:30
             }}
           >
-            <CloseIcon sx={{ fontSize: 20, color: '#000' }} />
+            <CloseIcon 
+            sx={{ 
+              fontSize: 20,
+              color: '#000',
+              }} />
           </Button>
         </Box>
 

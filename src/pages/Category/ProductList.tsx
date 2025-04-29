@@ -26,6 +26,22 @@ const mockProducts = [
     rating: 5,
     category: 'Pottery',
   },
+  {
+    id: 4,
+    image: '/images/products/Pottery3.jpg',
+    title: 'Bình hoa gốm men lam',
+    price: 300000,
+    rating: 5,
+    category: 'Pottery',
+  },
+  {
+    id: 5,
+    image: '/images/products/Pottery3.jpg',
+    title: 'Bình hoa gốm men lam',
+    price: 300000,
+    rating: 5,
+    category: 'Pottery',
+  },
   // Thêm sản phẩm tùy ý nếu cần
 ];
 
