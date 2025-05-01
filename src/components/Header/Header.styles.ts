@@ -6,7 +6,7 @@ export const HeaderContainer = styled.header`
   justify-content: space-between;
   align-items: center;
   padding: 1rem 4rem;
-  background: linear-gradient(180deg, #FFFFFF 0%, #CFD4DA 100%);
+  background: #FFFFFF; /* Change background to white */
   backdrop-filter: blur(50px);
 `;
 
@@ -14,6 +14,7 @@ export const LogoSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 1; /* Allow space for navigation to align left */
 `;
 
 export const LogoImg = styled.img`
@@ -24,9 +25,9 @@ export const LogoImg = styled.img`
 
 export const BrandName = styled.h1`
   font-family: 'TH Hoaico 2', sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 400;
-  letter-spacing: 5%;
+  letter-spacing: 0.1em; /* Increase letter spacing */
   color: #950B0B;
 `;
 
@@ -34,6 +35,7 @@ export const Navigation = styled.nav`
   display: flex;
   align-items: center;
   gap: 24px;
+  flex: 6; /* Push navigation closer to the logo */
 `;
 
 export const NavLink = styled(Link)`
@@ -91,4 +93,4 @@ export const LoginButton = styled.button`
   &:hover {
     background-color: #7a0909;
   }
-`;
+    `;
