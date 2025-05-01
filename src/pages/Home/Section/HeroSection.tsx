@@ -5,7 +5,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import '../Styles/HeroSection.css'; // ✅ đường dẫn đúng
+import '../Styles/HeroSection.css'; 
 
 const HeroSection = () => {
   const [slider, setSlider] = useState<Slider | null>(null);
@@ -57,7 +57,7 @@ const HeroSection = () => {
   ];
 
   return (
-    <Box sx={{ position: 'relative', mt: 0 }}>
+    <Box sx={{ position: 'relative', zIndex: 0 }}>
       <Slider ref={(c) => setSlider(c)} {...settings}>
         {slides.map((slide) => (
           <Box

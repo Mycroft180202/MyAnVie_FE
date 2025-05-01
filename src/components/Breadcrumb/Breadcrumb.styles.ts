@@ -1,9 +1,10 @@
-
 export const breadcrumbContainer = {
   display: 'flex',
+  ml: '200px', // Adjusted margin-right to move breadcrumb to the right
+  mb: '20px',
   alignItems: 'center',
   fontSize: '14px',
-  color: '#ADB6BD'
+  color: 'black'
 };
 
 export const breadcrumbItem = {
@@ -13,10 +14,12 @@ export const breadcrumbItem = {
 };
 
 export const breadcrumbIcon = {
-  fontSize: '18px',
+  fontSize: '20px',
   color: '#000000'
 };
 
 export const breadcrumbSeparator = {
-  color: '#000000'
+  color: 'black',
+  position: 'relative',
+  top: '4px' // Adjusted position to align separator with items
 };

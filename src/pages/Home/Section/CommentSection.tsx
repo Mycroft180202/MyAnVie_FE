@@ -62,7 +62,7 @@ const CommentSection = () => {
   return (
     <Box
       sx={{
-        py: 10,
+        py: 15,
         bgcolor: '#FFF9EC',
         position: 'relative',
         overflow: 'hidden',

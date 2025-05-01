@@ -71,7 +71,7 @@ const FeaturedProducts = () => {
   return (
     <Box
       sx={{
-        py: 8,
+        py: 6,
         bgcolor: '#FFF9EC',
         position: 'relative',
         overflow: 'hidden',
@@ -93,7 +93,7 @@ const FeaturedProducts = () => {
           CÁC SẢN PHẨM NỔI BẬT
         </Typography>
 
-        <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 2, pb: 10 }}>
+        <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 2, pb: 10}}>
           <Slider ref={sliderRef} {...settings}>
             {products.map((product) => (
               <Box className="product-card">
