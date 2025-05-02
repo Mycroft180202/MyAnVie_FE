@@ -85,10 +85,10 @@ const CommentSection = () => {
           KHÁCH HÀNG CỦA MYANVIE ĐÃ NÓI GÌ?
         </Typography>
 
-        <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 2, pb: 6 }}>
+        <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 2, pb: 6,  }}>
           <Slider ref={sliderRef} {...settings}>
             {comments.map((comment) => (
-              <Box key={comment.id} px={2}>
+              <Box key={comment.id}> 
                 <Box className="comment-card">
                   <Avatar
                     src={comment.avatar}

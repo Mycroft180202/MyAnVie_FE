@@ -6,6 +6,7 @@ import Footer from './components/Footer/Footer';
 import HomePage from './pages/Home/HomePage';
 import { LanguageProvider } from './store/LanguageContext';
 import AboutUsPage from './pages/AboutUs/AboutUs';
+import ShopPage from './pages/Shop/ShopPage';
 
 const App: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutUsPage />} />
+            <Route path="/shop/:category" element={<ShopPage />} />
           </Routes>
           <Footer />
         </Router>
