@@ -1,30 +1,57 @@
 const productsData = [
-    {
-      id: 1,
-      title: 'Bình gốm Bát Tràng',
-      image: '/images/products/pottery1.jpg',
-      price: 300000,
-      rating: 5,
-      category: 'pottery',
-    },
-    {
-      id: 2,
-      title: 'Khăn lụa Hà Đông',
-      image: '/images/products/silk1.jpg',
-      price: 250000,
-      rating: 4,
-      category: 'silk',
-    },
-    {
-      id: 3,
-      title: 'Giỏ mây tre đan',
-      image: '/images/products/bamboo1.jpg',
-      price: 180000,
-      rating: 5,
-      category: 'bamboo',
-    },
-    // ... thêm dữ liệu khác nếu cần
-  ];
-  
-  export default productsData;
-  
+  {
+    id: 1,
+    title: 'Bình gốm Bát Tràng',
+    image: '/images/products/pottery1.jpg',
+    price: 300000,
+    rating: 5,
+    category: 'pottery',
+    subCategory: 'binh-lo',
+  },
+  {
+    id: 2,
+    title: 'Chén dĩa gốm gia dụng',
+    image: '/images/products/pottery2.jpg',
+    price: 200000,
+    rating: 4,
+    category: 'pottery',
+    subCategory: 'do-gia-dung',
+  },
+  {
+    id: 3,
+    title: 'Khăn lụa Hà Đông',
+    image: '/images/products/silk1.jpg',
+    price: 250000,
+    rating: 4,
+    category: 'silk',
+    subCategory: 'khăn-lua',
+  },
+  {
+    id: 4,
+    title: 'Váy lụa tay dài',
+    image: '/images/products/silk2.jpg',
+    price: 450000,
+    rating: 5,
+    category: 'silk',
+    subCategory: 'vay-ao-lua',
+  },
+  {
+    id: 5,
+    title: 'Giỏ mây tre đan',
+    image: '/images/products/bamboo1.jpg',
+    price: 180000,
+    rating: 5,
+    category: 'bamboo',
+    subCategory: 'do-gia-dung',
+  },
+  {
+    id: 6,
+    title: 'Đèn trang trí mây tre',
+    image: '/images/products/bamboo2.jpg',
+    price: 280000,
+    rating: 4,
+    category: 'bamboo',
+    subCategory: 'trang-tri',
+  },
+];
+export default productsData;

@@ -5,7 +5,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 const ShopFilter = () => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 5 }}>
-      <Typography sx={{ fontSize: 18, fontWeight: 500, mr: 4 }}>Filter</Typography>
+      <Typography sx={{ fontSize: 18, fontWeight: 500, mr: 40 }}>Filter</Typography>
       {['Thời gian', 'Khoảng giá', 'Sắp xếp'].map((label) => (
         <Button
           key={label}

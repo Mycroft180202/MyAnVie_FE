@@ -1,6 +1,6 @@
 import { Box, Container } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import ShopBanner from './Section/ShopBanner';
@@ -9,25 +9,33 @@ import ShopFilter from './Section/ShopFilter';
 import ShopProductList from './Section/ShopProductList';
 import ShopPagination from './Section/ShopPagination';
 
-const categoryMapping: Record<string, string> = {
-  pottery: 'Gốm',
-  silk: 'Lụa',
-  bamboo: 'Mây tre đan',
-};
+import { categoryMapping } from '../../utils/categoryMapping';
 
 const ShopPage = () => {
-  const { category = 'pottery' } = useParams<{ category: 'pottery' | 'silk' | 'bamboo' }>();
-  const [tab, setTab] = useState<'do-gia-dung' | 'binh-lo'>('do-gia-dung');
+  const { category = 'pottery' } = useParams<{ category: keyof typeof categoryMapping }>();
+  const { label: categoryLabel, tabs } = categoryMapping[category] || { label: category, tabs: [] };
 
-  const categoryName = categoryMapping[category] || category; // Lấy tên tiếng Việt từ mapping
+  const categoryInfo = categoryMapping[category] || { label: category, tabs: [], bannerImages: [] };
+
+  // Nếu có tabs, chọn tab đầu tiên làm mặc định
+  const defaultTab = categoryInfo.tabs.length > 0 ? categoryInfo.tabs[0].key : '';
+  
+  // Đặt tab nếu chưa có
+  const [tab, setTab] = useState<string>(tabs.length > 0 ? tabs[0].key : '');
+
+  // 🛠 Khi category thay đổi thì cập nhật tab tương ứng
+  useEffect(() => {
+    setTab(tabs.length > 0 ? tabs[0].key : '');
+  }, [category]);
 
   return (
     <Box>
-      <Container maxWidth="lg" sx={{ pt: -1, ml: 15 }}>
+      {/* Breadcrumb with consistent margin */}
+      <Container maxWidth="lg" sx={{ pt: -1,ml:15 }}>
         <Breadcrumb
           items={[
             { label: 'Trang chủ', href: '/' },
-            { label: categoryName }, // Hiển thị tên tiếng Việt
+            { label: categoryInfo.label },
           ]}
         />
       </Container>
@@ -35,7 +43,7 @@ const ShopPage = () => {
       <Box sx={{ bgcolor: '#FFFCF3', minHeight: '100vh', pb: 2, pt: 2 }}>
         <ShopBanner category={category} />
         <Container maxWidth="lg">
-          <ShopTabs tab={tab} onTabChange={setTab} />
+          <ShopTabs tab={tab} tabs={categoryInfo.tabs} onTabChange={setTab} />
           <ShopFilter />
           <ShopProductList category={category} tab={tab} />
           <ShopPagination />

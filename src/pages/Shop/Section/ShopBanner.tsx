@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 
-const bannerData = {
+const bannerData: Record<string, { images: string[]; name: string; description: string }> = {
   pottery: {
     images: ['/images/products/Pottery1.jpg', '/images/products/Pottery2.jpg', '/images/products/Pottery3.jpg'],
     name: 'Gốm',
@@ -18,19 +18,16 @@ const bannerData = {
   },
 };
 
-const ShopBanner = ({ category }: { category: 'pottery' | 'silk' | 'bamboo' }) => {
-  const { images, name, description } = bannerData[category] || { images: [], name: category, description: '' };
+interface ShopBannerProps {
+  category: string; // 👈 Cho phép nhận từ useParams
+}
+
+const ShopBanner = ({ category }: ShopBannerProps) => {
+  const { images = [], name = category, description = '' } = bannerData[category] || {};
 
   return (
     <Box sx={{ mt: -2, mb: 6 }}>
-      <Box
-        sx={{
-          display: 'flex',
-          height: { xs: 250, md: 550 },
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
+      <Box sx={{ display: 'flex', height: { xs: 250, md: 550 }, position: 'relative', overflow: 'hidden' }}>
         {images.map((img) => (
           <Box
             key={img}
@@ -59,10 +56,10 @@ const ShopBanner = ({ category }: { category: 'pottery' | 'silk' | 'bamboo' }) =
           }}
         >
           <Typography sx={{ fontSize: { xs: 20, md: 36 }, fontWeight: 'bold', fontFamily: 'Hoaico2', mb: 2 }}>
-            Danh Mục Sản Phẩm {name} {/* Hiển thị tên tiếng Việt */}
+            Danh Mục Sản Phẩm {name}
           </Typography>
           <Typography sx={{ maxWidth: '70%', fontSize: { xs: 12, md: 16 }, fontFamily: 'Roboto', fontWeight: 300 }}>
-            {description} {/* Hiển thị mô tả tương ứng */}
+            {description}
           </Typography>
         </Box>
       </Box>
