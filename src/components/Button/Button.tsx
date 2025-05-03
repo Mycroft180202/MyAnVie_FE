@@ -5,11 +5,12 @@ type ButtonProps = {
   children: React.ReactNode;
   onClick?: () => void;
   disabled?: boolean;
+  variant?: 'solid' | 'outline';
 };
 
-const Button: React.FC<ButtonProps> = ({ children, onClick, disabled }) => {
+const Button: React.FC<ButtonProps> = ({ children, onClick, disabled, variant = 'solid'}) => {
   return (
-    <StyledButton onClick={onClick} disabled={disabled}>
+    <StyledButton onClick={onClick} disabled={disabled} className={variant}>
       {children}
     </StyledButton>
   );

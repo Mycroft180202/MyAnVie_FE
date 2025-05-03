@@ -21,6 +21,15 @@ const StyledButton = styled.button`
   &:hover {
     background-color: #7e0a0a;
   }
+  
+  &.outline {
+    background-color: #fff; /* Nền trắng */
+    color: #000; /* Chữ đen */
+    border: 1px solid #000; /* Viền đen */
+
+    &:hover {
+      background-color: #f0f0f0; /* Nền xám nhạt khi hover */
+    }
 
   &:disabled {
     background-color: #d3d3d3;

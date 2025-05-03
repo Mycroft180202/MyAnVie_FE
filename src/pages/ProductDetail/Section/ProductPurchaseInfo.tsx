@@ -1,55 +1,140 @@
-import { Box, Typography, Rating, Button } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Rating,
+  IconButton,
+  Stack,
+  Divider,
+} from '@mui/material';
+import RemoveIcon from '@mui/icons-material/Remove';
+import AddIcon from '@mui/icons-material/Add';
+import { useState } from 'react';
+import Button from '../../../components/Button/Button';
 
-interface Product {
-  id: number;
+interface ProductProps {
   title: string;
-  image: string;
   price: number;
   rating: number;
   category: string;
-  subCategory: string;
+  image: string;
 }
 
-interface ProductPurchaseInfoProps {
-  product: Product;
-}
+const ProductPurchaseInfo = ({ product }: { product: ProductProps }) => {
+  const [quantity, setQuantity] = useState(1);
+  const [color, setColor] = useState<string>('blue');
+  const [size, setSize] = useState('50x70');
 
-const ProductPurchaseInfo: React.FC<ProductPurchaseInfoProps> = ({ product }) => {
+  const handleQtyChange = (type: 'inc' | 'dec') => {
+    setQuantity((prev) => (type === 'inc' ? prev + 1 : Math.max(1, prev - 1)));
+  };
+
+  const colorOptions = ['blue', 'red', 'brown', 'orange'];
+  const sizeOptions = ['50x70', '70x90', '90x110'];
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#5B0101', fontFamily: 'Hoaico2' }}>
+    <Box>
+      {/* Title */}
+      <Typography sx={{ fontSize: 24, fontWeight: 'bold', mb: 1, fontFamily: 'Hoaico2', letterSpacing:2 }}>
         {product.title}
       </Typography>
 
-      <Typography variant="h6" sx={{ color: '#950B0B', fontWeight: 500 }}>
-        {product.price.toLocaleString('vi-VN')}₫
-      </Typography>
+      {/* Price */}
+      <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+        <Typography sx={{ color: '#999', textDecoration: 'line-through' }}>500.000đ</Typography>
+        <Typography sx={{ color: '#950B0B', fontSize: 24, fontWeight: 700 }}>
+          {product.price.toLocaleString('vi-VN')}đ
+        </Typography>
+      </Stack>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Rating value={product.rating} readOnly />
-        <Typography variant="body2">({product.rating} sao)</Typography>
+      {/* Stats row */}
+      <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+        <Typography>20 Lượt bán</Typography>
+        <Divider orientation="vertical" flexItem sx={{ bgcolor: '#000' }} />
+        <Typography>15 Lượt đánh giá</Typography>
+        <Divider orientation="vertical" flexItem sx={{ bgcolor: '#000' }} />
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <Rating value={product.rating} readOnly size="small" />
+          <Typography>5/5 sao</Typography>
+        </Stack>
+        <Divider orientation="vertical" flexItem sx={{ bgcolor: '#000' }} />
+        <Typography>100 Sản phẩm còn lại</Typography>
+      </Stack>
+
+      <Divider sx={{ my: 2, bgcolor: '#000' }} />
+
+      {/* Color */}
+      <Box sx={{ my: 2 }}>
+        <Stack direction="row" alignItems="center" spacing={4}>
+          <Typography fontWeight="bold" sx={{ minWidth: 80 }}>
+            Màu sắc
+          </Typography>
+          <Stack direction="row" spacing={2}>
+            {colorOptions.map((c) => (
+              <Box
+                key={c}
+                onClick={() => setColor(c)}
+                sx={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: '50%',
+                  bgcolor: c,
+                  border: c === color ? '2px solid black' : '1px solid #ccc',
+                  cursor: 'pointer',
+                }}
+              />
+            ))}
+          </Stack>
+        </Stack>
       </Box>
 
-      <Typography variant="body2" sx={{ fontSize: 14, color: '#555' }}>
-        Danh mục: {product.category.toUpperCase()} / {product.subCategory}
-      </Typography>
+      {/* Quantity */}
+      <Box sx={{ my: 2 }}>
+        <Stack direction="row" alignItems="center" spacing={4}>
+          <Typography fontWeight="bold" sx={{ minWidth: 80 }}>
+            Số lượng
+          </Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <IconButton onClick={() => handleQtyChange('dec')}>
+              <RemoveIcon />
+            </IconButton>
+            <Typography>{quantity}</Typography>
+            <IconButton onClick={() => handleQtyChange('inc')}>
+              <AddIcon />
+            </IconButton>
+          </Stack>
+        </Stack>
+      </Box>
 
-      <Button
-        variant="contained"
-        sx={{
-          mt: 3,
-          backgroundColor: '#950B0B',
-          borderRadius: '100px',
-          padding: '10px 24px',
-          textTransform: 'none',
-          fontWeight: 500,
-          '&:hover': {
-            backgroundColor: '#750909',
-          },
-        }}
-      >
-        Thêm vào giỏ hàng
-      </Button>
+      {/* Size */}
+      <Box sx={{ my: 2 }}>
+        <Typography fontWeight="bold" mb={1}>
+          Kích thước
+        </Typography>
+        <Stack direction="row" spacing={2}>
+          {sizeOptions.map((s) => (
+            <Button
+              key={s}
+              onClick={() => setSize(s)}
+              variant={size === s ? 'solid' : 'outline'}
+            >
+              {s.replace('x', ' x ')} cm
+            </Button>
+          ))}
+        </Stack>
+      </Box>
+
+      {/* Stock */}
+      <Typography sx={{ mt: 1, mb: 2 }}>Còn 20 sản phẩm</Typography>
+
+      <Divider sx={{ my: 2, bgcolor: '#000' }} />
+
+      {/* Buttons */}
+      <Stack direction="row" spacing={2}>
+        <Button onClick={() => { /* handle mua ngay */ }}>Mua ngay</Button>
+        <Button variant="outline" onClick={() => { /* handle thêm giỏ hàng */ }}>
+          Thêm vào giỏ hàng
+        </Button>
+      </Stack>
     </Box>
   );
 };
