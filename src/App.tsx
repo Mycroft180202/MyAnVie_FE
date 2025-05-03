@@ -7,6 +7,7 @@ import HomePage from './pages/Home/HomePage';
 import { LanguageProvider } from './store/LanguageContext';
 import AboutUsPage from './pages/AboutUs/AboutUs';
 import ShopPage from './pages/Shop/ShopPage';
+import ProductDetailPage from './pages/ProductDetail/ProductDetailPage';
 
 const App: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutUsPage />} />
             <Route path="/shop/:category" element={<ShopPage />} />
+            <Route path="/product/:productId" element={<ProductDetailPage />} />
           </Routes>
           <Footer />
         </Router>
