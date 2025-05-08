@@ -6,7 +6,7 @@ const categories = [
     image: '/images/img/pottery-showcase.jpg',
     title: 'Bộ sưu tập bình\nvà lọ hoa gốm',
     description:
-      'Lorem ipsum dolor sit amet consectetur. Ut elementum id erat dignissim cursus ac. Vivamus amet feugiat justo in et at. Enim ac sed lobortis proin. Amet habitant vitae integer enim condimentum. Sed blandit elementum semper ac lorem ut cursus massa etiam. Eros lacus erat vulputate pellentesque ultrices sit amet sapien.',
+      'Mang từng nét đất, chạm đời sống nay',
     isReversed: false,
   },
   {
@@ -14,7 +14,7 @@ const categories = [
     image: '/images/img/silk-showcase.jpg',
     title: 'Phụ kiện làm tóc\n từ lụa hà đông',
     description:
-      'Lorem ipsum dolor sit amet consectetur. Ut elementum id erat dignissim cursus ac. Vivamus amet feugiat justo in et at. Enim ac sed lobortis proin. Amet habitant vitae integer enim condimentum. Sed blandit elementum semper ac lorem ut cursus massa etiam. Eros lacus erat vulputate pellentesque ultrices sit amet sapien.',
+      'Nét mềm mại uyển chuyển, mang trong mình hồn xưa đang được thổi hồn trên từng khổ vải, chấm phá lên mình những nét tinh hoa.',
     isReversed: true,
   },
   {
@@ -34,11 +34,11 @@ const features = [
   },
   {
     id: 2,
-    title: 'Kết nối khách hàng và nghệ nhân',
+    title: 'Đem nét đẹp xưa điểm tô đời nay',
   },
   {
     id: 3,
-    title: 'Truyền tải câu chuyện văn hóa qua từng sản phẩm',
+    title: 'Câu chuyện văn hóa trải trong từng sản phẩm',
   },
 ];
 
@@ -92,9 +92,7 @@ const CategoryShowcase = () => {
               color: '#000',
             }}
           >
-            Lorem ipsum dolor sit amet consectetur. Faucibus feugiat porttitor aliquet natoque. Nisi massa ullamcorper
-            fames sit ac scelerisque. Consequat nibh dolor pellentesque morbi aliquam proin. Venenatis enim dolor elit
-            enim proin.
+            Cầu nối giữa những giá trị xưa với nhịp chảy hối hả ngày nay.
           </Typography>
         </Box>
 

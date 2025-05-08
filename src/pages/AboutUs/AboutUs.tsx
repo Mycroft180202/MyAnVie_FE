@@ -19,9 +19,8 @@ const AboutUsPage = () => {
           ]}
         />
       </Container>
-
         <HeroIntroSection />
-        <TeamSection/>
+        {/* <TeamSection/> */}
         <StatsSection/>
         <VillageVisitSection/>
         <ShowroomSection/>

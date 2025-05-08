@@ -121,7 +121,7 @@ const HeroIntroSection = () => {
             mb: 6,
           }}
         >
-          Lorem ipsum dolor sit amet consectetur. Faucibus feugiat porttitor aliquet natoque. Nisi massa ullamcorper fames sit ac scelerisque. Consequat nibh dolor pellentesque morbi aliquam proin. Venenatis enim dolor elit enim proin.
+         MYANVIE là một thương hiệu mang trong mình niềm đam mê văn hóa Việt và khát vọng gìn giữ, lan tỏa giá trị của các làng nghề truyền thống, khám phá vẻ đẹp tinh hoa từ những bàn tay nghệ nhân để trong từng sản phẩm thủ công làng nghề - nơi mỗi món đồ là một câu chuyện, mỗi đường nét là một nét di sản
         </Typography>
 
         {/* Feature 1-2-3 */}
