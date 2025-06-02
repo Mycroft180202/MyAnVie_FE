@@ -19,8 +19,8 @@ const productsData = [
   },
   {
     id: 3,
-    title: 'Khăn lụa Hà Đông',
-    image: '/images/products/silk1.jpg',
+    title: 'Khăn lụa',
+    image: '/images/products/Mockup1.jpg',
     price: 250000,
     rating: 4,
     category: 'silk',

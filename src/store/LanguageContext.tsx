@@ -15,7 +15,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const value = {
     language,
     setLanguage,
-    t: translations[language], // Provide translations based on the current language
+    t: translations[language], // Ensure proper typing
   };
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;

@@ -13,8 +13,7 @@ import { categoryMapping } from '../../utils/categoryMapping';
 
 const ShopPage = () => {
   const { category = 'pottery' } = useParams<{ category: keyof typeof categoryMapping }>();
-  const { label: categoryLabel, tabs } = categoryMapping[category] || { label: category, tabs: [] };
-
+  const { tabs } = categoryMapping[category] || { tabs: [] };
   const categoryInfo = categoryMapping[category] || { label: category, tabs: [], bannerImages: [] };
 
   // Nếu có tabs, chọn tab đầu tiên làm mặc định
@@ -25,8 +24,10 @@ const ShopPage = () => {
 
   // 🛠 Khi category thay đổi thì cập nhật tab tương ứng
   useEffect(() => {
-    setTab(tabs.length > 0 ? tabs[0].key : '');
-  }, [category]);
+    if (tabs && tabs.length > 0) {
+      setTab(defaultTab || tabs[0].key);
+    }
+  }, [tabs, defaultTab]);
 
   return (
     <Box>

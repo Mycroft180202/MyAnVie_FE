@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../store/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 
 import Logo from '../../assets/images/logo/myanvie-logo.png';
 import SearchIcon from '../../assets/images/icon/search-icon.svg';
@@ -9,23 +10,36 @@ import VNFlag from '../../assets/images/icon/VNFlag.svg';
 import UKFlag from '../../assets/images/icon/UKFlag.png';
 
 import Button from '../Button/Button';
-import styles from './Header.module.css'
+import styles from './Header.module.css';
 
 const Header: React.FC = () => {
   const { t, setLanguage } = useLanguage();
+  const { user, logout } = useAuth();
   const [isShopDropdownOpen, setShopDropdownOpen] = useState(false);
-  const [isPolicyDropdownOpen, setPolicyDropdownOpen] = useState(false);
+  const [isUserMenuOpen, setUserMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
+  const handleCartClick = () =>{
+    navigate('/cart')
+  }
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    setUserMenuOpen(false); // Đóng menu sau khi logout
+  };
 
   const toggleShopDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
     setShopDropdownOpen((prev) => !prev);
-    setPolicyDropdownOpen(false); // Đóng dropdown kia nếu đang mở
   };
-  
-  const togglePolicyDropdown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setPolicyDropdownOpen((prev) => !prev);
-    setShopDropdownOpen(false);
+
+  const toggleUserMenu = () => {
+    setUserMenuOpen((prev) => !prev);
   };
 
   return (
@@ -42,11 +56,8 @@ const Header: React.FC = () => {
         <Link to="/about" className={styles.navLink}>{t.about}</Link>
 
         {/* Dropdown shop */}
-        <div
-          className={styles.dropdownWrapper}
-          onClick={toggleShopDropdown}
-        >
-          <a href="#" className={styles.navLink}>{t.shop}</a>
+        <div className={styles.dropdownWrapper} onClick={toggleShopDropdown}>
+          <button className={styles.navLink}>{t.shop}</button>
           {isShopDropdownOpen && (
             <div className={styles.dropdownMenu}>
               <Link to="/shop/pottery">{t.categories.ceramic}</Link>
@@ -57,20 +68,6 @@ const Header: React.FC = () => {
         </div>
 
         <Link to="/news" className={styles.navLink}>{t.news}</Link>
-
-        <div
-          className={styles.dropdownWrapper}
-          onClick={togglePolicyDropdown}
-        >
-          <Link to="#" className={styles.navLink}>{t.policy}</Link>
-          {isPolicyDropdownOpen && (
-            <div className={styles.dropdownMenu}>
-              <Link to="/policy/return">{t.policies.return}</Link>
-              <Link to="/policy/shipping">{t.policies.shipping}</Link>
-              <Link to="/policy/warranty">{t.policies.warranty}</Link>
-            </div>
-          )}
-        </div>
         <Link to="/contact" className={styles.navLink}>{t.contact}</Link>
       </nav>
 
@@ -79,15 +76,41 @@ const Header: React.FC = () => {
         <button className={styles.iconButton}>
           <img src={SearchIcon} alt="Search" />
         </button>
-        <button className={styles.iconButton}>
+        <button className={styles.iconButton} onClick={handleCartClick}>
           <img src={CartIcon} alt="Cart" />
         </button>
-        <Button>{t.login}</Button>
-        <button className={styles.iconButton} onClick={() => setLanguage('vi')}>
-          <img src={VNFlag} alt="Vietnam Flag" style={{ width: '30px', height: '30px' }} />
+
+        {/* Conditional rendering based on login status */}
+        {user ? (
+          <div className={styles.userMenuWrapper}>
+            <img
+              src={'/images/AboutUs/Nhật.jpg'}
+              alt="User Avatar"
+              className={styles.userAvatar}
+              onClick={toggleUserMenu}
+            />
+            {isUserMenuOpen && (
+              <div className={styles.userMenu}>
+                <Link to="/profile" onClick={() => setUserMenuOpen(false)}>{t.userMenu.viewProfile}</Link>
+                <Link to="/orders" onClick={() => setUserMenuOpen(false)}>{t.userMenu.viewOrders}</Link>
+                {user?.role == 1 && (
+                  <Link to="/admin" onClick={() => setUserMenuOpen(true)}>
+                    {t.userMenu.admin}
+                  </Link>
+                )}
+                <button type="button" onClick={handleLogout}>{t.userMenu.logout}</button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Button onClick={handleLoginClick}>{t.login}</Button>
+        )}
+
+        <button className={styles.iconButton}>
+          <img src={VNFlag} alt="Vietnam Flag" className={styles.flagIcon} onClick={() => setLanguage('vi')} />
         </button>
-        <button className={styles.iconButton} onClick={() => setLanguage('en')}>
-          <img src={UKFlag} alt="UK Flag" style={{ width: '30px', height: '30px' }} />
+        <button className={styles.iconButton}>
+          <img src={UKFlag} alt="UK Flag" className={styles.flagIcon} onClick={() => setLanguage('en')} />
         </button>
       </div>
     </header>

@@ -1,4 +1,6 @@
 import { Box, Typography, Grid } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
 import ProductCard from '../../../components/ProductCard/ProductCard';
 import productsData from '../../../pages/Shop/mockProducts'; // hoặc import tương ứng
 
@@ -11,6 +13,13 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
   currentProductId,
   category,
 }) => {
+  const navigate = useNavigate();
+
+  const handleProductClick = (productId: number) => {
+    navigate(`/product/${productId}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const relatedProducts = productsData
     .filter(
       (product) => product.category === category && product.id !== currentProductId
@@ -27,7 +36,9 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
       <Grid container spacing={3}>
         {relatedProducts.map((product) => (
           <Grid item xs={12} sm={6} md={3} key={product.id}>
-            <ProductCard {...product} />
+            <div onClick={() => handleProductClick(product.id)}>
+              <ProductCard {...product} />
+            </div>
           </Grid>
         ))}
       </Grid>

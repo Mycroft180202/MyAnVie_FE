@@ -47,6 +47,7 @@ const ShowroomSection = () => {
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
+                  title="MyAnVie Showroom Location"
                 />
               </Box>
               

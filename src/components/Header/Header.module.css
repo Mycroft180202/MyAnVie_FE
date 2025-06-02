@@ -39,12 +39,15 @@
   }
   
   .navLink {
+    background: none;
+    border: none;
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
     font-weight: 400;
     letter-spacing: 0.05em;
     color: #000000;
     text-decoration: none;
+    cursor: pointer;
     transition: color 0.3s;
   }
   
@@ -106,3 +109,55 @@
     color: #950b0b;
   }
   
+  .userMenuWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .userAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    object-fit: cover;
+  }
+  
+  .userMenu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+  }
+  
+  .userMenu a,
+  .userMenu button {
+    padding: 10px 16px;
+    white-space: nowrap;
+    font-size: 16px;
+    color: #000;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+  }
+  
+  .userMenu a:hover,
+  .userMenu button:hover {
+    background: #f0f0f0;
+    color: #950b0b;
+  }
+  
+  .flagImage {
+    width: 30px;
+    height: 30px;
+  }
