@@ -3,81 +3,78 @@ import {
   CardMedia, 
   CardContent, 
   Typography, 
-  Box, 
-  Rating 
+  Box 
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface ProductCardProps {
-  id: number;
+  id: string; 
   image: string;
   title: string;
   price: number;
-  rating: number;
   category: string;
 }
-
-const ProductCard = ({ id, image, title, price, rating, category }: ProductCardProps) => {
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    navigate(`/product/${id}`);
-  };
-
+const ProductCard = ({ id, image, title, price, category }: ProductCardProps) => {
   return (
     <Card
+      component={Link}
+      to={`/products/${id}`}
       sx={{
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        borderRadius: '12px',
-        border: '1px solid #DDD',
-        cursor: 'pointer',
-        transition: 'transform 0.2s, box-shadow 0.2s',
+        textDecoration: 'none',
+        transition: 'transform 0.2s',
         '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+          transform: 'scale(1.02)',
         },
       }}
-      onClick={handleClick}
     >
       <CardMedia
         component="img"
-        height="300"
         image={image}
         alt={title}
         sx={{
+          paddingTop: '100%', // 1:1 aspect ratio
+          height: 0,
           objectFit: 'cover',
-          borderBottom: '1px solid #DDD',
         }}
       />
       <CardContent sx={{ flexGrow: 1, p: 2 }}>
         <Typography
+          gutterBottom
           variant="h6"
+          component="div"
           sx={{
             fontSize: '1rem',
-            mb: 1,
-            height: '3rem',
+            fontWeight: 500,
+            color: 'text.primary',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
+            whiteSpace: 'nowrap',
           }}
         >
           {title}
         </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            mb: 1,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {category}
+        </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography
-            variant="subtitle1"
-            sx={{
-              color: '#950B0B',
-              fontWeight: 'bold',
-            }}
-          >
-            {price.toLocaleString('vi-VN')}₫
+          <Typography variant="h6" color="primary" sx={{ fontWeight: 600 }}>
+            {new Intl.NumberFormat('vi-VN', {
+              style: 'currency',
+              currency: 'VND',
+            }).format(price)}
           </Typography>
-          <Rating value={rating} readOnly size="small" />
         </Box>
       </CardContent>
     </Card>

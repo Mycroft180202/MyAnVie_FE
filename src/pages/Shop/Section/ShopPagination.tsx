@@ -1,19 +1,31 @@
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
+import { useState } from 'react';
 
-const ShopPagination = () => {
+interface ShopPaginationProps {
+  totalPages: number;
+  currentPage: number;
+  onPageChange: (page: number) => void;
+}
+
+const ShopPagination = ({ totalPages, currentPage, onPageChange }: ShopPaginationProps) => {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, gap: 1 }}>
-      {[1, 2, 3].map((page) => (
-        <Box
+      {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+        <Button
           key={page}
+          variant={page === currentPage ? 'contained' : 'outlined'}
+          onClick={() => onPageChange(page)}
           sx={{
-            width: 12,
-            height: 12,
+            minWidth: '40px',
+            height: '40px',
             borderRadius: '50%',
-            bgcolor: page === 2 ? '#000' : '#ccc',
-            cursor: 'pointer',
+            bgcolor: page === currentPage ? '#950B0B' : 'transparent',
+            color: page === currentPage ? '#fff' : '#000',
+            borderColor: '#000',
           }}
-        />
+        >
+          {page}
+        </Button>
       ))}
     </Box>
   );

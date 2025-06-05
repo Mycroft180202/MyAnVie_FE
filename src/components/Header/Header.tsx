@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../store/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
+import { categoryService } from '../../services/categoryService';
+import { Category } from '../../types/category';
 
 import Logo from '../../assets/images/logo/myanvie-logo.png';
 import SearchIcon from '../../assets/images/icon/search-icon.svg';
@@ -17,20 +19,34 @@ const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const [isShopDropdownOpen, setShopDropdownOpen] = useState(false);
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await categoryService.getAllCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleLoginClick = () => {
     navigate('/login');
   };
 
   const handleCartClick = () =>{
-    navigate('/cart')
+    navigate('/cart');
   }
 
   const handleLogout = () => {
     logout();
     navigate('/');
-    setUserMenuOpen(false); // Đóng menu sau khi logout
+    setUserMenuOpen(false);
   };
 
   const toggleShopDropdown = (e: React.MouseEvent) => {
@@ -42,27 +58,41 @@ const Header: React.FC = () => {
     setUserMenuOpen((prev) => !prev);
   };
 
+  const handleCategoryClick = (categoryName: string) => {
+    navigate(`/shop?category=${categoryName}`);
+    setShopDropdownOpen(false);
+  };
+
   return (
     <header className={styles.headerContainer}>
       {/* Logo */}
       <div className={styles.logoSection}>
-        <img src={Logo} alt="MyAnVie Logo" className={styles.logoImg} />
+        <Link to="/">
+          <img src={Logo} alt="MyAnVie Logo" className={styles.logoImg} />
+        </Link>
         <h1 className={styles.brandName}>MYANVIE</h1>
       </div>
 
       {/* Navigation */}
       <nav className={styles.navigation}>
-        <Link to="/" className={`${styles.navLink} active`}>{t.home}</Link>
+        <Link to="/" className={styles.navLink}>{t.home}</Link>
         <Link to="/about" className={styles.navLink}>{t.about}</Link>
 
         {/* Dropdown shop */}
-        <div className={styles.dropdownWrapper} onClick={toggleShopDropdown}>
-          <button className={styles.navLink}>{t.shop}</button>
+        <div className={styles.dropdownWrapper}>
+          <Link to="/shop" className={styles.navLink} onClick={toggleShopDropdown}>{t.shop}</Link>
           {isShopDropdownOpen && (
             <div className={styles.dropdownMenu}>
-              <Link to="/shop/pottery">{t.categories.ceramic}</Link>
-              <Link to="/shop/silk">{t.categories.silk}</Link>
-              <Link to="/shop/bamboo">{t.categories.bamboo}</Link>
+              <Link to="/shop" onClick={() => setShopDropdownOpen(false)}>Tất cả sản phẩm</Link>
+              {categories.map((category) => (
+                <Link 
+                  key={category.id}
+                  to="/shop"
+                  onClick={() => handleCategoryClick(category.name)}
+                >
+                  {category.name}
+                </Link>
+              ))}
             </div>
           )}
         </div>
@@ -93,8 +123,8 @@ const Header: React.FC = () => {
               <div className={styles.userMenu}>
                 <Link to="/profile" onClick={() => setUserMenuOpen(false)}>{t.userMenu.viewProfile}</Link>
                 <Link to="/orders" onClick={() => setUserMenuOpen(false)}>{t.userMenu.viewOrders}</Link>
-                {user?.role == 1 && (
-                  <Link to="/admin" onClick={() => setUserMenuOpen(true)}>
+                {user?.role === 1 && (
+                  <Link to="/admin" onClick={() => setUserMenuOpen(false)}>
                     {t.userMenu.admin}
                   </Link>
                 )}

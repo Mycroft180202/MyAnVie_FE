@@ -1,15 +1,6 @@
 import { Box, Typography, Grid } from '@mui/material';
 import { useState } from 'react';
-
-interface Product {
-  id: number;
-  title: string;
-  image: string;
-  price: number;
-  rating: number;
-  category: string;
-  subCategory: string;
-}
+import { Product } from '../../../types/product';
 
 interface ProductTabSectionProps {
   product: Product;
@@ -61,34 +52,15 @@ const ProductTabSection: React.FC<ProductTabSectionProps> = ({ product }) => {
                   width: '100%',
                   height: 'auto',
                   borderRadius: '12px',
-                  objectFit: 'cover',
                 }}
               />
-              <Typography fontWeight="bold" mt={2}>
-                Video quá trình sản xuất sản phẩm
-              </Typography>
             </Grid>
             <Grid item xs={12} md={7}>
-              <Typography>
-                {product.title} là sản phẩm thuộc danh mục {product.category}. Được sản xuất thủ công với quy trình nghiêm ngặt và nguyên liệu cao cấp, sản phẩm mang đến sự tinh tế và độc đáo cho không gian sống.
-              </Typography>
-              <Box mt={2}>
-                <Typography fontWeight="bold">Màu sắc:</Typography>
-                <Typography>Xanh, Đỏ, Vàng</Typography>
-                <Typography fontWeight="bold" mt={1}>Chất liệu:</Typography>
-                <Typography>Gốm cao cấp sản xuất tại Bát Tràng</Typography>
-                <Typography fontWeight="bold" mt={1}>Kiểu dáng:</Typography>
-                <Typography>Dáng cao, phình dưới</Typography>
-                <Typography fontWeight="bold" mt={1}>Các kích thước:</Typography>
-                <Typography>50 x 70 cm, 70 x 90 cm, 90 x 110 cm</Typography>
-                <Typography fontWeight="bold" mt={1}>Công dụng:</Typography>
-                <Typography>Trang trí, làm quà tặng, cắm hoa</Typography>
-              </Box>
-              <Typography fontWeight="bold" mt={4}>
-                Cách vệ sinh và bảo quản sản phẩm
+              <Typography variant="h6" gutterBottom>
+                {product.name}
               </Typography>
               <Typography>
-                Lau nhẹ bằng khăn mềm. Tránh va đập mạnh. Bảo quản nơi khô ráo, thoáng mát.
+                {product.description || 'Chưa có mô tả cho sản phẩm này.'}
               </Typography>
             </Grid>
           </Grid>
@@ -100,7 +72,6 @@ const ProductTabSection: React.FC<ProductTabSectionProps> = ({ product }) => {
           <Typography variant="h6" mb={2}>
             Đánh giá từ khách hàng (đang cập nhật)
           </Typography>
-          {/* Placeholder: add real customer review section here later */}
           <Typography>Chưa có đánh giá nào.</Typography>
         </Box>
       )}

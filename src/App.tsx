@@ -26,6 +26,7 @@ import AdminOrders from './pages/Admin/Orders';
 import Users from './pages/Admin/Users';
 import AdminRoute from './components/PrivateRoute/AdminRoute';
 import AdminLayout from './layouts/AdminLayout';
+import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 
 const AppContent = () => {
   const location = useLocation();
@@ -33,12 +34,13 @@ const AppContent = () => {
 
   return (
     <>
+      <ScrollToTop />
       {!isAdminRoute && <Header />}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutUsPage />} />
-        <Route path="/shop/:category" element={<ShopPage />} />
-        <Route path="/product/:productId" element={<ProductDetailPage />} />
+        <Route path="/shop" element={<ShopPage />} />
+        <Route path="/products/:productId" element={<ProductDetailPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

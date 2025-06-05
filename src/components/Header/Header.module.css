@@ -8,6 +8,7 @@
     backdrop-filter: blur(50px);
     position: relative;
     z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
   
   .logoSection {
@@ -21,14 +22,20 @@
     width: 40px;
     height: 40px;
     border-radius: 40px;
+    transition: transform 0.2s;
+  }
+  
+  .logoImg:hover {
+    transform: scale(1.05);
   }
   
   .brandName {
-    font-family: 'TH Hoaico 2', sans-serif;
+    font-family: 'Hoaico2', sans-serif;
     font-size: 18px;
     font-weight: 400;
     letter-spacing: 0.1em;
     color: #950b0b;
+    margin: 0;
   }
   
   .navigation {
@@ -49,11 +56,32 @@
     text-decoration: none;
     cursor: pointer;
     transition: color 0.3s;
+    position: relative;
+    padding: 4px 0;
   }
   
   .navLink:hover,
   .navLink.active {
     color: #950b0b;
+  }
+  
+  .navLink:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: #950b0b;
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s;
+  }
+  
+  .navLink:hover:after,
+  .navLink.active:after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
   }
   
   .actionSection {
@@ -70,6 +98,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 0.2s;
+  }
+  
+  .iconButton:hover {
+    transform: scale(1.1);
   }
   
   .iconButton img {
@@ -89,24 +122,44 @@
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    min-width: 160px;
+    min-width: 200px;
     display: flex;
     flex-direction: column;
     z-index: 999;
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: dropdownFadeIn 0.3s ease forwards;
+  }
+  
+  @keyframes dropdownFadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   
   .dropdownMenu a {
-    padding: 10px 16px;
+    padding: 12px 16px;
     white-space: nowrap;
     font-size: 14px;
     color: #000;
     text-decoration: none;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  
+  .dropdownMenu a:last-child {
+    border-bottom: none;
   }
   
   .dropdownMenu a:hover {
-    background: #f0f0f0;
+    background: #f8f8f8;
     color: #950b0b;
+    padding-left: 20px;
   }
   
   .userMenuWrapper {
@@ -121,6 +174,11 @@
     border-radius: 50%;
     cursor: pointer;
     object-fit: cover;
+    transition: transform 0.2s;
+  }
+  
+  .userAvatar:hover {
+    transform: scale(1.05);
   }
   
   .userMenu {
@@ -131,33 +189,50 @@
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    min-width: 160px;
+    min-width: 180px;
     display: flex;
     flex-direction: column;
     z-index: 999;
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: dropdownFadeIn 0.3s ease forwards;
   }
   
   .userMenu a,
   .userMenu button {
-    padding: 10px 16px;
+    padding: 12px 16px;
     white-space: nowrap;
-    font-size: 16px;
+    font-size: 14px;
     color: #000;
     text-decoration: none;
     background: none;
     border: none;
     cursor: pointer;
     text-align: left;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  
+  .userMenu a:last-child,
+  .userMenu button:last-child {
+    border-bottom: none;
   }
   
   .userMenu a:hover,
   .userMenu button:hover {
-    background: #f0f0f0;
+    background: #f8f8f8;
     color: #950b0b;
+    padding-left: 20px;
   }
   
-  .flagImage {
-    width: 30px;
-    height: 30px;
+  .flagIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .flagIcon:hover {
+    transform: scale(1.1);
   }

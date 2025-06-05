@@ -14,7 +14,7 @@ const categories = [
     image: '/images/img/silk-showcase.jpg',
     title: 'Phụ kiện làm tóc\n từ lụa hà đông',
     description:
-      'Nét mềm mại uyển chuyển, mang trong mình hồn xưa đang được thổi hồn trên từng khổ vải, chấm phá lên mình những nét tinh hoa.',
+      'Hãy để sự mềm mại thuần khiết của lụa Hà Đông nâng niu từng sợi tóc bạn. Không chỉ là một chất liệu, lụa Hà Đông là di sản văn hóa, là biểu tượng của sự tinh tế và sang trọng. Khi hóa thân thành những món phụ kiện tóc, lụa Hà Đông mang đến trải nghiệm chăm sóc hoàn toàn khác biệt. Bề mặt trơn láng, óng ả của lụa giảm thiểu tối đa ma sát, ngăn ngừa tình trạng tóc gãy rụng, xơ rối thường gặp khi sử dụng các chất liệu khác. Đặc biệt, khả năng duy trì độ ẩm tự nhiên của lụa tơ tằm giúp mái tóc luôn mềm mượt, bóng khỏe, nói không với khô xơ ngay cả khi bạn tạo kiểu thường xuyên. Với đặc tính thoáng khí và an toàn cho da đầu, phụ kiện tóc lụa Hà Đông là lựa chọn lý tưởng để bạn tự tin khoe vẻ đẹp tự nhiên, đồng thời thể hiện gu thẩm mỹ tinh tế và sự trân trọng những giá trị truyền thống.',
     isReversed: true,
   },
   {

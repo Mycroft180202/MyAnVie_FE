@@ -1,45 +1,48 @@
-import { Box, Typography } from '@mui/material';
-
-const bannerData: Record<string, { images: string[]; name: string; description: string }> = {
-  pottery: {
-    images: ['/images/products/Pottery1.jpg', '/images/products/Pottery2.jpg', '/images/products/Pottery3.jpg'],
-    name: 'Gốm',
-    description: 'Các sản phẩm gốm sứ tinh xảo, mang đậm nét truyền thống và hiện đại.',
-  },
-  silk: {
-    images: ['/images/products/Silk1.jpg', '/images/products/Silk2.jpg'],
-    name: 'Lụa',
-    description: 'Những sản phẩm lụa cao cấp, mềm mại và sang trọng.',
-  },
-  bamboo: {
-    images: ['/images/products/Bamboo1.jpg', '/images/products/Bamboo2.jpg'],
-    name: 'Mây tre đan',
-    description: 'Sản phẩm mây tre đan thủ công, thân thiện với môi trường.',
-  },
-};
+import { Box, Container, Grid, Typography } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Category } from '../../../types/category';
+import { categoryService } from '../../../services/categoryService';
 
 interface ShopBannerProps {
-  category: string; // 👈 Cho phép nhận từ useParams
+  category: string;
 }
 
-const ShopBanner = ({ category }: ShopBannerProps) => {
-  const { images = [], name = category, description = '' } = bannerData[category] || {};
+const ShopBanner: React.FC<ShopBannerProps> = ({ category }) => {
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await categoryService.getAllCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const categoryImage = `/images/categories/${category}.jpg`;
+
+  const getTitle = () => {
+    if (category === 'all') return 'Tất cả sản phẩm';
+    return `Sản phẩm ${category}`;
+  };
 
   return (
     <Box sx={{ mt: -2, mb: 6 }}>
-      <Box sx={{ display: 'flex', height: { xs: 250, md: 550 }, position: 'relative', overflow: 'hidden' }}>
-        {images.map((img) => (
-          <Box
-            key={img}
-            sx={{
-              flex: 1,
-              backgroundImage: `url(${img})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          />
-        ))}
-        <Box sx={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)' }} />
+      <Box sx={{ display: 'flex', height: { xs: 200, md: 300 }, position: 'relative', overflow: 'hidden' }}>
+        <Box
+          sx={{
+            flex: 1,
+            bgcolor: '#FFF9EC',
+            backgroundImage: 'url(/images/hero-bg.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'brightness(0.7)',
+          }}
+        />
         <Box
           sx={{
             position: 'absolute',
@@ -55,11 +58,26 @@ const ShopBanner = ({ category }: ShopBannerProps) => {
             textAlign: 'center',
           }}
         >
-          <Typography sx={{ fontSize: { xs: 20, md: 36 }, fontWeight: 'bold', fontFamily: 'Hoaico2', mb: 2 }}>
-            Danh Mục Sản Phẩm {name}
+          <Typography
+            sx={{
+              fontSize: { xs: 24, md: 36 },
+              fontWeight: 'bold',
+              fontFamily: 'Hoaico2',
+              mb: 2,
+              textTransform: 'uppercase',
+            }}
+          >
+            {getTitle()}
           </Typography>
-          <Typography sx={{ maxWidth: '70%', fontSize: { xs: 12, md: 16 }, fontFamily: 'Roboto', fontWeight: 300 }}>
-            {description}
+          <Typography
+            sx={{
+              maxWidth: '70%',
+              fontSize: { xs: 14, md: 16 },
+              fontFamily: 'Roboto',
+              fontWeight: 300,
+            }}
+          >
+            Khám phá các sản phẩm đa dạng và phong phú của chúng tôi
           </Typography>
         </Box>
       </Box>
