@@ -32,10 +32,8 @@ export interface RegisterData {
 }
 
 export interface LoginResponsePayload {
-  token: {
-    token: string;
-    user: User;
-  };
+  token: string;
+  user: User;
 }
 
 export interface ForgotPasswordRequest {

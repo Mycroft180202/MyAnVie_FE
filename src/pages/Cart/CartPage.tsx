@@ -15,62 +15,100 @@ import { Link, useNavigate } from 'react-router-dom';
 import ShoppingBasketOutlinedIcon from '@mui/icons-material/ShoppingBasketOutlined';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { cartService } from '../../services/cartService';
-import type { CartItem as CartItemType } from '../../services/cartService';
+import { CartItem as CartItemType, Cart as CartType } from '../../services/cartService';
+import { useAuth } from '../../context/AuthContext';
 
 const CartPage = () => {
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState<CartItemType[]>([]);
+  const { user, token, isAuthenticated, isLoading: authLoading } = useAuth();
+  const [cartData, setCartData] = useState<CartType | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (authLoading) return;
+
+    if (!isAuthenticated) {
+      toast.info('Vui lòng đăng nhập để xem giỏ hàng của bạn.');
+      navigate('/login');
+      return;
+    }
+
     fetchCart();
-  }, []);
+  }, [isAuthenticated, authLoading, navigate, token]);
 
   const fetchCart = async () => {
+    if (!token) return;
     try {
-      const cart = await cartService.getMyCart();
-      setCartItems(cart.items);
-    } catch (error) {
-      toast.error('Failed to load cart');
+      setLoading(true);
+      const cart = await cartService.getMyCart(token);
+      setCartData(cart);
+      setError(null);
+    } catch (error: any) {
+      setError(error.message || 'Không thể tải giỏ hàng.');
+      toast.error(error.message || 'Không thể tải giỏ hàng.');
       console.error('Error fetching cart:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateQuantity = async (id: number, quantity: number) => {
+  const handleUpdateQuantity = async (itemId: string, quantity: number) => {
+    if (!token) {
+      toast.error('Vui lòng đăng nhập để cập nhật giỏ hàng');
+      return;
+    }
+
     try {
-      await cartService.updateItemQuantity(id, quantity);
-      const updatedCart = await cartService.getMyCart();
-      setCartItems(updatedCart.items);
-      toast.success('Cart updated successfully');
-    } catch (error) {
-      toast.error('Failed to update quantity');
-      console.error('Error updating quantity:', error);
+      setLoading(true);
+      console.log('Updating quantity for item:', itemId, 'to:', quantity);
+      const updatedCart = await cartService.updateItemQuantity(itemId, quantity, token);
+      console.log('Cart updated successfully:', updatedCart);
+      setCartData(updatedCart);
+      toast.success('Đã cập nhật số lượng sản phẩm!');
+    } catch (error: any) {
+      console.error('Error in handleUpdateQuantity:', error);
+      const errorMessage = error.message || 'Không thể cập nhật số lượng.';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      // Refresh cart data to ensure UI is in sync with server
+      await fetchCart();
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleRemoveItem = async (id: number) => {
+  const handleRemoveItem = async (itemId: string) => {
+    if (!token) return;
     try {
-      await cartService.removeItem(id);
-      const updatedCart = await cartService.getMyCart();
-      setCartItems(updatedCart.items);
-      toast.success('Item removed from cart');
-    } catch (error) {
-      toast.error('Failed to remove item');
+      setLoading(true);
+      await cartService.removeItem(itemId, token);
+      await fetchCart();
+      toast.success('Đã xóa sản phẩm khỏi giỏ hàng.');
+    } catch (error: any) {
+      setError(error.message || 'Không thể xóa sản phẩm.');
+      toast.error(error.message || 'Không thể xóa sản phẩm.');
       console.error('Error removing item:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = cartData?.cartItems.reduce((sum, item) => sum + item.productPrice * item.quantity, 0) || 0;
   const shipping = 30000;
-  const total = subtotal + shipping;
+  const total = (cartData?.totalPrice !== undefined && cartData.totalPrice !== null) ? cartData.totalPrice : (subtotal + shipping);
 
   const handleCheckout = () => {
-    navigate('/checkout');
+    console.log('CartPage: handleCheckout called.');
+    console.log('CartPage: cartData before checkout:', cartData);
+    if (!cartData || cartData.cartItems.length === 0) {
+      toast.error('Giỏ hàng của bạn đang trống');
+      return;
+    }
+    navigate('/checkout', { state: { cartItems: cartData.cartItems } });
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
         <CircularProgress />
@@ -78,9 +116,18 @@ const CartPage = () => {
     );
   }
 
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ my: 4 }}>
+        <Typography variant="h6" color="error">{error}</Typography>
+        <Button component={Link} to="/login" sx={{ mt: 2 }}>Đăng nhập</Button>
+      </Container>
+    );
+  }
+
   return (
     <Container maxWidth="lg" sx={{ my: 4 }}>
-      {cartItems.length > 0 ? (
+      {cartData && cartData.cartItems.length > 0 ? (
         <>
           <Typography variant="h4" sx={{ mb: 4, fontWeight: 600 }}>
             Giỏ hàng của bạn
@@ -89,11 +136,16 @@ const CartPage = () => {
           <Grid container spacing={4}>
             <Grid item xs={12} md={8}>
               <Stack spacing={2}>
-                {cartItems.map((item) => (
+                {cartData.cartItems.map((item) => (
                   <CartItem
                     key={item.id}
-                    {...item}
-                    onUpdateQuantity={(quantity) => handleUpdateQuantity(item.id, quantity)}
+                    id={item.id}
+                    productId={item.productId}
+                    productName={item.productName}
+                    price={item.productPrice}
+                    productImage={item.productImage}
+                    quantity={item.quantity}
+                    onUpdateQuantity={(qty) => handleUpdateQuantity(item.id, qty)}
                     onRemove={() => handleRemoveItem(item.id)}
                   />
                 ))}

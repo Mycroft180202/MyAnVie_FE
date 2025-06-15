@@ -1,45 +1,59 @@
 import { Box, Typography } from '@mui/material';
 
-const bannerData: Record<string, { images: string[]; name: string; description: string }> = {
-  pottery: {
-    images: ['/images/products/Pottery1.jpg', '/images/products/Pottery2.jpg', '/images/products/Pottery3.jpg'],
+const bannerData: Record<string, { image: string; name: string; description: string }> = {
+  'gốm': {
+    image: '/images/products/Pottery1.jpg',
     name: 'Gốm',
     description: 'Các sản phẩm gốm sứ tinh xảo, mang đậm nét truyền thống và hiện đại.',
   },
-  silk: {
-    images: ['/images/products/Silk1.jpg', '/images/products/Silk2.jpg'],
+  'lụa': {
+    image: '/images/products/Silk1.jpg',
     name: 'Lụa',
     description: 'Những sản phẩm lụa cao cấp, mềm mại và sang trọng.',
   },
-  bamboo: {
-    images: ['/images/products/Bamboo1.jpg', '/images/products/Bamboo2.jpg'],
+  'mây tre đan': {
+    image: '/images/products/Bamboo1.jpg',
     name: 'Mây tre đan',
     description: 'Sản phẩm mây tre đan thủ công, thân thiện với môi trường.',
   },
 };
 
 interface ShopBannerProps {
-  category: string; // 👈 Cho phép nhận từ useParams
+  category: string;
 }
 
 const ShopBanner = ({ category }: ShopBannerProps) => {
-  const { images = [], name = category, description = '' } = bannerData[category] || {};
+  const { image, name = category, description = '' } = bannerData[category] || {};
+  console.log('ShopBanner - category:', category);
+  console.log('ShopBanner - bannerData[category]:', bannerData[category]);
+  console.log('ShopBanner - image:', image);
 
   return (
     <Box sx={{ mt: -2, mb: 6 }}>
-      <Box sx={{ display: 'flex', height: { xs: 250, md: 550 }, position: 'relative', overflow: 'hidden' }}>
-        {images.map((img) => (
-          <Box
-            key={img}
-            sx={{
-              flex: 1,
-              backgroundImage: `url(${img})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
+      <Box sx={{ 
+        height: { xs: 250, md: 550 }, 
+        position: 'relative', 
+        overflow: 'hidden',
+      }}>
+        {image && (
+          <img 
+            src={image} 
+            alt={`Banner ${name}`} 
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              position: 'absolute',
+              top: 0,
+              left: 0,
             }}
           />
-        ))}
-        <Box sx={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)' }} />
+        )}
+        <Box sx={{ 
+          position: 'absolute', 
+          inset: 0, 
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7))' 
+        }} />
         <Box
           sx={{
             position: 'absolute',
@@ -55,10 +69,22 @@ const ShopBanner = ({ category }: ShopBannerProps) => {
             textAlign: 'center',
           }}
         >
-          <Typography sx={{ fontSize: { xs: 20, md: 36 }, fontWeight: 'bold', fontFamily: 'Hoaico2', mb: 2 }}>
+          <Typography sx={{ 
+            fontSize: { xs: 20, md: 36 }, 
+            fontWeight: 'bold', 
+            fontFamily: 'Hoaico2', 
+            mb: 2,
+            textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+          }}>
             Danh Mục Sản Phẩm {name}
           </Typography>
-          <Typography sx={{ maxWidth: '70%', fontSize: { xs: 12, md: 16 }, fontFamily: 'Roboto', fontWeight: 300 }}>
+          <Typography sx={{ 
+            maxWidth: '70%', 
+            fontSize: { xs: 12, md: 16 }, 
+            fontFamily: 'Roboto', 
+            fontWeight: 300,
+            textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
+          }}>
             {description}
           </Typography>
         </Box>

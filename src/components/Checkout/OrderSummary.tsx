@@ -1,118 +1,92 @@
 import React from 'react';
+import { CartState } from '../../store/slices/cartSlice';
 import {
-  Box,
-  Typography,
   Paper,
-  Divider,
-  Stack,
+  Typography,
+  Box,
   Button,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Divider,
+  CircularProgress // Thêm CircularProgress cho trạng thái loading của nút
 } from '@mui/material';
-
-interface OrderItem {
-  id: string;
-  name: string;
-  image: string;
-  price: number;
-  quantity: number;
-}
+// import Image from 'next/image'; // Dòng này sẽ bị xóa vì đây không phải dự án Next.js
 
 interface OrderSummaryProps {
-  items: OrderItem[];
-  subtotal: number;
-  shipping: number;
-  total: number;
-  onPlaceOrder: () => void;
-  isLoading?: boolean;
+  cart: CartState;
+  onPlaceOrder: () => Promise<void>;
+  isLoading: boolean;
 }
 
-const OrderSummary: React.FC<OrderSummaryProps> = ({
-  items,
-  subtotal,
-  shipping,
-  total,
-  onPlaceOrder,
-  isLoading = false,
-}) => {
+export const OrderSummary: React.FC<OrderSummaryProps> = ({ cart, onPlaceOrder, isLoading }) => {
   return (
-    <Paper elevation={0} sx={{ p: 3, border: '1px solid #E0E0E0', borderRadius: 2 }}>
-      <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+    <Paper elevation={3} sx={{ p: 3 }}>
+      <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
         Đơn hàng của bạn
       </Typography>
-
-      <Stack spacing={2} sx={{ mt: 3 }}>
-        {items.map((item) => (
-          <Box key={item.id} sx={{ display: 'flex', gap: 2 }}>
-            <Box
-              component="img"
-              src={item.image}
-              alt={item.name}
-              sx={{
-                width: 80,
-                height: 80,
-                objectFit: 'cover',
-                borderRadius: 1,
-              }}
+      <List sx={{ mb: 2 }}>
+        {cart.items.map((item) => (
+          <ListItem key={item.id} disablePadding sx={{ mb: 2, alignItems: 'flex-start' }}>
+            <ListItemIcon sx={{ minWidth: 'unset', mr: 2 }}>
+              <Box
+                component="img"
+                src={item.imageUrl}
+                alt={item.name}
+                sx={{
+                  width: 80,
+                  height: 80,
+                  objectFit: 'cover',
+                  borderRadius: 1,
+                  border: '1px solid #e0e0e0',
+                }}
+              />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {item.name}
+                </Typography>
+              }
+              secondary={
+                <React.Fragment>
+                  <Typography variant="body2" color="text.secondary">
+                    Số lượng: {item.quantity}
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    {(item.price * item.quantity).toLocaleString('vi-VN')}đ
+                  </Typography>
+                </React.Fragment>
+              }
             />
-            <Box flex={1}>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {item.name}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Số lượng: {item.quantity}
-              </Typography>
-              <Typography variant="body2" color="error" sx={{ fontWeight: 500 }}>
-                {item.price.toLocaleString('vi-VN')}đ
-              </Typography>
-            </Box>
-          </Box>
+          </ListItem>
         ))}
-      </Stack>
+      </List>
 
-      <Divider sx={{ my: 3 }} />
+      <Divider sx={{ my: 2 }} />
 
-      <Stack spacing={2}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography color="text.secondary">Tạm tính:</Typography>
-          <Typography fontWeight={500}>
-            {subtotal.toLocaleString('vi-VN')}đ
-          </Typography>
-        </Box>
-
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography color="text.secondary">Phí vận chuyển:</Typography>
-          <Typography fontWeight={500}>
-            {shipping.toLocaleString('vi-VN')}đ
-          </Typography>
-        </Box>
-
-        <Divider />
-
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography variant="h6">Tổng cộng:</Typography>
-          <Typography variant="h6" color="error" fontWeight={600}>
-            {total.toLocaleString('vi-VN')}đ
-          </Typography>
-        </Box>
-      </Stack>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+        <Typography variant="subtitle1" color="text.secondary">Tổng cộng:</Typography>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+          {cart.total.toLocaleString('vi-VN')}đ
+        </Typography>
+      </Box>
+      <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'right', mb: 2 }}>
+        Phí vận chuyển sẽ được tính sau
+      </Typography>
 
       <Button
-        fullWidth
         variant="contained"
-        color="error"
-        size="large"
+        color="primary"
+        fullWidth
         onClick={onPlaceOrder}
-        disabled={isLoading}
-        sx={{
-          mt: 3,
-          textTransform: 'none',
-          fontWeight: 600,
-          py: 1.5,
-        }}
+        disabled={isLoading || cart.items.length === 0}
+        sx={{ py: 1.5, textTransform: 'none' }}
+        startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
       >
         {isLoading ? 'Đang xử lý...' : 'Đặt hàng'}
       </Button>
     </Paper>
   );
 };
-
-export default OrderSummary;

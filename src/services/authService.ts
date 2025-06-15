@@ -20,27 +20,19 @@ export const authService = {
   async login(credentials: LoginCredentials): Promise<{ user: User; token: string }> {
     try {
       const response = await axios.post<LoginResponsePayload>(`${API_URL}/auth/login`, {
-        // Backend của bạn nhận LoginDto { Email, Password }
-        // LoginCredentials của bạn hiện tại là { email: string, password: string }
-        // Nếu LoginCredentials của bạn có 'identifier', thì cần map:
-        // email: credentials.identifier, 
-        email: credentials.email, // Giả sử LoginCredentials của bạn đã có 'email'
+        email: credentials.email,
         password: credentials.password,
       });
       
-      // Trích xuất đúng từ cấu trúc lồng nhau
-      const actualTokenString = response.data.token.token;
-      const userDetails = response.data.token.user;
+      const { token, user } = response.data;
 
-      if (actualTokenString) {
-        localStorage.setItem('token', actualTokenString);
-        this.setAuthHeader(actualTokenString);
+      if (token) {
+        localStorage.setItem('token', token);
+        this.setAuthHeader(token);
       }
       localStorage.removeItem('refreshToken'); 
 
-      // Trả về một cấu trúc phẳng cho AuthContext sử dụng (nếu muốn)
-      // Hoặc AuthContext có thể tự xử lý LoginResponsePayload
-      return { user: userDetails, token: actualTokenString }; 
+      return { user, token }; 
 
     } catch (error: any) {
       console.error('Login error:', error.response?.data || error.message);

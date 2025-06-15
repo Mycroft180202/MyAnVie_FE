@@ -1,6 +1,7 @@
 import { Box, Container } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { categoryService, SubCategory, Category } from '../../services/categoryService';
 
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import ShopBanner from './Section/ShopBanner';
@@ -9,44 +10,83 @@ import ShopFilter from './Section/ShopFilter';
 import ShopProductList from './Section/ShopProductList';
 import ShopPagination from './Section/ShopPagination';
 
-import { categoryMapping } from '../../utils/categoryMapping';
-
 const ShopPage = () => {
-  const { category = 'pottery' } = useParams<{ category: keyof typeof categoryMapping }>();
-  const { tabs } = categoryMapping[category] || { tabs: [] };
-  const categoryInfo = categoryMapping[category] || { label: category, tabs: [], bannerImages: [] };
+  const { category = 'pottery', subCategoryId } = useParams<{ category: string; subCategoryId?: string }>();
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string>('');
+  const [currentCategoryId, setCurrentCategoryId] = useState<string | null>(null);
 
-  // Nếu có tabs, chọn tab đầu tiên làm mặc định
-  const defaultTab = categoryInfo.tabs.length > 0 ? categoryInfo.tabs[0].key : '';
-  
-  // Đặt tab nếu chưa có
-  const [tab, setTab] = useState<string>(tabs.length > 0 ? tabs[0].key : '');
+  const normalizedCategory = category.toLowerCase();
 
-  // 🛠 Khi category thay đổi thì cập nhật tab tương ứng
   useEffect(() => {
-    if (tabs && tabs.length > 0) {
-      setTab(defaultTab || tabs[0].key);
-    }
-  }, [tabs, defaultTab]);
+    const fetchCategoriesAndSubCategories = async () => {
+      try {
+        const allCategories = await categoryService.getCategories();
+        const foundCategory = allCategories.find(cat => cat.name.toLowerCase() === normalizedCategory);
+
+        if (foundCategory) {
+          setCurrentCategoryId(foundCategory.id);
+          const allSubCategories = await categoryService.getSubCategories();
+          const filteredSubCategories = allSubCategories.filter(sub => 
+            sub.categoryId === foundCategory.id
+          );
+          setSubCategories(filteredSubCategories);
+          
+          if (subCategoryId) {
+            setSelectedSubCategory(subCategoryId);
+          } else if (filteredSubCategories.length > 0) {
+            setSelectedSubCategory(filteredSubCategories[0].id);
+          }
+        } else {
+          setSubCategories([]);
+          setCurrentCategoryId(null);
+          setSelectedSubCategory('');
+        }
+      } catch (error) {
+        console.error('Error fetching categories or subcategories:', error);
+      }
+    };
+
+    fetchCategoriesAndSubCategories();
+  }, [category, subCategoryId, normalizedCategory]);
+
+  const handleSubCategoryChange = (subCategoryId: string) => {
+    setSelectedSubCategory(subCategoryId);
+  };
 
   return (
     <Box>
-      {/* Breadcrumb with consistent margin */}
-      <Container maxWidth="lg" sx={{ pt: -1,ml:15 }}>
+      <Container maxWidth="lg" sx={{ pt: -1, ml: 15 }}>
         <Breadcrumb
           items={[
-            { label: 'Trang chủ', href: '/' },
-            { label: categoryInfo.label },
+            { label: 'Trang chủ', path: '/' },
+            { label: category.charAt(0).toUpperCase() + category.slice(1) },
+            ...(selectedSubCategory ? [{
+              label: subCategories.find(sub => sub.id === selectedSubCategory)?.name || '',
+              path: `/shop/${category}/${selectedSubCategory}`
+            }] : [])
           ]}
         />
       </Container>
 
       <Box sx={{ bgcolor: '#FFFCF3', minHeight: '100vh', pb: 2, pt: 2 }}>
-        <ShopBanner category={category} />
+        <ShopBanner category={normalizedCategory} />
         <Container maxWidth="lg">
-          <ShopTabs tab={tab} tabs={categoryInfo.tabs} onTabChange={setTab} />
+          {subCategories.length > 0 && (
+            <ShopTabs
+              tab={selectedSubCategory}
+              tabs={subCategories.map(sub => ({
+                key: sub.id,
+                label: sub.name
+              }))}
+              onTabChange={handleSubCategoryChange}
+            />
+          )}
           <ShopFilter />
-          <ShopProductList category={category} tab={tab} />
+          <ShopProductList
+            categoryId={currentCategoryId}
+            subCategoryId={selectedSubCategory}
+          />
           <ShopPagination />
         </Container>
       </Box>

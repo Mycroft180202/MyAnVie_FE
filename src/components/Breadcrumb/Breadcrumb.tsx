@@ -10,7 +10,7 @@ import {
 
 type BreadcrumbItem = {
   label: string;
-  href?: string; // Nếu có href thì là link
+  path?: string; // Thay đổi từ href sang path
 };
 
 interface BreadcrumbProps {
@@ -32,8 +32,8 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
             {/* Dot separator (không hiển thị trước phần đầu tiên) */}
             <Typography component="span" sx={breadcrumbSeparator}>•</Typography>
             
-            {item.href ? (
-              <MuiLink href={item.href} underline="none" color="inherit">
+            {item.path ? (
+              <MuiLink href={item.path} underline="none" color="inherit">
                 {item.label}
               </MuiLink>
             ) : (

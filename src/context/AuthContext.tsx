@@ -84,13 +84,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (credentials: LoginCredentials) => {
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
-      // authService.login đã được sửa để trả về { token: { token: string, user: User } }
-      // và chúng ta cần trích xuất đúng
-      const loginData = await authService.login(credentials); 
+      const { user, token } = await authService.login(credentials);
       
       setState({
-        user: loginData.user,       // Lấy user từ cấu trúc lồng nhau
-        token: loginData.token,     // Lấy token string từ cấu trúc lồng nhau
+        user,
+        token,
         isAuthenticated: true,
         isLoading: false,
         error: null,
@@ -98,11 +96,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Đăng nhập thất bại';
       setState(prev => ({
-        ...defaultAuthState, // Reset về trạng thái chưa đăng nhập
+        ...defaultAuthState,
         isLoading: false,
         error: errorMessage,
       }));
-      throw error; // Ném lại lỗi để component Login có thể bắt và hiển thị toast
+      throw error;
     }
   };
 

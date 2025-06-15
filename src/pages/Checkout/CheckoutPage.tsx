@@ -1,116 +1,222 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Grid,
   Typography,
   Breadcrumbs,
   Link,
+  CircularProgress,
+  Box,
+  Button,
+  Paper,
+  TextField,
+  Divider
 } from '@mui/material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import DeliveryForm from '../../components/Checkout/DeliveryForm';
-import OrderSummary from '../../components/Checkout/OrderSummary';
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
+import { OrderSummary } from '../../components/Checkout/OrderSummary';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import ShoppingBasketOutlinedIcon from '@mui/icons-material/ShoppingBasketOutlined';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { ShippingForm } from '../../components/Checkout/ShippingForm';
+import { PaymentForm } from '../../components/Checkout/PaymentForm';
+import { LoadingSpinner } from '../../components/Common/LoadingSpinner';
+import { cartService, CartItem } from '../../services/cartService';
+import { orderService, CreateOrderDto } from '../../services/orderService';
+import { productService } from '../../services/productService';
+import { PaymentMethod } from '../../components/Checkout/PaymentMethod';
 
-interface OrderItem {
-  id: string;
-  name: string;
-  image: string;
-  price: number;
-  quantity: number;
-}
-
-const CheckoutPage = () => {
+const CheckoutPage: React.FC = () => {
+  const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  
-  // Dữ liệu mẫu, sau này sẽ lấy từ Cart Context
-  const cartItems: OrderItem[] = [
-    {
-      id: '1',
-      name: 'Bình gốm Bát Tràng',
-      image: '/images/products/Pottery1.jpg',
-      price: 450000,
-      quantity: 1,
-    },
-    {
-      id: '2',
-      name: 'Khăn lụa Vạn Phúc',
-      image: '/images/products/Silk1.jpg',
-      price: 850000,
-      quantity: 2,
-    },
-  ];
+  const dispatch = useDispatch();
+  const { user, token, isAuthenticated, isLoading: authLoading } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [isProcessingOrder, setIsProcessingOrder] = useState(false);
+
+  const cart = useSelector((state: RootState) => state.cart);
+
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const [formData, setFormData] = useState({
-    fullName: user?.fullName || '',
+    shippingAddress: user?.address || '',
     phoneNumber: user?.phoneNumber || '',
     email: user?.email || '',
-    address: user?.address || '',
-    note: '',
-    paymentMethod: 'cod' as 'cod' | 'bank',
+    note: ''
   });
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = 30000;
-  const total = subtotal + shipping;
+  const [paymentMethod, setPaymentMethod] = useState('COD');
 
-  const handleFormChange = (field: string, value: string) => {
-    setFormData((prev) => ({
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!isAuthenticated) {
+      toast.info('Vui lòng đăng nhập để tiến hành thanh toán.');
+      navigate('/login');
+    }
+  }, [isAuthenticated, authLoading, navigate]);
+
+  useEffect(() => {
+    const fetchAndSetCartItems = async () => {
+      console.log('CheckoutPage: useEffect triggered.');
+      console.log('CheckoutPage: location.state received:', location.state);
+
+      if (!token) {
+        toast.info('Vui lòng đăng nhập để tiến hành thanh toán');
+        navigate('/login');
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const state = location.state as { cartItems?: CartItem[], productId?: string, quantity?: number } | null;
+
+        if (state?.cartItems) {
+          console.log('CheckoutPage: Using cartItems from location.state.', state.cartItems);
+          setCartItems(state.cartItems);
+        } else if (state?.productId && state?.quantity) {
+          console.log('CheckoutPage: Using productId and quantity from location.state (Buy Now flow).');
+          const product = await productService.getProductById(state.productId);
+          const tempCartItem: CartItem = {
+            id: 'temp-' + product.id,
+            productId: product.id,
+            productName: product.name,
+            productPrice: product.price,
+            productImage: product.imageUrl,
+            quantity: state.quantity
+          };
+          console.log('CheckoutPage: Setting tempCartItem:', tempCartItem);
+          setCartItems([tempCartItem]);
+        } else {
+          console.log('CheckoutPage: No state found, fetching full cart.');
+          const cart = await cartService.getMyCart(token);
+          console.log('CheckoutPage: Full cart fetched:', cart.cartItems);
+          setCartItems(cart.cartItems);
+        }
+      } catch (error: any) {
+        toast.error(error.message || 'Không thể tải giỏ hàng hoặc sản phẩm.');
+        console.error('Error in CheckoutPage useEffect:', error);
+        if (location.state?.productId) {
+          navigate('/shop');
+        } else {
+          navigate('/cart');
+        }
+      } finally {
+        setLoading(false);
+        console.log('CheckoutPage: Loading set to false.');
+      }
+    };
+
+    if (!isAuthenticated) {
+      toast.info('Vui lòng đăng nhập để tiến hành thanh toán');
+      navigate('/login');
+      return;
+    }
+
+    fetchAndSetCartItems();
+  }, [isAuthenticated, token, navigate, location.state]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
       ...prev,
-      [field]: value,
+      [name]: value
     }));
   };
 
-  const validateForm = () => {
-    const required = ['fullName', 'phoneNumber', 'email', 'address'];
-    for (const field of required) {
-      if (!formData[field as keyof typeof formData]) {
-        toast.error(`Vui lòng nhập ${field === 'fullName' ? 'họ tên' : 
-          field === 'phoneNumber' ? 'số điện thoại' : 
-          field === 'email' ? 'email' : 'địa chỉ'}`);
-        return false;
-      }
-    }
-    
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast.error('Email không hợp lệ');
-      return false;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!token) return;
+
+    if (cartItems.length === 0) {
+      toast.error('Giỏ hàng của bạn đang trống');
+      return;
     }
 
-    // Validate phone number format (Vietnam)
-    const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
-    if (!phoneRegex.test(formData.phoneNumber)) {
-      toast.error('Số điện thoại không hợp lệ');
-      return false;
-    }
-
-    return true;
-  };
-
-  const handlePlaceOrder = async () => {
-    if (!validateForm()) return;
-
-    setIsLoading(true);
     try {
-      // TODO: Implement order placement logic
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulated API call
-      toast.success('Đặt hàng thành công!');
-      navigate('/order-success'); // Create this page later
-    } catch (error) {
-      toast.error('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại!');
+      setLoading(true);
+      const orderData: CreateOrderDto = {
+        shippingAddress: formData.shippingAddress,
+        items: cartItems.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity
+        })),
+        paymentMethod: paymentMethod
+      };
+
+      if (paymentMethod === 'VNPAY') {
+        // Xử lý thanh toán VNPAY
+        const paymentUrl = await orderService.createVNPayPayment(orderData, token);
+        window.location.href = paymentUrl;
+        return;
+      }
+
+      // Xử lý thanh toán COD
+      const order = await orderService.createOrder(orderData, token);
+      
+      // Xóa giỏ hàng sau khi đặt hàng thành công
+      try {
+        await cartService.clearCart(token);
+        toast.success('Đặt hàng thành công!');
+        navigate(`/orders/${order.id}`);
+      } catch (error: any) {
+        console.error('Error clearing cart:', error);
+        toast.warning('Đặt hàng thành công nhưng không thể xóa giỏ hàng.');
+        navigate(`/orders/${order.id}`);
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Không thể đặt hàng');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
+
+  const subtotal = cartItems.reduce((sum, item) => sum + item.productPrice * item.quantity, 0);
+  const shipping = 30000;
+  const total = subtotal + shipping;
+
+  if (authLoading || loading || isProcessingOrder) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ my: 4 }}>
+        <Typography variant="h6" color="error">{error}</Typography>
+        <Button component={RouterLink} to="/cart" sx={{ mt: 2 }}>Quay lại giỏ hàng</Button>
+      </Container>
+    );
+  }
+
+  console.log('CheckoutPage: Current cartItems:', cartItems);
+  
+  if (!cartItems || cartItems.length === 0) {
+    return (
+      <Container maxWidth="lg" sx={{ my: 4, textAlign: 'center' }}>
+        <ShoppingBasketOutlinedIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+        <Typography variant="h5" gutterBottom>
+          Giỏ hàng trống
+        </Typography>
+        <Typography color="text.secondary" sx={{ mb: 4 }}>
+          Bạn chưa có sản phẩm nào trong giỏ hàng để thanh toán.
+        </Typography>
+        <Button component={RouterLink} to="/shop" variant="contained" color="error" sx={{ textTransform: 'none' }}>
+          Mua sắm ngay
+        </Button>
+      </Container>
+    );
+  }
 
   return (
-    <Container maxWidth="lg" sx={{ my: 4 }}>
-      {/* Breadcrumbs */}
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       <Breadcrumbs 
         separator={<NavigateNextIcon fontSize="small" />}
         sx={{ mb: 4 }}
@@ -130,21 +236,132 @@ const CheckoutPage = () => {
 
       <Grid container spacing={4}>
         <Grid item xs={12} md={8}>
-          <DeliveryForm 
-            formData={formData}
-            onChange={handleFormChange}
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Typography variant="h6" sx={{ mb: 3 }}>
+              Thông tin giao hàng
+            </Typography>
+            <form onSubmit={handleSubmit}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Địa chỉ giao hàng"
+                    name="shippingAddress"
+                    value={formData.shippingAddress}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Số điện thoại"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Ghi chú"
+                    name="note"
+                    value={formData.note}
+                    onChange={handleInputChange}
+                    multiline
+                    rows={3}
+                  />
+                </Grid>
+              </Grid>
+            </form>
+          </Paper>
+
+          <PaymentMethod
+            selectedMethod={paymentMethod}
+            onMethodChange={setPaymentMethod}
           />
+
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" sx={{ mb: 3 }}>
+              Sản phẩm
+            </Typography>
+            {cartItems.map((item) => (
+              <Box key={item.id} sx={{ mb: 2 }}>
+                <Grid container alignItems="center" spacing={2}>
+                  <Grid item xs={2}>
+                    <img
+                      src={item.productImage}
+                      alt={item.productName}
+                      style={{ width: '100%', borderRadius: '4px' }}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle1">{item.productName}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Số lượng: {item.quantity}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4} sx={{ textAlign: 'right' }}>
+                    <Typography variant="subtitle1" color="error">
+                      {(item.productPrice * item.quantity).toLocaleString('vi-VN')}đ
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Divider sx={{ my: 2 }} />
+              </Box>
+            ))}
+          </Paper>
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <OrderSummary
-            items={cartItems}
-            subtotal={subtotal}
-            shipping={shipping}
-            total={total}
-            onPlaceOrder={handlePlaceOrder}
-            isLoading={isLoading}
-          />
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" sx={{ mb: 3 }}>
+              Tổng thanh toán
+            </Typography>
+            <Box sx={{ mb: 2 }}>
+              <Grid container justifyContent="space-between">
+                <Typography>Tạm tính:</Typography>
+                <Typography>{subtotal.toLocaleString('vi-VN')}đ</Typography>
+              </Grid>
+            </Box>
+            <Box sx={{ mb: 2 }}>
+              <Grid container justifyContent="space-between">
+                <Typography>Phí vận chuyển:</Typography>
+                <Typography>{shipping.toLocaleString('vi-VN')}đ</Typography>
+              </Grid>
+            </Box>
+            <Divider sx={{ my: 2 }} />
+            <Box sx={{ mb: 3 }}>
+              <Grid container justifyContent="space-between">
+                <Typography variant="h6">Tổng cộng:</Typography>
+                <Typography variant="h6" color="error">
+                  {total.toLocaleString('vi-VN')}đ
+                </Typography>
+              </Grid>
+            </Box>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? 'Đang xử lý...' : paymentMethod === 'VNPAY' ? 'Thanh toán qua VNPAY' : 'Đặt hàng'}
+            </Button>
+          </Paper>
         </Grid>
       </Grid>
     </Container>

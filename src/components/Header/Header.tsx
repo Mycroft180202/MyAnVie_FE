@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../store/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
+import { categoryService, Category, SubCategory } from '../../services/categoryService';
 
 import Logo from '../../assets/images/logo/myanvie-logo.png';
 import SearchIcon from '../../assets/images/icon/search-icon.svg';
@@ -17,20 +18,39 @@ const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const [isShopDropdownOpen, setShopDropdownOpen] = useState(false);
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const [categoriesData, subCategoriesData] = await Promise.all([
+          categoryService.getCategories(),
+          categoryService.getSubCategories()
+        ]);
+        setCategories(categoriesData);
+        setSubCategories(subCategoriesData);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleLoginClick = () => {
     navigate('/login');
   };
 
-  const handleCartClick = () =>{
-    navigate('/cart')
-  }
+  const handleCartClick = () => {
+    navigate('/cart');
+  };
 
   const handleLogout = () => {
     logout();
     navigate('/');
-    setUserMenuOpen(false); // Đóng menu sau khi logout
+    setUserMenuOpen(false);
   };
 
   const toggleShopDropdown = (e: React.MouseEvent) => {
@@ -40,6 +60,10 @@ const Header: React.FC = () => {
 
   const toggleUserMenu = () => {
     setUserMenuOpen((prev) => !prev);
+  };
+
+  const getSubCategoriesForCategory = (categoryId: string) => {
+    return subCategories.filter(sub => sub.categoryId === categoryId);
   };
 
   return (
@@ -60,9 +84,15 @@ const Header: React.FC = () => {
           <button className={styles.navLink}>{t.shop}</button>
           {isShopDropdownOpen && (
             <div className={styles.dropdownMenu}>
-              <Link to="/shop/pottery">{t.categories.ceramic}</Link>
-              <Link to="/shop/silk">{t.categories.silk}</Link>
-              <Link to="/shop/bamboo">{t.categories.bamboo}</Link>
+              {categories.map((category) => (
+                <Link
+                  key={category.id}
+                  to={`/shop/${category.name.toLowerCase()}`}
+                  className={styles.categoryLink}
+                >
+                  {category.name}
+                </Link>
+              ))}
             </div>
           )}
         </div>
@@ -79,38 +109,26 @@ const Header: React.FC = () => {
         <button className={styles.iconButton} onClick={handleCartClick}>
           <img src={CartIcon} alt="Cart" />
         </button>
-
-        {/* Conditional rendering based on login status */}
         {user ? (
-          <div className={styles.userMenuWrapper}>
-            <img
-              src={'/images/AboutUs/Nhật.jpg'}
-              alt="User Avatar"
-              className={styles.userAvatar}
-              onClick={toggleUserMenu}
-            />
+          <div className={styles.userMenu}>
+            <button className={styles.iconButton} onClick={toggleUserMenu}>
+              <img src={'/images/AboutUs/Nhật.jpg'} alt="User" className={styles.userAvatar} />
+            </button>
             {isUserMenuOpen && (
-              <div className={styles.userMenu}>
-                <Link to="/profile" onClick={() => setUserMenuOpen(false)}>{t.userMenu.viewProfile}</Link>
-                <Link to="/orders" onClick={() => setUserMenuOpen(false)}>{t.userMenu.viewOrders}</Link>
-                {user?.role == 1 && (
-                  <Link to="/admin" onClick={() => setUserMenuOpen(true)}>
-                    {t.userMenu.admin}
-                  </Link>
-                )}
-                <button type="button" onClick={handleLogout}>{t.userMenu.logout}</button>
+              <div className={styles.userDropdown}>
+                <Link to="/profile">Profile</Link>
+                <button onClick={handleLogout}>Logout</button>
               </div>
             )}
           </div>
         ) : (
-          <Button onClick={handleLoginClick}>{t.login}</Button>
+          <Button onClick={handleLoginClick}>Login</Button>
         )}
-
-        <button className={styles.iconButton}>
-          <img src={VNFlag} alt="Vietnam Flag" className={styles.flagIcon} onClick={() => setLanguage('vi')} />
+        <button className={styles.iconButton} onClick={() => setLanguage('vi')}>
+          <img src={VNFlag} alt="Vietnamese" />
         </button>
-        <button className={styles.iconButton}>
-          <img src={UKFlag} alt="UK Flag" className={styles.flagIcon} onClick={() => setLanguage('en')} />
+        <button className={styles.iconButton} onClick={() => setLanguage('en')}>
+          <img src={UKFlag} alt="English" />
         </button>
       </div>
     </header>

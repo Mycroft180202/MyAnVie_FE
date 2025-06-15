@@ -71,7 +71,7 @@ const OrdersPage = () => {
       <Container maxWidth="lg" sx={{ pt: 4, ml: 15 }}>
         <Breadcrumb
           items={[
-            { label: 'Trang chủ', href: '/' },
+            { label: 'Trang chủ', path: '/' },
             { label: 'Đơn hàng của tôi' }
           ]}
         />

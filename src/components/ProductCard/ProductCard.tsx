@@ -4,20 +4,26 @@ import {
   CardContent, 
   Typography, 
   Box, 
-  Rating 
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 interface ProductCardProps {
-  id: number;
-  image: string;
+  id: string; // GUID từ backend
   title: string;
+  image: string;
   price: number;
-  rating: number;
   category: string;
+  subCategory: string;
 }
 
-const ProductCard = ({ id, image, title, price, rating, category }: ProductCardProps) => {
+const ProductCard: React.FC<ProductCardProps> = ({
+  id,
+  title,
+  image,
+  price,
+  category,
+  subCategory,
+}) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -77,7 +83,6 @@ const ProductCard = ({ id, image, title, price, rating, category }: ProductCardP
           >
             {price.toLocaleString('vi-VN')}₫
           </Typography>
-          <Rating value={rating} readOnly size="small" />
         </Box>
       </CardContent>
     </Card>

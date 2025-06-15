@@ -10,10 +10,11 @@ import {
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 interface CartItemProps {
-  id: number;
-  productId: number;
+  id: string;
+  productId: string;
   productName: string;
   price: number;
+  productImage: string;
   quantity: number;
   onUpdateQuantity: (quantity: number) => void;
   onRemove: () => void;
@@ -22,6 +23,7 @@ interface CartItemProps {
 const CartItem: React.FC<CartItemProps> = ({
   productName,
   price,
+  productImage,
   quantity,
   onUpdateQuantity,
   onRemove,
@@ -45,6 +47,19 @@ const CartItem: React.FC<CartItemProps> = ({
         borderBottom: '1px solid #E0E0E0',
       }}
     >
+      {/* Product Image */}
+      <Box sx={{ width: 80, height: 80, flexShrink: 0 }}>
+        <img 
+          src={productImage} 
+          alt={productName} 
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            borderRadius: '8px'
+          }}
+        />
+      </Box>
       {/* Product Info */}
       <Box flex={1}>
         <Typography variant="h6" sx={{ mb: 1, fontWeight: 500 }}>

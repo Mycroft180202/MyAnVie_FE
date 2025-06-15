@@ -9,6 +9,7 @@
     "@mui/icons-material": "^5.14.19",
     "@mui/material": "^5.14.20",
     "@mui/x-date-pickers": "^6.19.4",
+    "@reduxjs/toolkit": "^2.8.2",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",
@@ -21,10 +22,11 @@
     "myanvie_fe": "file:",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^6.22.1",
     "react-scripts": "5.0.1",
     "react-slick": "^0.30.1",
-    "react-toastify": "^10.0.4",
+    "react-toastify": "^10.0.6",
     "recharts": "^2.12.0",
     "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.8",
@@ -57,9 +59,12 @@
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
-    "@types/react-dom": "^19.1.5",
+    "@types/react-dom": "^18.2.0",
     "@types/react-router-dom": "^5.3.3",
     "@types/react-slick": "^0.23.13",
-    "@types/react-toastify": "^4.0.2"
+    "@types/react-toastify": "^4.0.2",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.4",
+    "tailwindcss": "^4.1.8"
   }
 }

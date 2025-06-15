@@ -14,7 +14,6 @@ const AboutUsPage = () => {
         <Container maxWidth="lg" sx={{ pt: -1,ml:15 }}>
         <Breadcrumb
           items={[
-            { label: 'Trang chủ', href: '/' },
             { label: 'Về chúng tôi' },
           ]}
         />
