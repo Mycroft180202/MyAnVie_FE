@@ -24,9 +24,10 @@ import { ShippingForm } from '../../components/Checkout/ShippingForm';
 import { PaymentForm } from '../../components/Checkout/PaymentForm';
 import { LoadingSpinner } from '../../components/Common/LoadingSpinner';
 import { cartService, CartItem } from '../../services/cartService';
-import { orderService, CreateOrderDto } from '../../services/orderService';
+import { createOrder, getMyOrders, getOrderById, CreateOrderDto, OrderResponse } from '../../services/orderService';
 import { productService } from '../../services/productService';
 import { PaymentMethod } from '../../components/Checkout/PaymentMethod';
+import { PAYMENT_METHODS } from '../../config/constants';
 
 const CheckoutPage: React.FC = () => {
   const location = useLocation();
@@ -130,48 +131,52 @@ const CheckoutPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token) return;
+    if (!token) {
+      toast.error('Vui lòng đăng nhập để tiếp tục');
+      navigate('/login');
+      return;
+    }
 
     if (cartItems.length === 0) {
-      toast.error('Giỏ hàng của bạn đang trống');
+      toast.error('Giỏ hàng trống');
+      return;
+    }
+
+    if (!formData.shippingAddress) {
+      toast.error('Vui lòng nhập địa chỉ giao hàng');
       return;
     }
 
     try {
-      setLoading(true);
+      setIsProcessingOrder(true);
       const orderData: CreateOrderDto = {
         shippingAddress: formData.shippingAddress,
         items: cartItems.map(item => ({
           productId: item.productId,
           quantity: item.quantity
         })),
-        paymentMethod: paymentMethod
+        paymentMethod: paymentMethod === 'VNPAY' ? PAYMENT_METHODS.VNPAY : PAYMENT_METHODS.COD
       };
 
-      if (paymentMethod === 'VNPAY') {
-        // Xử lý thanh toán VNPAY
-        const paymentUrl = await orderService.createVNPayPayment(orderData, token);
-        window.location.href = paymentUrl;
-        return;
-      }
-
-      // Xử lý thanh toán COD
-      const order = await orderService.createOrder(orderData, token);
+      const response: OrderResponse = await createOrder(orderData, token);
       
-      // Xóa giỏ hàng sau khi đặt hàng thành công
-      try {
-        await cartService.clearCart(token);
+      if (paymentMethod === 'VNPAY' && response.paymentUrl) {
+        window.location.href = response.paymentUrl;
+      } else {
         toast.success('Đặt hàng thành công!');
-        navigate(`/orders/${order.id}`);
-      } catch (error: any) {
-        console.error('Error clearing cart:', error);
-        toast.warning('Đặt hàng thành công nhưng không thể xóa giỏ hàng.');
-        navigate(`/orders/${order.id}`);
+        await cartService.clearCart(token);
+        navigate('/payment-result', {
+          state: {
+            success: true,
+            orderId: response.order.id
+          }
+        });
       }
     } catch (error: any) {
-      toast.error(error.message || 'Không thể đặt hàng');
+      console.error('Error creating order:', error);
+      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi đặt hàng');
     } finally {
-      setLoading(false);
+      setIsProcessingOrder(false);
     }
   };
 
@@ -304,7 +309,7 @@ const CheckoutPage: React.FC = () => {
                     <img
                       src={item.productImage}
                       alt={item.productName}
-                      style={{ width: '100%', borderRadius: '4px' }}
+                      style={{ width: '100%', borderRadius: '4px' }} 
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -321,7 +326,7 @@ const CheckoutPage: React.FC = () => {
                 </Grid>
                 <Divider sx={{ my: 2 }} />
               </Box>
-            ))}
+            ))} 
           </Paper>
         </Grid>
 
@@ -357,9 +362,9 @@ const CheckoutPage: React.FC = () => {
               color="primary"
               size="large"
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={isProcessingOrder}
             >
-              {loading ? 'Đang xử lý...' : paymentMethod === 'VNPAY' ? 'Thanh toán qua VNPAY' : 'Đặt hàng'}
+              {isProcessingOrder ? 'Đang xử lý...' : paymentMethod === 'VNPAY' ? 'Thanh toán qua VNPAY' : 'Đặt hàng'}
             </Button>
           </Paper>
         </Grid>

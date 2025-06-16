@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_URL } from '../config/api';
+import { API_URL } from '../config/constants';
 
 export interface OrderItem {
   productId: string;
@@ -8,89 +8,75 @@ export interface OrderItem {
 
 export interface CreateOrderDto {
   shippingAddress: string;
-  items: {
-    productId: string;
-    quantity: number;
-  }[];
-  paymentMethod: 'COD' | 'VNPAY';
+  paymentMethod: number; // 0 for COD, 1 for VNPAY
+  items: OrderItem[];
+}
+
+export interface OrderItemResponse {
+  id: string;
+  productId: string;
+  productName: string;
+  productThumbnailUrl: string;
+  quantity: number;
+  price: number;
 }
 
 export interface OrderDto {
   id: string;
   userId: string;
+  customerFullName: string;
+  customerEmail: string;
   orderDate: string;
-  shippingAddress: string;
-  status: string;
   totalAmount: number;
-  items: {
-    id: string;
-    productId: string;
-    productName: string;
-    quantity: number;
-    price: number;
-    thumbnailUrl: string;
-  }[];
+  shippingAddress: string;
+  status: number; // Corrected to number
+  orderItems: OrderItemResponse[];
 }
 
-export const orderService = {
-  async createOrder(orderData: CreateOrderDto, token: string): Promise<OrderDto> {
-    try {
-      const response = await axios.post<OrderDto>(`${API_URL}/orders`, orderData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      return response.data;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to create order');
-    }
-  },
+export interface OrderResponse {
+  order: OrderDto;
+  paymentUrl: string;
+}
 
-  async getMyOrders(token: string): Promise<OrderDto[]> {
-    try {
-      const response = await axios.get<OrderDto[]>(`${API_URL}/orders/my-orders`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      return response.data;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to fetch orders');
-    }
-  },
-
-  async getOrderById(orderId: string, token: string): Promise<OrderDto> {
-    try {
-      const response = await axios.get<OrderDto>(`${API_URL}/orders/${orderId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      return response.data;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to fetch order');
-    }
-  },
-
-  createVNPayPayment: async (orderData: CreateOrderDto, token: string): Promise<string> => {
-    const response = await fetch(`${API_URL}/orders/vnpay`, {
-      method: 'POST',
+export const createOrder = async (orderData: CreateOrderDto, token: string): Promise<OrderResponse> => {
+  try {
+    const response = await axios.post<OrderResponse>(`${API_URL}/api/Orders`, orderData, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(orderData)
+      }
     });
+    return response.data;
+  } catch (error: any) {
+    console.error("Error creating order:", error.response?.data || error.message);
+    throw error;
+  }
+};
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Không thể tạo thanh toán VNPAY');
-    }
+export const getMyOrders = async (token: string): Promise<OrderDto[]> => {
+  try {
+    const response = await axios.get<OrderDto[]>(`${API_URL}/api/Orders/my-orders`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Failed to fetch orders');
+  }
+};
 
-    const data = await response.json();
-    return data.paymentUrl;
+export const getOrderById = async (orderId: string, token: string): Promise<OrderDto> => {
+  try {
+    const response = await axios.get<OrderDto>(`${API_URL}/api/Orders/${orderId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Failed to fetch order');
   }
 }; 

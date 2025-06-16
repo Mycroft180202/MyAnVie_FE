@@ -24,6 +24,7 @@ import AdminOrders from './pages/Admin/Orders';
 import Users from './pages/Admin/Users';
 import AdminRoute from './components/PrivateRoute/AdminRoute';
 import AdminLayout from './layouts/AdminLayout';
+import PaymentResult from './pages/PaymentResult';
 
 const AppContent: React.FC = () => {
   const location = useLocation();
@@ -47,6 +48,7 @@ const AppContent: React.FC = () => {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-success" element={<OrderSuccessPage />} />
           <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/payment-result" element={<PaymentResult />} />
           
           {/* Admin routes wrapped in AdminLayout */}
           <Route path="/admin/*" element={
