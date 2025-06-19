@@ -127,7 +127,7 @@ const ProductDetailPage: React.FC = () => {
             <Card>
               <CardMedia
                 component="img"
-                image={product.imageUrl}
+                image={product.thumbnailUrl}
                 alt={product.name}
                 sx={{ height: 400, objectFit: 'contain' }}
               />

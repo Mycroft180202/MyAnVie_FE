@@ -6,15 +6,15 @@ const categories = [
     image: '/images/img/pottery-showcase.jpg',
     title: 'Bộ sưu tập bình\nvà lọ hoa gốm',
     description:
-      'Mang từng nét đất, chạm đời sống nay',
+      'Chắt lọc từ những thớ đất sét tinh túy, được nhào nặn dưới bàn tay tài hoa và nung luyện qua lửa đỏ, mỗi tác phẩm gốm sứ của MYANVIE là một lời tự sự mộc mạc của đất. Không chỉ là vật dụng, đó là mảnh hồn của làng nghề truyền thống, mang đến sự bình yên, ấm cúng và một vẻ đẹp vững chãi cho không gian sống của bạn. Mỗi món gốm là một dấu ấn riêng, không hoàn toàn lặp lại, hứa hẹn sẽ trở thành một điểm nhấn độc đáo, kể câu chuyện về sự gắn kết giữa con người và thiên nhiên.',
     isReversed: false,
   },
   {
     id: 2,
-    image: '/images/img/silk-showcase.jpg',
-    title: 'Phụ kiện làm tóc\n từ lụa hà đông',
+    image: '/images/ActualProduct/lua1.png',
+    title: 'Cô gái bên đầm sen \n từ lụa hà đông',
     description:
-      'Nét mềm mại uyển chuyển, mang trong mình hồn xưa đang được thổi hồn trên từng khổ vải, chấm phá lên mình những nét tinh hoa.',
+      'Từ những sợi tơ tằm óng ả được nuôi dưỡng bởi lá dâu xanh, qua đôi tay khéo léo của người nghệ nhân dệt vải, mỗi tấm lụa MYANVIE là một dòng chảy của vẻ đẹp mềm mại và thanh lịch. Chúng tôi không chỉ tạo ra những khổ vải, mà còn dệt nên những câu chuyện văn hóa, những nét duyên thầm của người phụ nữ Việt. Khoác lên mình tấm lụa MYANVIE không chỉ là mặc một trang phục, mà là mang theo cả một di sản, một sự khẳng định về vẻ đẹp tinh tế, sang trọng và đầy cuốn hút vượt thời gian.',
     isReversed: true,
   },
   {
@@ -22,7 +22,7 @@ const categories = [
     image: '/images/img/bamboo-showcase.jpg',
     title: 'Đồ trang trí mây tre đan',
     description:
-      'Lorem ipsum dolor sit amet consectetur. Ut elementum id erat dignissim cursus ac. Vivamus amet feugiat justo in et at. Enim ac sed lobortis proin. Amet habitant vitae integer enim condimentum. Sed blandit elementum semper ac lorem ut cursus massa etiam. Eros lacus erat vulputate pellentesque ultrices sit amet sapien.',
+      'Từ những sợi mây, nan tre mộc mạc của làng nghề Việt, qua đôi tay khéo léo của người nghệ nhân, mỗi tác phẩm được hình thành không chỉ là một vật dụng trang trí. Đó là sự kết tinh của nét đẹp tự nhiên, sự ấm áp của vật liệu và câu chuyện văn hóa dung dị, mang đến một không gian sống an yên và tinh tế.',
     isReversed: false,
   },
 ];
@@ -30,15 +30,15 @@ const categories = [
 const features = [
   {
     id: 1,
-    title: 'Giữ gìn và lan tỏa giá trị truyền thống',
+    title: 'Gìn giữ tinh hoa di sản',
   },
   {
     id: 2,
-    title: 'Đem nét đẹp xưa điểm tô đời nay',
+    title: 'Thổi hồn xưa vào nhịp sống nay',
   },
   {
     id: 3,
-    title: 'Câu chuyện văn hóa trải trong từng sản phẩm',
+    title: 'Kể chuyện văn hóa qua từng tác phẩm.',
   },
 ];
 
