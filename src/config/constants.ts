@@ -1,4 +1,4 @@
-export const API_URL = 'http://localhost:5001';
+export const API_URL = 'https://myanviebe.onrender.com/api';
 
 export const PAYMENT_METHODS = {
   COD: 0,

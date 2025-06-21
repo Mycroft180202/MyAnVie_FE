@@ -40,7 +40,7 @@ export interface OrderResponse {
 
 export const createOrder = async (orderData: CreateOrderDto, token: string): Promise<OrderResponse> => {
   try {
-    const response = await axios.post<OrderResponse>(`${API_URL}/api/Orders`, orderData, {
+    const response = await axios.post<OrderResponse>(`${API_URL}/Orders`, orderData, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
@@ -55,7 +55,7 @@ export const createOrder = async (orderData: CreateOrderDto, token: string): Pro
 
 export const getMyOrders = async (token: string): Promise<OrderDto[]> => {
   try {
-    const response = await axios.get<OrderDto[]>(`${API_URL}/api/Orders/my-orders`, {
+    const response = await axios.get<OrderDto[]>(`${API_URL}/Orders/my-orders`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -69,7 +69,7 @@ export const getMyOrders = async (token: string): Promise<OrderDto[]> => {
 
 export const getOrderById = async (orderId: string, token: string): Promise<OrderDto> => {
   try {
-    const response = await axios.get<OrderDto>(`${API_URL}/api/Orders/${orderId}`, {
+    const response = await axios.get<OrderDto>(`${API_URL}/Orders/${orderId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
