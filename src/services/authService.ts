@@ -115,7 +115,7 @@ export const authService = {
 
   async forgotPassword(data: ForgotPasswordRequest): Promise<{ message: string }> {
     try {
-      const response = await axios.post<{ message: string }>(`${API_URL}/auth/forgot-password`, data);
+      const response = await axios.post<{ message: string }>(`${API_URL}/auth/request-password-reset`, data);
       return response.data;
     } catch (error: any) {
       console.error('Forgot password error:', error.response?.data || error.message);

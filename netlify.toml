@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"  # Hoặc "yarn build" tùy vào bạn dùng gì
+  publish = "build"          # Thư mục chứa kết quả build của React
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
