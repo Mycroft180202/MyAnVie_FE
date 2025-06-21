@@ -32,19 +32,18 @@ const PaymentResult: React.FC = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+    const paymentMethod = params.get('paymentMethod');
     const vnp_ResponseCode = params.get('vnp_ResponseCode');
-    const vnp_TxnRef = params.get('vnp_TxnRef'); // Mã giao dịch của bạn
+    const vnp_TxnRef = params.get('vnp_TxnRef');
     const vnp_Amount = params.get('vnp_Amount');
     const vnp_OrderInfo = params.get('vnp_OrderInfo');
     const orderIdFromState = location.state?.orderId;
 
-    if (vnp_ResponseCode) {
-      const message = VNPAY_RESPONSE_CODES[vnp_ResponseCode] || 'Giao dịch không xác định';
-      setErrorMessage(message);
-
+    if (paymentMethod === '2') {
+      // Handle QR payment
       if (vnp_ResponseCode === '00') {
         setPaymentStatus('success');
-        toast.success('Thanh toán thành công!', {
+        toast.success('Thanh toán qua QR thành công!', {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -54,11 +53,10 @@ const PaymentResult: React.FC = () => {
         });
         setTransactionDetails({
           vnp_TxnRef,
-          vnp_Amount: vnp_Amount ? parseFloat(vnp_Amount) / 100 : 0, // VNPAY amount is in cents
+          vnp_Amount: vnp_Amount ? parseFloat(vnp_Amount) / 100 : 0,
           vnp_OrderInfo,
         });
 
-        // Try to fetch order details if orderId is available
         const extractedOrderId = vnp_OrderInfo?.split(' ').pop();
         const finalOrderId = orderIdFromState || extractedOrderId;
 
@@ -69,22 +67,11 @@ const PaymentResult: React.FC = () => {
             })
             .catch((err: any) => {
               console.error("Error fetching order details:", err);
-              // setErrorMessage("Không thể tải chi tiết đơn hàng.");
             });
         }
-      } else if (vnp_ResponseCode === '24') {
-        setPaymentStatus('cancelled');
-        toast.warning('Giao dịch đã bị hủy', {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
       } else {
         setPaymentStatus('failed');
-        toast.error(`Thanh toán thất bại: ${message}`, {
+        toast.error('Thanh toán qua QR thất bại!', {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -93,29 +80,12 @@ const PaymentResult: React.FC = () => {
           draggable: true,
         });
       }
-    } else if (orderIdFromState && location.state?.success) {
-      // For COD payments or direct success navigation
-      setPaymentStatus('success');
-      toast.success('Đặt hàng thành công!', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-      // Fetch order details for COD if needed
-      if (token) {
-        getOrderById(orderIdFromState, token)
-          .then((data: OrderDto) => {
-            setOrderInfo(data);
-          })
-          .catch((err: any) => {
-            console.error("Error fetching COD order details:", err);
-          });
-      }
+    } else if (paymentMethod === '1') {
+      // Handle VNPAY payment (maintenance mode)
+      setPaymentStatus('failed');
+      setErrorMessage('Phương thức thanh toán qua VNPAY đang bảo trì.');
     } else {
-      setPaymentStatus('failed'); // Default to failed if no clear status
+      setPaymentStatus('failed');
       setErrorMessage('Không tìm thấy thông tin giao dịch.');
     }
   }, [location.search, location.state, token]);
@@ -271,4 +241,4 @@ const PaymentResult: React.FC = () => {
   );
 };
 
-export default PaymentResult; 
+export default PaymentResult;

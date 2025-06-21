@@ -3,6 +3,7 @@ export const API_URL = 'http://localhost:5001';
 export const PAYMENT_METHODS = {
   COD: 0,
   VNPAY: 1,
+  QR:2,
 };
 
 export const VNPAY_RESPONSE_CODES: { [key: string]: string } = {

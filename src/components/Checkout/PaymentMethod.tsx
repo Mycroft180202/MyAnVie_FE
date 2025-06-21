@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import PaymentIcon from '@mui/icons-material/Payment';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
+import QrCodeIcon from '@mui/icons-material/QrCode';
 
 interface PaymentMethodProps {
   selectedMethod: string;
@@ -42,12 +43,23 @@ export const PaymentMethod: React.FC<PaymentMethodProps> = ({
             }
           />
           <FormControlLabel
+            value="QR"
+            control={<Radio />}
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <QrCodeIcon />
+                <Typography>Thanh toán qua QR</Typography>
+              </Box>
+            }
+          />
+          <FormControlLabel
             value="VNPAY"
+            disabled
             control={<Radio />}
             label={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <PaymentIcon />
-                <Typography>Thanh toán qua VNPAY</Typography>
+                <Typography>Thanh toán qua VNPAY (Đang bảo trì)</Typography>
               </Box>
             }
           />
@@ -55,4 +67,4 @@ export const PaymentMethod: React.FC<PaymentMethodProps> = ({
       </FormControl>
     </Paper>
   );
-}; 
+};

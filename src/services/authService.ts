@@ -101,7 +101,7 @@ export const authService = {
     
     try {
       // API /auth/me của backend cần trả về UserDto có role là number
-      const response = await axios.get<User>(`${API_URL}/auth/me`);
+      const response = await axios.get<User>(`${API_URL}/users/me`);
       return response.data;
     } catch (error: any) {
       // ... (xử lý lỗi như cũ) ...

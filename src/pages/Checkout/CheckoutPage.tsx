@@ -21,7 +21,6 @@ import ShoppingBasketOutlinedIcon from '@mui/icons-material/ShoppingBasketOutlin
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { ShippingForm } from '../../components/Checkout/ShippingForm';
-import { PaymentForm } from '../../components/Checkout/PaymentForm';
 import { LoadingSpinner } from '../../components/Common/LoadingSpinner';
 import { cartService, CartItem } from '../../services/cartService';
 import { createOrder, getMyOrders, getOrderById, CreateOrderDto, OrderResponse } from '../../services/orderService';
@@ -155,12 +154,12 @@ const CheckoutPage: React.FC = () => {
           productId: item.productId,
           quantity: item.quantity
         })),
-        paymentMethod: paymentMethod === 'VNPAY' ? PAYMENT_METHODS.VNPAY : PAYMENT_METHODS.COD
+        paymentMethod: paymentMethod === 'VNPAY' ? PAYMENT_METHODS.VNPAY : paymentMethod === 'QR' ? PAYMENT_METHODS.QR : PAYMENT_METHODS.COD
       };
 
       const response: OrderResponse = await createOrder(orderData, token);
-      
-      if (paymentMethod === 'VNPAY' && response.paymentUrl) {
+
+      if ((paymentMethod === 'VNPAY' || paymentMethod === 'QR') && response.paymentUrl) {
         window.location.href = response.paymentUrl;
       } else {
         toast.success('Đặt hàng thành công!');
@@ -364,7 +363,13 @@ const CheckoutPage: React.FC = () => {
               onClick={handleSubmit}
               disabled={isProcessingOrder}
             >
-              {isProcessingOrder ? 'Đang xử lý...' : paymentMethod === 'VNPAY' ? 'Thanh toán qua VNPAY' : 'Đặt hàng'}
+              {isProcessingOrder 
+                ? 'Đang xử lý...' 
+                : paymentMethod === 'VNPAY' 
+                  ? 'Thanh toán qua VNPAY' 
+                  : paymentMethod === 'QR'
+                    ? 'Thanh toán qua QR'
+                    : 'Đặt hàng'}
             </Button>
           </Paper>
         </Grid>

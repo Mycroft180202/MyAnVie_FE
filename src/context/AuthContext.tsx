@@ -47,14 +47,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const initAuth = async () => {
-      // Không cần setState isLoading ở đây nữa vì defaultAuthState đã là true
       try {
         const token = authService.getToken();
         if (token) {
-          authService.setAuthHeader(token); // Quan trọng: Set header cho axios TRƯỚC KHI gọi getCurrentUser
-          const user = await authService.getCurrentUser(); // getCurrentUser trong service đã xử lý logout nếu token không hợp lệ
-          
-          if (user) { // Nếu getCurrentUser trả về user (token hợp lệ)
+          authService.setAuthHeader(token);
+          const user = await authService.getCurrentUser();
+          if (user) {
             setState({
               user,
               token,
@@ -62,18 +60,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               isLoading: false,
               error: null,
             });
-          } else { 
-            // Token có trong localStorage nhưng không hợp lệ (getCurrentUser trả về null hoặc ném lỗi đã được xử lý trong service bằng cách logout)
-            // authService.logout() đã được gọi bên trong getCurrentUser nếu có lỗi 401/403
-            setState({ ...defaultAuthState, isLoading: false }); // Đặt lại state và dừng loading
+          } else {
+            setState({ ...defaultAuthState, isLoading: false });
           }
         } else {
-          // Không có token trong localStorage
-          setState({ ...defaultAuthState, isLoading: false }); // Đặt lại state và dừng loading
+          setState({ ...defaultAuthState, isLoading: false });
         }
-      } catch (error) { // Bắt lỗi từ authService.getCurrentUser nếu nó ném lỗi chưa được xử lý
-        console.error('Auth initialization error in context:', error);
-        authService.logout(); 
+      } catch (error) {
+        console.error('Error during authentication initialization:', error);
+        authService.logout();
         setState({ ...defaultAuthState, isLoading: false });
       }
     };

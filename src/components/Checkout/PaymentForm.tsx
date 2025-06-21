@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Typography, RadioGroup, FormControlLabel, Radio, TextField, Paper, Divider } from '@mui/material';
 
 interface PaymentFormData {
-  paymentMethod: 'cod' | 'banking';
+  paymentMethod: 'cod' | 'banking' | 'qr';
   bankName?: string;
   accountNumber?: string;
   accountName?: string;
@@ -38,9 +38,15 @@ export const PaymentForm: React.FC = () => {
             label="Thanh toán khi nhận hàng (COD)"
           />
           <FormControlLabel
+            value="qr"
+            control={<Radio />}
+            label="Thanh toán qua QR"
+          />
+          <FormControlLabel
             value="banking"
             control={<Radio />}
-            label="Chuyển khoản ngân hàng"
+            label="Chuyển khoản ngân hàng (Đang bảo trì)"
+            disabled
           />
         </RadioGroup>
 
@@ -77,4 +83,4 @@ export const PaymentForm: React.FC = () => {
       </Box>
     </Paper>
   );
-}; 
+};
