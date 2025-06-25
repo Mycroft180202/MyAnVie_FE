@@ -9,7 +9,7 @@ const bannerData: Record<string, { image: string; name: string; description: str
   'lụa': {
     image: '/images/products/Silk1.jpg',
     name: 'Lụa',
-    description: 'Những sản phẩm lụa cao cấp, mềm mại và sang trọng.',
+    description: 'Chào mừng bạn đến với danh mục sản phẩm lụa, nơi hội tụ vẻ đẹp tinh tế và giá trị văn hóa truyền thống của Việt Nam. Lụa của chúng tôi không chỉ là những món đồ thời trang mà còn là câu chuyện về sự khéo léo, tâm huyết của các nghệ nhân từ những làng nghề dệt lụa nổi tiếng, mang đến cho bạn trải nghiệm đẳng cấp và bền vững.',
   },
   'mây tre đan': {
     image: '/images/products/Bamboo1.jpg',
