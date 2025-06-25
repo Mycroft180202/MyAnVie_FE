@@ -54,18 +54,11 @@ const CheckoutPage: React.FC = () => {
   useEffect(() => {
     if (authLoading) return;
 
-    if (!isAuthenticated) {
-      toast.info('Vui lòng đăng nhập để tiến hành thanh toán.');
-      navigate('/login');
-    }
-  }, [isAuthenticated, authLoading, navigate]);
-
-  useEffect(() => {
     const fetchAndSetCartItems = async () => {
       console.log('CheckoutPage: useEffect triggered.');
       console.log('CheckoutPage: location.state received:', location.state);
 
-      if (!token) {
+      if (!isAuthenticated || !token) {
         toast.info('Vui lòng đăng nhập để tiến hành thanh toán');
         navigate('/login');
         return;
@@ -86,7 +79,7 @@ const CheckoutPage: React.FC = () => {
             productId: product.id,
             productName: product.name,
             productPrice: product.price,
-            productImage: product.imageUrl,
+            productImage: product.thumbnailUrl, // Sử dụng thumbnailUrl thay vì imageUrl
             quantity: state.quantity
           };
           console.log('CheckoutPage: Setting tempCartItem:', tempCartItem);
@@ -111,14 +104,8 @@ const CheckoutPage: React.FC = () => {
       }
     };
 
-    if (!isAuthenticated) {
-      toast.info('Vui lòng đăng nhập để tiến hành thanh toán');
-      navigate('/login');
-      return;
-    }
-
     fetchAndSetCartItems();
-  }, [isAuthenticated, token, navigate, location.state]);
+  }, [isAuthenticated, authLoading, token, navigate, location.state]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

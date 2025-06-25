@@ -104,10 +104,17 @@ const ProductDetailPage: React.FC = () => {
     try {
       console.log('Processing buy now:', { productId: product.id, quantity });
       await cartService.addToCart(product.id, quantity, token);
+      const tempCartItem = {
+        id: 'temp-' + product.id,
+        productId: product.id,
+        productName: product.name,
+        productPrice: product.price,
+        productImage: product.thumbnailUrl,
+        quantity: quantity
+      };
       navigate('/checkout', { 
         state: { 
-          productId: product.id,
-          quantity: quantity
+          cartItems: [tempCartItem]
         } 
       });
     } catch (error: any) {
