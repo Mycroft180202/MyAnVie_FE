@@ -99,6 +99,8 @@ const Header: React.FC = () => {
 
         <Link to="/news" className={styles.navLink}>{t.news}</Link>
         <Link to="/contact" className={styles.navLink}>{t.contact}</Link>
+        <Link to="/policy" className={styles.navLink}>{t.policy}</Link>
+
       </nav>
 
       {/* Action buttons */}
@@ -116,13 +118,17 @@ const Header: React.FC = () => {
             </button>
             {isUserMenuOpen && (
               <div className={styles.userDropdown}>
-                <Link to="/profile">Profile</Link>
-                <button onClick={handleLogout}>Logout</button>
+                <Link to="/profile">Thông tin cá nhân</Link>
+                {user.role === 1 && (
+                  <Link to="/admin">Quản trị</Link>
+                )}
+                <Link to="/orders">Đơn hàng của tôi</Link>
+                <button onClick={handleLogout}>Đăng xuất</button>
               </div>
             )}
           </div>
         ) : (
-          <Button onClick={handleLoginClick}>Login</Button>
+          <Button onClick={handleLoginClick}>Đăng Nhập</Button>
         )}
         <button className={styles.iconButton} onClick={() => setLanguage('vi')}>
           <img src={VNFlag} alt="Vietnamese" />
