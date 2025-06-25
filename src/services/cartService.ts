@@ -18,33 +18,6 @@ export interface Cart {
   totalPrice: number;
 }
 
-export const addToCart = async (productId: string, quantity: number, token: string): Promise<Cart> => {
-  try {
-    const response = await axios.post(`${API_URL}/cart/add`, {
-      productId,
-      quantity
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    return response.data;
-  } catch (error: any) {
-    console.error('Error adding to cart:', error);
-    throw new Error(error.response?.data?.message || 'Failed to add to cart');
-  }
-};
-
-export const getCart = async (): Promise<Cart> => {
-  try {
-    const response = await axios.get(`${API_URL}/cart`);
-    return response.data;
-  } catch (error) {
-    console.error('Error getting cart:', error);
-    throw error;
-  }
-};
-
 export const cartService = {
   async getMyCart(token: string): Promise<Cart> {
     try {
@@ -61,17 +34,29 @@ export const cartService = {
 
   async addToCart(productId: string, quantity: number, token: string): Promise<Cart> {
     try {
+      console.log('Adding to cart:', { productId, quantity, token: token ? 'Token exists' : 'No token' });
       const response = await axios.post<Cart>(`${API_URL}/cart/add`, {
         productId,
         quantity
       }, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
+      console.log('Add to cart response:', response.data);
       return response.data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to add to cart');
+      console.error('Error adding to cart:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+        stack: error.stack
+      });
+      if (error.response?.status === 401) {
+        throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+      }
+      throw new Error(error.response?.data?.message || 'Không thể thêm vào giỏ hàng');
     }
   },
 

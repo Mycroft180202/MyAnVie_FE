@@ -49,9 +49,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const initAuth = async () => {
       try {
         const token = authService.getToken();
+        console.log('Initial token:', token ? 'exists' : 'not found');
+        
         if (token) {
           authService.setAuthHeader(token);
           const user = await authService.getCurrentUser();
+          console.log('Current user:', user ? 'fetched' : 'not found');
+          
           if (user) {
             setState({
               user,
@@ -61,9 +65,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               error: null,
             });
           } else {
+            console.log('No user found, clearing auth state');
+            authService.logout();
             setState({ ...defaultAuthState, isLoading: false });
           }
         } else {
+          console.log('No token found, setting default state');
           setState({ ...defaultAuthState, isLoading: false });
         }
       } catch (error) {
@@ -80,6 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
       const { user, token } = await authService.login(credentials);
+      console.log('Login successful, token:', token ? 'received' : 'missing');
       
       setState({
         user,
@@ -89,6 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         error: null,
       });
     } catch (error) {
+      console.error('Login error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Đăng nhập thất bại';
       setState(prev => ({
         ...defaultAuthState,

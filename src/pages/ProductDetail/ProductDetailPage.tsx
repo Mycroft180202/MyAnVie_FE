@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { productService, Product } from '../../services/productService';
-import { addToCart } from '../../store/slices/cartSlice';
 import { toast } from 'react-toastify';
 import ProductTabSection from './Section/ProductTabSection';
 import RelatedProductsSection from './Section/RelatedProductsSection';
@@ -56,11 +55,14 @@ const ProductDetailPage: React.FC = () => {
   }, [id]);
 
   const handleAddToCart = async () => {
-    if (!product || !token) return;
-    
     if (!isAuthenticated) {
       toast.info('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.');
       navigate('/login');
+      return;
+    }
+
+    if (!product || !token) {
+      toast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
       return;
     }
 
@@ -68,18 +70,20 @@ const ProductDetailPage: React.FC = () => {
       await cartService.addToCart(product.id, quantity, token);
       toast.success('Đã thêm vào giỏ hàng');
     } catch (error: any) {
-      toast.error(error.message || 'Không thể thêm vào giỏ hàng');
       console.error('Error adding to cart:', error);
+      toast.error(error.message || 'Không thể thêm vào giỏ hàng');
     }
   };
 
   const handleBuyNow = async () => {
-    console.log('ProductDetailPage: handleBuyNow called.');
-    if (!product || !token) return;
-    
     if (!isAuthenticated) {
       toast.info('Vui lòng đăng nhập để mua ngay.');
       navigate('/login');
+      return;
+    }
+
+    if (!product || !token) {
+      toast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
       return;
     }
 
