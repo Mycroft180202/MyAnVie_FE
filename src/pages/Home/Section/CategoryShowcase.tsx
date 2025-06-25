@@ -11,7 +11,7 @@ const categories = [
   },
   {
     id: 2,
-    image: '/images/ActualProduct/lua1.png',
+    image: '/images/ActualProduct/luahoasen.png',
     title: 'Cô gái bên đầm sen \n từ lụa hà đông',
     description:
       'Từ những sợi tơ tằm óng ả được nuôi dưỡng bởi lá dâu xanh, qua đôi tay khéo léo của người nghệ nhân dệt vải, mỗi tấm lụa MYANVIE là một dòng chảy của vẻ đẹp mềm mại và thanh lịch. Chúng tôi không chỉ tạo ra những khổ vải, mà còn dệt nên những câu chuyện văn hóa, những nét duyên thầm của người phụ nữ Việt. Khoác lên mình tấm lụa MYANVIE không chỉ là mặc một trang phục, mà là mang theo cả một di sản, một sự khẳng định về vẻ đẹp tinh tế, sang trọng và đầy cuốn hút vượt thời gian.',
