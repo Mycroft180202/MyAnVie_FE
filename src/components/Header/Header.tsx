@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../store/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
@@ -22,6 +22,9 @@ const Header: React.FC = () => {
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const navigate = useNavigate();
 
+  const shopDropdownRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -37,6 +40,24 @@ const Header: React.FC = () => {
     };
 
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Handle shop dropdown
+      if (shopDropdownRef.current && !shopDropdownRef.current.contains(event.target as Node)) {
+        setShopDropdownOpen(false);
+      }
+      // Handle user menu dropdown
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const handleLoginClick = () => {
@@ -66,6 +87,14 @@ const Header: React.FC = () => {
     return subCategories.filter(sub => sub.categoryId === categoryId);
   };
 
+  const handleCategoryClick = () => {
+    setShopDropdownOpen(false);
+  };
+
+  const handleUserMenuItemClick = () => {
+    setUserMenuOpen(false);
+  };
+
   return (
     <header className={styles.headerContainer}>
       {/* Logo */}
@@ -80,8 +109,8 @@ const Header: React.FC = () => {
         <Link to="/about" className={styles.navLink}>{t.about}</Link>
 
         {/* Dropdown shop */}
-        <div className={styles.dropdownWrapper} onClick={toggleShopDropdown}>
-          <button className={styles.navLink}>{t.shop}</button>
+        <div className={styles.dropdownWrapper} ref={shopDropdownRef}>
+          <button className={styles.navLink} onClick={toggleShopDropdown}>{t.shop}</button>
           {isShopDropdownOpen && (
             <div className={styles.dropdownMenu}>
               {categories.map((category) => (
@@ -89,6 +118,7 @@ const Header: React.FC = () => {
                   key={category.id}
                   to={`/shop/${category.name.toLowerCase()}`}
                   className={styles.categoryLink}
+                  onClick={handleCategoryClick}
                 >
                   {category.name}
                 </Link>
@@ -100,7 +130,6 @@ const Header: React.FC = () => {
         <Link to="/news" className={styles.navLink}>{t.news}</Link>
         <Link to="/contact" className={styles.navLink}>{t.contact}</Link>
         <Link to="/policy" className={styles.navLink}>{t.policy}</Link>
-
       </nav>
 
       {/* Action buttons */}
@@ -112,17 +141,17 @@ const Header: React.FC = () => {
           <img src={CartIcon} alt="Cart" />
         </button>
         {user ? (
-          <div className={styles.userMenu}>
+          <div className={styles.userMenu} ref={userMenuRef}>
             <button className={styles.iconButton} onClick={toggleUserMenu}>
               <img src={'/images/AboutUs/Nhật.jpg'} alt="User" className={styles.userAvatar} />
             </button>
             {isUserMenuOpen && (
               <div className={styles.userDropdown}>
-                <Link to="/profile">Thông tin cá nhân</Link>
+                <Link to="/profile" onClick={handleUserMenuItemClick}>Thông tin cá nhân</Link>
                 {user.role === 1 && (
-                  <Link to="/admin">Quản trị</Link>
+                  <Link to="/admin" onClick={handleUserMenuItemClick}>Quản trị</Link>
                 )}
-                <Link to="/orders">Đơn hàng của tôi</Link>
+                <Link to="/orders" onClick={handleUserMenuItemClick}>Đơn hàng của tôi</Link>
                 <button onClick={handleLogout}>Đăng xuất</button>
               </div>
             )}

@@ -1,7 +1,8 @@
 import { Box, Container } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { categoryService, SubCategory, Category } from '../../services/categoryService';
+import { categoryService } from '../../services/categoryService';
+import { FilterOptions } from './Section/ShopFilter';
 
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import ShopBanner from './Section/ShopBanner';
@@ -10,11 +11,18 @@ import ShopFilter from './Section/ShopFilter';
 import ShopProductList from './Section/ShopProductList';
 import ShopPagination from './Section/ShopPagination';
 
+interface SubCategory {
+  id: string;
+  name: string;
+  categoryId: string;
+}
+
 const ShopPage = () => {
   const { category = 'pottery', subCategoryId } = useParams<{ category: string; subCategoryId?: string }>();
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>('');
   const [currentCategoryId, setCurrentCategoryId] = useState<string | null>(null);
+  const [filters, setFilters] = useState<FilterOptions>({});
 
   const normalizedCategory = category.toLowerCase();
 
@@ -54,6 +62,10 @@ const ShopPage = () => {
     setSelectedSubCategory(subCategoryId);
   };
 
+  const handleFilterChange = (newFilters: FilterOptions) => {
+    setFilters(newFilters);
+  };
+
   return (
     <Box>
       <Container maxWidth="lg" sx={{ pt: -1, ml: 15 }}>
@@ -82,10 +94,11 @@ const ShopPage = () => {
               onTabChange={handleSubCategoryChange}
             />
           )}
-          <ShopFilter />
+          <ShopFilter onFilterChange={handleFilterChange} />
           <ShopProductList
             categoryId={currentCategoryId}
             subCategoryId={selectedSubCategory}
+            filters={filters}
           />
           <ShopPagination />
         </Container>
