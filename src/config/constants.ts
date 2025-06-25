@@ -1,4 +1,4 @@
-export const API_URL = 'https://myanviebe.onrender.com/api';
+export const API_URL = 'https://myanvie.up.railway.app/api';
 
 export const PAYMENT_METHODS = {
   COD: 0,
