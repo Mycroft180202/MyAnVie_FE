@@ -1,69 +1,82 @@
-import React, { useState } from 'react';
-import { Box, Container, Typography, Tabs, Tab } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Container, Typography, Tabs, Tab, CircularProgress, Alert } from '@mui/material';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import OrderCard from '../../components/Orders/OrderCard';
 import { Order } from '../../types/order';
+import { getMyOrders, OrderDto } from '../../services/orderService';
+import { useAuth } from '../../context/AuthContext';
 
-// Mock data - sẽ thay thế bằng API call sau
-const mockOrders: Order[] = [
-  {
-    id: "ORD001",
-    userId: "user1",
-    orderDate: "2025-05-30",
-    status: "pending",
-    totalAmount: 1500000,
-    shippingAddress: {
-      fullName: "Nguyễn Văn A",
-      phone: "0123456789",
-      address: "123 Đường ABC",
-      city: "Hà Nội"
-    },
-    items: [
-      {
-        id: "ITEM001",
-        productId: "PROD001",
-        name: "Bình gốm Bát Tràng",
-        image: "/images/products/Pottery1.jpg",
-        price: 500000,
-        quantity: 2
-      }
-    ]
-  },
-  {
-    id: "ORD002",
-    userId: "user1",
-    orderDate: "2025-05-29",
-    status: "delivered",
-    totalAmount: 800000,
-    shippingAddress: {
-      fullName: "Nguyễn Văn A",
-      phone: "0123456789",
-      address: "123 Đường ABC",
-      city: "Hà Nội"
-    },
-    items: [
-      {
-        id: "ITEM002",
-        productId: "PROD002",
-        name: "Khăn lụa Vạn Phúc",
-        image: "/images/products/Silk1.jpg",
-        price: 800000,
-        quantity: 1
-      }
-    ]
+// Map status number from API to string for frontend
+const mapOrderStatus = (status: number): Order['status'] => {
+  switch (status) {
+    case 0: return 'pending';
+    case 1: return 'processing';
+    case 2: return 'shipped';
+    case 3: return 'delivered';
+    case 4: return 'cancelled';
+    default: return 'pending';
   }
-];
+};
+
+// Transform OrderDto to Order type
+const transformOrder = (orderDto: OrderDto): Order => {
+  return {
+    id: orderDto.id,
+    userId: orderDto.userId,
+    orderDate: orderDto.orderDate,
+    status: mapOrderStatus(orderDto.status),
+    totalAmount: orderDto.totalAmount,
+    shippingAddress: {
+      fullName: orderDto.customerFullName,
+      address: orderDto.shippingAddress,
+      phone: '', // These fields might need to be added to the API response
+      city: ''
+    },
+    items: orderDto.orderItems.map(item => ({
+      id: item.id,
+      productId: item.productId,
+      name: item.productName,
+      image: item.productThumbnailUrl,
+      price: item.price,
+      quantity: item.quantity
+    }))
+  };
+};
 
 const OrdersPage = () => {
   const [tabValue, setTabValue] = useState<string>('all');
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { token } = useAuth();
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (!token) return;
+      
+      try {
+        setIsLoading(true);
+        setError(null);
+        const ordersData = await getMyOrders(token);
+        const transformedOrders = ordersData.map(transformOrder);
+        setOrders(transformedOrders);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải đơn hàng');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [token]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
 
   const getFilteredOrders = () => {
-    if (tabValue === 'all') return mockOrders;
-    return mockOrders.filter(order => order.status === tabValue);
+    if (tabValue === 'all') return orders;
+    return orders.filter(order => order.status === tabValue);
   };
 
   return (
@@ -85,6 +98,12 @@ const OrdersPage = () => {
         }}>
           Đơn hàng của tôi
         </Typography>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
 
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
           <Tabs 
@@ -109,17 +128,25 @@ const OrdersPage = () => {
         </Box>
 
         <Box sx={{ mb: 4 }}>
-          {getFilteredOrders().map((order) => (
-            <OrderCard 
-              key={order.id} 
-              order={order}
-              onClick={() => console.log('Order clicked:', order.id)}
-            />
-          ))}
-          {getFilteredOrders().length === 0 && (
-            <Typography variant="body1" sx={{ textAlign: 'center', mt: 4, color: 'text.secondary' }}>
-              Không có đơn hàng nào trong mục này
-            </Typography>
+          {isLoading ? (
+            <Box display="flex" justifyContent="center" my={4}>
+              <CircularProgress sx={{ color: '#950B0B' }} />
+            </Box>
+          ) : (
+            <>
+              {getFilteredOrders().map((order) => (
+                <OrderCard 
+                  key={order.id} 
+                  order={order}
+                  onClick={() => console.log('Order clicked:', order.id)}
+                />
+              ))}
+              {getFilteredOrders().length === 0 && (
+                <Typography variant="body1" sx={{ textAlign: 'center', mt: 4, color: 'text.secondary' }}>
+                  Không có đơn hàng nào trong mục này
+                </Typography>
+              )}
+            </>
           )}
         </Box>
       </Container>
