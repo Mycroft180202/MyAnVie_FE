@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,6 +11,7 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+import OrderSuccessPage from './pages/Checkout/OrderSuccessPage';
 
 const theme = createTheme({
   palette: {
@@ -55,7 +56,10 @@ const App: React.FC = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Router>
-          <AppContent />
+          <Routes>
+            <Route path="/*" element={<AppContent />} />
+            <Route path="/order-success" element={<OrderSuccessPage />} />
+          </Routes>
           <ToastContainer
             position="top-right"
             autoClose={3000}

@@ -149,14 +149,10 @@ const CheckoutPage: React.FC = () => {
       if ((paymentMethod === 'VNPAY' || paymentMethod === 'QR') && response.paymentUrl) {
         window.location.href = response.paymentUrl;
       } else {
+        // Đối với COD, chuyển hướng đến trang OrderSuccessPage
         toast.success('Đặt hàng thành công!');
         await cartService.clearCart(token);
-        navigate('/payment-result', {
-          state: {
-            success: true,
-            orderId: response.order.id
-          }
-        });
+        navigate('/order-success');
       }
     } catch (error: any) {
       console.error('Error creating order:', error);
