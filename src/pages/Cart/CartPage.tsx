@@ -153,7 +153,7 @@ const CartPage = () => {
 
               <Button
                 component={Link}
-                to="/shop"
+                to="/"
                 startIcon={<KeyboardBackspaceIcon />}
                 sx={{ mt: 4, textTransform: 'none' }}
               >
@@ -165,7 +165,7 @@ const CartPage = () => {
               <CartSummary
                 subtotal={subtotal}
                 shipping={shipping}
-                total={total}
+                total={total + shipping}
                 onCheckout={handleCheckout}
               />
             </Grid>
