@@ -48,7 +48,7 @@ const ProductTabSection: React.FC<ProductTabSectionProps> = ({ product }) => {
             <Grid item xs={12} md={12}>
               {/* Phần giới thiệu sản phẩm */}
               <Typography variant="h6" sx={{ mb: 3, color: '#950B0B', fontWeight: 600 }}>
-                {product.name} là sản phẩm thuộc danh mục {product.categoryName}
+                {product.name}
               </Typography>
               <Typography sx={{ mb: 4 }}>
                 {product.description}
