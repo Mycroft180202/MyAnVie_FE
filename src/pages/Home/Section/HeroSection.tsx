@@ -1,5 +1,6 @@
 import { Box, Container, Button, IconButton } from '@mui/material';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -8,6 +9,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import '../Styles/HeroSection.css'; 
 
 const HeroSection = () => {
+  const navigate = useNavigate();
   const [slider, setSlider] = useState<Slider | null>(null);
 
   const settings = {
@@ -119,6 +121,7 @@ const HeroSection = () => {
                   </Box>
                   <Button
                     variant="contained"
+                    onClick={() => navigate('/shop/lụa')}
                     sx={{
                       bgcolor: '#F7B463',
                       color: 'black',

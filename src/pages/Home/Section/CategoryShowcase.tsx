@@ -1,4 +1,5 @@
 import { Box, Button, Container, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const categories = [
   {
@@ -43,16 +44,17 @@ const features = [
 ];
 
 const CategoryShowcase = () => {
+  const navigate = useNavigate();
+
   return (
     <Box
       sx={{
         background: '#f5f5dc',
         position: 'relative',
         overflow: 'hidden',
-        mt:-1
+        mt: -1,
       }}
     >
-      
       <Container maxWidth="lg" sx={{ py: 10, position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <Box sx={{ textAlign: 'center', mb: 8 }}>
@@ -268,6 +270,7 @@ const CategoryShowcase = () => {
                 </Box>
                 <Button
                   variant="contained"
+                  onClick={() => navigate('/shop/lụa')}
                   sx={{
                     bgcolor: '#950B0B',
                     borderRadius: '100px',
