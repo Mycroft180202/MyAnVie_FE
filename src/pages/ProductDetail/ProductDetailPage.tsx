@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { productService, Product } from '../../services/productService';
-import { toast } from 'react-toastify';
+ import { toast } from 'react-toastify';
 import ProductTabSection from './Section/ProductTabSection';
 import RelatedProductsSection from './Section/RelatedProductsSection';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
@@ -56,38 +56,53 @@ const ProductDetailPage: React.FC = () => {
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
+      console.log('User not authenticated, redirecting to login');
       toast.info('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.');
-      navigate('/login');
+      navigate('/login', { 
+        state: { from: `/product/${id}` } 
+      });
       return;
     }
 
     if (!product || !token) {
+      console.error('Product or token missing:', { hasProduct: !!product, hasToken: !!token });
       toast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
       return;
     }
 
     try {
+      console.log('Adding product to cart:', { productId: product.id, quantity });
       await cartService.addToCart(product.id, quantity, token);
       toast.success('Đã thêm vào giỏ hàng');
     } catch (error: any) {
-      console.error('Error adding to cart:', error);
+      console.error('Add to cart error:', error);
+      if (error.message.includes('Phiên đăng nhập đã hết hạn')) {
+        navigate('/login', { 
+          state: { from: `/product/${id}` } 
+        });
+      }
       toast.error(error.message || 'Không thể thêm vào giỏ hàng');
     }
   };
 
   const handleBuyNow = async () => {
     if (!isAuthenticated) {
+      console.log('User not authenticated, redirecting to login');
       toast.info('Vui lòng đăng nhập để mua ngay.');
-      navigate('/login');
+      navigate('/login', { 
+        state: { from: `/product/${id}` } 
+      });
       return;
     }
 
     if (!product || !token) {
+      console.error('Product or token missing:', { hasProduct: !!product, hasToken: !!token });
       toast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
       return;
     }
 
     try {
+      console.log('Processing buy now:', { productId: product.id, quantity });
       await cartService.addToCart(product.id, quantity, token);
       navigate('/checkout', { 
         state: { 
@@ -96,8 +111,13 @@ const ProductDetailPage: React.FC = () => {
         } 
       });
     } catch (error: any) {
-      toast.error(error.message || 'Không thể thêm vào giỏ hàng');
-      console.error('Error adding to cart:', error);
+      console.error('Buy now error:', error);
+      if (error.message.includes('Phiên đăng nhập đã hết hạn')) {
+        navigate('/login', { 
+          state: { from: `/product/${id}` } 
+        });
+      }
+      toast.error(error.message || 'Không thể xử lý yêu cầu mua ngay');
     }
   };
 

@@ -25,17 +25,20 @@ export const authService = {
       });
       
       const { token, user } = response.data;
+      console.log('Login response:', { hasToken: !!token, hasUser: !!user });
 
       if (token) {
         localStorage.setItem('token', token);
         this.setAuthHeader(token);
       }
-      localStorage.removeItem('refreshToken'); 
 
       return { user, token }; 
-
     } catch (error: any) {
-      console.error('Login error:', error.response?.data || error.message);
+      console.error('Login error:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
       throw new Error(error.response?.data?.message || 'Email hoặc mật khẩu không chính xác.');
     }
   },
@@ -70,16 +73,19 @@ export const authService = {
   },
 
   logout(): void {
+    console.log('Logging out, clearing token');
     localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
     delete axios.defaults.headers.common['Authorization'];
   },
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    console.log('Getting token from localStorage:', token ? 'exists' : 'not found');
+    return token;
   },
 
   setAuthHeader(token: string | null): void {
+    console.log('Setting auth header:', token ? 'with token' : 'removing token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } else {
