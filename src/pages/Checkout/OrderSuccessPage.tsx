@@ -36,7 +36,7 @@ const OrderSuccessPage = () => {
           
           <Button
             component={RouterLink}
-            to="/shop"
+            to="/shop/lụa"
             variant="contained"
             color="error"
             sx={{ textTransform: 'none' }}
