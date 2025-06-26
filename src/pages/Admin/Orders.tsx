@@ -188,6 +188,7 @@ const Orders = () => {
               <TableCell>Mã đơn</TableCell>
               <TableCell>Khách hàng</TableCell>
               <TableCell>Email</TableCell>
+              <TableCell>Số điện thoại</TableCell>
               <TableCell>Ngày đặt</TableCell>
               <TableCell align="right">Tổng tiền</TableCell>
               <TableCell>Trạng thái</TableCell>
@@ -200,6 +201,7 @@ const Orders = () => {
                 <TableCell>#{order.id.slice(0, 8)}</TableCell>
                 <TableCell>{order.customerFullName}</TableCell>
                 <TableCell>{order.customerEmail}</TableCell>
+                <TableCell>{order.customerPhone}</TableCell>
                 <TableCell>
                   {dayjs(order.orderDate).format('DD/MM/YYYY HH:mm')}
                 </TableCell>
@@ -242,6 +244,7 @@ const Orders = () => {
                   </Typography>
                   <Typography>Khách hàng: {selectedOrder.customerFullName}</Typography>
                   <Typography>Email: {selectedOrder.customerEmail}</Typography>
+                  <Typography>Số điện thoại: {selectedOrder.customerPhone}</Typography>
                   <Typography>
                     Ngày đặt: {dayjs(selectedOrder.orderDate).format('DD/MM/YYYY HH:mm')}
                   </Typography>

@@ -26,6 +26,7 @@ export interface OrderDto {
   userId: string;
   customerFullName: string;
   customerEmail: string;
+  customerPhone: string; // Thêm trường số điện thoại
   orderDate: string;
   totalAmount: number;
   shippingAddress: string;
@@ -79,4 +80,4 @@ export const getOrderById = async (orderId: string, token: string): Promise<Orde
   } catch (error: any) {
     throw new Error(error.response?.data?.message || 'Failed to fetch order');
   }
-}; 
+};
