@@ -38,10 +38,10 @@ const PaymentResult: React.FC = () => {
     const vnp_Amount = params.get('vnp_Amount');
     const vnp_OrderInfo = params.get('vnp_OrderInfo');
     const orderIdFromState = location.state?.orderId;
-
+    const status = params.get('status');
     if (paymentMethod === '2') {
       // Handle QR payment
-      if (vnp_ResponseCode === '00') {
+      if (status === 'PAID') {
         setPaymentStatus('success');
         toast.success('Thanh toán qua QR thành công!', {
           position: "top-right",
@@ -69,7 +69,8 @@ const PaymentResult: React.FC = () => {
               console.error("Error fetching order details:", err);
             });
         }
-      } else {
+      } else if(status === 'CANCELLED')
+      {
         setPaymentStatus('failed');
         toast.error('Thanh toán qua QR thất bại!', {
           position: "top-right",
