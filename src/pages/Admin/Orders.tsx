@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Card,
@@ -32,107 +32,64 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
 import AdminLayout from '../../layouts/AdminLayout';
-import { OrderDto } from '../../services/orderService';
-import axios from 'axios';
-import { API_URL } from '../../config/constants';
+
+// Mock data - replace with API calls
+const mockOrders = [
+  {
+    id: 1,
+    customerName: 'Nguyễn Văn A',
+    date: '2025-05-15',
+    products: [
+      { name: 'Bình gốm hoa văn', quantity: 2, price: 1500000 },
+      { name: 'Khăn lụa thêu tay', quantity: 1, price: 800000 },
+    ],
+    total: 3800000,
+    status: 'delivered',
+    paymentMethod: 'COD',
+    shippingAddress: 'Số 123 Đường ABC, Quận XYZ, Hà Nội',
+  },
+  {
+    id: 2,
+    customerName: 'Trần Thị B',
+    date: '2025-05-10',
+    products: [
+      { name: 'Giỏ tre đan', quantity: 3, price: 450000 },
+    ],
+    total: 1350000,
+    status: 'processing',
+    paymentMethod: 'Banking',
+    shippingAddress: 'Số 456 Đường DEF, Quận UVW, Hồ Chí Minh',
+  },
+];
 
 const Orders = () => {
-  const [orders, setOrders] = useState<OrderDto[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState<OrderDto | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
   const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get<OrderDto[]>(`${API_URL}/Orders`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      setOrders(response.data);
-      setLoading(false);
-    } catch (error: any) {
-      setError(error.message);
-      setLoading(false);
-    }
-  };
-
-  const getStatusLabel = (status: number) => {
-    switch (status) {
-      case 0:
-        return 'Đang xử lý';
-      case 1:
-        return 'Đang giao';
-      case 2:
-        return 'Đã giao';
-      case 3:
-        return 'Đã hủy';
-      default:
-        return 'Không xác định';
-    }
-  };
-
-  const getStatusColor = (status: number) => {
-    switch (status) {
-      case 0:
-        return 'warning';
-      case 1:
-        return 'info';
-      case 2:
-        return 'success';
-      case 3:
-        return 'error';
-      default:
-        return 'default';
-    }
-  };
-
-  const handleOpenDialog = (order: OrderDto) => {
+  const handleOpenDialog = (order: any) => {
     setSelectedOrder(order);
     setOpenDialog(true);
   };
 
-  const handleStatusChange = async (orderId: string, newStatus: number) => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.put(
-        `${API_URL}/Orders/${orderId}/status`,
-        { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      fetchOrders();
-    } catch (error) {
-      console.error('Error updating order status:', error);
-    }
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedOrder(null);
   };
 
-  const filteredOrders = orders.filter((order) => {
-    if (filterStatus !== 'all' && order.status !== parseInt(filterStatus))
-      return false;
-    if (startDate && dayjs(order.orderDate).isBefore(startDate, 'day'))
-      return false;
-    if (endDate && dayjs(order.orderDate).isAfter(endDate, 'day')) return false;
+  const handleStatusChange = (orderId: number, newStatus: string) => {
+    // In a real app, this would make an API call
+    console.log('Changing status for order:', orderId, 'to:', newStatus);
+  };
+
+  const filteredOrders = mockOrders.filter((order) => {
+    if (filterStatus !== 'all' && order.status !== filterStatus) return false;
+    if (startDate && dayjs(order.date).isBefore(startDate, 'day')) return false;
+    if (endDate && dayjs(order.date).isAfter(endDate, 'day')) return false;
     return true;
   });
-
-  if (loading) return <Box sx={{ p: 3 }}>Đang tải...</Box>;
-  if (error)
-    return <Box sx={{ p: 3, color: 'error.main' }}>Lỗi: {error}</Box>;
 
   return (
     <AdminLayout>
@@ -148,10 +105,10 @@ const Orders = () => {
                 onChange={(e) => setFilterStatus(e.target.value)}
               >
                 <MenuItem value="all">Tất cả</MenuItem>
-                <MenuItem value="0">Đang xử lý</MenuItem>
-                <MenuItem value="1">Đang giao</MenuItem>
-                <MenuItem value="2">Đã giao</MenuItem>
-                <MenuItem value="3">Đã hủy</MenuItem>
+                <MenuItem value="processing">Đang xử lý</MenuItem>
+                <MenuItem value="shipped">Đang giao</MenuItem>
+                <MenuItem value="delivered">Đã giao</MenuItem>
+                <MenuItem value="cancelled">Đã hủy</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -187,9 +144,8 @@ const Orders = () => {
             <TableRow>
               <TableCell>Mã đơn</TableCell>
               <TableCell>Khách hàng</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Số điện thoại</TableCell>
               <TableCell>Ngày đặt</TableCell>
+              <TableCell>Sản phẩm</TableCell>
               <TableCell align="right">Tổng tiền</TableCell>
               <TableCell>Trạng thái</TableCell>
               <TableCell align="right">Thao tác</TableCell>
@@ -198,20 +154,37 @@ const Orders = () => {
           <TableBody>
             {filteredOrders.map((order) => (
               <TableRow key={order.id}>
-                <TableCell>#{order.id.slice(0, 8)}</TableCell>
-                <TableCell>{order.customerFullName}</TableCell>
-                <TableCell>{order.customerEmail}</TableCell>
-                <TableCell>{order.customerPhone}</TableCell>
+                <TableCell>#{order.id}</TableCell>
+                <TableCell>{order.customerName}</TableCell>
+                <TableCell>{order.date}</TableCell>
                 <TableCell>
-                  {dayjs(order.orderDate).format('DD/MM/YYYY HH:mm')}
+                  {order.products
+                    .map((p) => `${p.name} (${p.quantity})`)
+                    .join(', ')}
                 </TableCell>
                 <TableCell align="right">
-                  {order.totalAmount.toLocaleString('vi-VN')} ₫
+                  {order.total.toLocaleString('vi-VN')} ₫
                 </TableCell>
                 <TableCell>
                   <Chip
-                    label={getStatusLabel(order.status)}
-                    color={getStatusColor(order.status) as any}
+                    label={
+                      order.status === 'delivered'
+                        ? 'Đã giao'
+                        : order.status === 'processing'
+                        ? 'Đang xử lý'
+                        : order.status === 'shipped'
+                        ? 'Đang giao'
+                        : 'Đã hủy'
+                    }
+                    color={
+                      order.status === 'delivered'
+                        ? 'success'
+                        : order.status === 'processing'
+                        ? 'warning'
+                        : order.status === 'shipped'
+                        ? 'info'
+                        : 'error'
+                    }
                     size="small"
                   />
                 </TableCell>
@@ -227,13 +200,8 @@ const Orders = () => {
       </TableContainer>
 
       {/* Order Detail Dialog */}
-      <Dialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>Chi tiết đơn hàng #{selectedOrder?.id.slice(0, 8)}</DialogTitle>
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+        <DialogTitle>Chi tiết đơn hàng #{selectedOrder?.id}</DialogTitle>
         <DialogContent>
           {selectedOrder && (
             <Box>
@@ -242,11 +210,10 @@ const Orders = () => {
                   <Typography variant="h6" gutterBottom>
                     Thông tin đơn hàng
                   </Typography>
-                  <Typography>Khách hàng: {selectedOrder.customerFullName}</Typography>
-                  <Typography>Email: {selectedOrder.customerEmail}</Typography>
-                  <Typography>Số điện thoại: {selectedOrder.customerPhone}</Typography>
+                  <Typography>Khách hàng: {selectedOrder.customerName}</Typography>
+                  <Typography>Ngày đặt: {selectedOrder.date}</Typography>
                   <Typography>
-                    Ngày đặt: {dayjs(selectedOrder.orderDate).format('DD/MM/YYYY HH:mm')}
+                    Phương thức thanh toán: {selectedOrder.paymentMethod}
                   </Typography>
                   <Typography>
                     Địa chỉ giao hàng: {selectedOrder.shippingAddress}
@@ -262,13 +229,13 @@ const Orders = () => {
                       value={selectedOrder.status}
                       label="Trạng thái"
                       onChange={(e) =>
-                        handleStatusChange(selectedOrder.id, Number(e.target.value))
+                        handleStatusChange(selectedOrder.id, e.target.value)
                       }
                     >
-                      <MenuItem value={0}>Đang xử lý</MenuItem>
-                      <MenuItem value={1}>Đang giao</MenuItem>
-                      <MenuItem value={2}>Đã giao</MenuItem>
-                      <MenuItem value={3}>Đã hủy</MenuItem>
+                      <MenuItem value="processing">Đang xử lý</MenuItem>
+                      <MenuItem value="shipped">Đang giao</MenuItem>
+                      <MenuItem value="delivered">Đã giao</MenuItem>
+                      <MenuItem value="cancelled">Đã hủy</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -282,43 +249,34 @@ const Orders = () => {
                   <TableHead>
                     <TableRow>
                       <TableCell>Sản phẩm</TableCell>
-                      <TableCell>Hình ảnh</TableCell>
                       <TableCell align="right">Số lượng</TableCell>
                       <TableCell align="right">Đơn giá</TableCell>
                       <TableCell align="right">Thành tiền</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {selectedOrder.orderItems.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell>{item.productName}</TableCell>
-                        <TableCell>
-                          <img
-                            src={item.productThumbnailUrl}
-                            alt={item.productName}
-                            style={{
-                              width: '50px',
-                              height: '50px',
-                              objectFit: 'cover',
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell align="right">{item.quantity}</TableCell>
+                    {selectedOrder.products.map((product: any, index: number) => (
+                      <TableRow key={index}>
+                        <TableCell>{product.name}</TableCell>
+                        <TableCell align="right">{product.quantity}</TableCell>
                         <TableCell align="right">
-                          {item.price.toLocaleString('vi-VN')} ₫
+                          {product.price.toLocaleString('vi-VN')} ₫
                         </TableCell>
                         <TableCell align="right">
-                          {(item.price * item.quantity).toLocaleString('vi-VN')} ₫
+                          {(product.price * product.quantity).toLocaleString(
+                            'vi-VN'
+                          )}{' '}
+                          ₫
                         </TableCell>
                       </TableRow>
                     ))}
                     <TableRow>
-                      <TableCell colSpan={4}>
+                      <TableCell colSpan={3}>
                         <Typography variant="subtitle1">Tổng cộng</Typography>
                       </TableCell>
                       <TableCell align="right">
                         <Typography variant="subtitle1">
-                          {selectedOrder.totalAmount.toLocaleString('vi-VN')} ₫
+                          {selectedOrder.total.toLocaleString('vi-VN')} ₫
                         </Typography>
                       </TableCell>
                     </TableRow>
