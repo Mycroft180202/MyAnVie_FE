@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -15,76 +16,48 @@ import {
   DialogContent,
   Chip,
   TablePagination,
+  CircularProgress,
 } from '@mui/material';
 import {
   Visibility as VisibilityIcon,
-  Block as BlockIcon,
 } from '@mui/icons-material';
 import AdminLayout from '../../layouts/AdminLayout';
-
-// Mock data - replace with API calls
-const mockUsers = [
-  {
-    id: 1,
-    username: 'nguyenvana',
-    fullName: 'Nguyễn Văn A',
-    email: 'nguyenvana@example.com',
-    age: 35,
-    totalOrders: 15,
-    totalSpent: 45000000,
-    status: 'active',
-  },
-  {
-    id: 2,
-    username: 'tranthib',
-    fullName: 'Trần Thị B',
-    email: 'tranthib@example.com',
-    age: 28,
-    totalOrders: 12,
-    totalSpent: 36000000,
-    status: 'active',
-  },
-  {
-    id: 3,
-    username: 'levanc',
-    fullName: 'Lê Văn C',
-    email: 'levanc@example.com',
-    age: 42,
-    totalOrders: 8,
-    totalSpent: 25000000,
-    status: 'inactive',
-  },
-];
-
-const mockOrders = [
-  {
-    id: 1,
-    date: '2025-05-15',
-    products: [
-      { name: 'Bình gốm hoa văn', quantity: 2, price: 1500000 },
-      { name: 'Khăn lụa thêu tay', quantity: 1, price: 800000 },
-    ],
-    total: 3800000,
-    status: 'delivered',
-  },
-  {
-    id: 2,
-    date: '2025-05-10',
-    products: [
-      { name: 'Giỏ tre đan', quantity: 3, price: 450000 },
-    ],
-    total: 1350000,
-    status: 'processing',
-  },
-];
+import { userService, UserDto } from '../../services/userService';
+import { useAuth } from '../../context/AuthContext';
+import { toast } from 'react-toastify';
+import dayjs from 'dayjs';
 
 const Users = () => {
+  const [users, setUsers] = useState<UserDto[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<UserDto | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { token } = useAuth();
+  const navigate = useNavigate();
 
-  const handleOpenDialog = (user: any) => {
+  useEffect(() => {
+    fetchUsers();
+  }, [token]);
+
+  const fetchUsers = async () => {
+    try {
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      setLoading(true);
+      const data = await userService.getAllUsers();
+      setUsers(data);
+    } catch (error: any) {
+      toast.error(error.message || 'Không thể tải danh sách người dùng');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenDialog = (user: UserDto) => {
     setSelectedUser(user);
     setOpenDialog(true);
   };
@@ -103,15 +76,15 @@ const Users = () => {
     setPage(0);
   };
 
-  const toggleUserStatus = (userId: number) => {
-    // In a real app, this would make an API call
-    const confirmed = window.confirm(
-      'Bạn có chắc muốn thay đổi trạng thái của người dùng này?'
+  if (loading) {
+    return (
+      <AdminLayout>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+          <CircularProgress />
+        </Box>
+      </AdminLayout>
     );
-    if (confirmed) {
-      console.log('Toggling status for user:', userId);
-    }
-  };
+  }
 
   return (
     <AdminLayout>
@@ -121,38 +94,37 @@ const Users = () => {
             <TableRow>
               <TableCell>Họ tên</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Tuổi</TableCell>
-              <TableCell align="right">Số đơn hàng</TableCell>
-              <TableCell align="right">Tổng chi tiêu</TableCell>
-              <TableCell>Trạng thái</TableCell>
+              <TableCell>Số điện thoại</TableCell>
+              <TableCell>Ngày sinh</TableCell>
+              <TableCell>Ngày tạo</TableCell>
+              <TableCell>Vai trò</TableCell>
               <TableCell align="right">Thao tác</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {mockUsers
+            {users
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>{user.fullName}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.age}</TableCell>
-                  <TableCell align="right">{user.totalOrders}</TableCell>
-                  <TableCell align="right">
-                    {user.totalSpent.toLocaleString('vi-VN')} ₫
+                  <TableCell>{user.phoneNumber}</TableCell>
+                  <TableCell>
+                    {dayjs(user.dateOfBirth).format('DD/MM/YYYY')}
+                  </TableCell>
+                  <TableCell>
+                    {dayjs(user.createdAt).format('DD/MM/YYYY HH:mm')}
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={user.status === 'active' ? 'Hoạt động' : 'Vô hiệu'}
-                      color={user.status === 'active' ? 'success' : 'error'}
+                      label={user.role === 1 ? 'Admin' : 'User'}
+                      color={user.role === 1 ? 'primary' : 'default'}
                       size="small"
                     />
                   </TableCell>
                   <TableCell align="right">
                     <IconButton onClick={() => handleOpenDialog(user)}>
                       <VisibilityIcon />
-                    </IconButton>
-                    <IconButton onClick={() => toggleUserStatus(user.id)}>
-                      <BlockIcon />
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -162,7 +134,7 @@ const Users = () => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={mockUsers.length}
+          count={users.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -186,62 +158,20 @@ const Users = () => {
               <Box sx={{ mb: 3 }}>
                 <Typography>Họ tên: {selectedUser.fullName}</Typography>
                 <Typography>Email: {selectedUser.email}</Typography>
-                <Typography>Tuổi: {selectedUser.age}</Typography>
+                <Typography>Số điện thoại: {selectedUser.phoneNumber}</Typography>
                 <Typography>
-                  Tổng số đơn hàng: {selectedUser.totalOrders}
+                  Ngày sinh: {dayjs(selectedUser.dateOfBirth).format('DD/MM/YYYY')}
                 </Typography>
                 <Typography>
-                  Tổng chi tiêu: {selectedUser.totalSpent.toLocaleString('vi-VN')} ₫
+                  Địa chỉ: {selectedUser.address || 'Chưa cập nhật'}
+                </Typography>
+                <Typography>
+                  Vai trò: {selectedUser.role === 1 ? 'Admin' : 'User'}
+                </Typography>
+                <Typography>
+                  Ngày tạo: {dayjs(selectedUser.createdAt).format('DD/MM/YYYY HH:mm')}
                 </Typography>
               </Box>
-
-              <Typography variant="h6" gutterBottom>
-                Lịch sử đơn hàng
-              </Typography>
-              <TableContainer component={Paper} sx={{ mb: 2 }}>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Mã đơn</TableCell>
-                      <TableCell>Ngày đặt</TableCell>
-                      <TableCell>Sản phẩm</TableCell>
-                      <TableCell align="right">Tổng tiền</TableCell>
-                      <TableCell>Trạng thái</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {mockOrders.map((order) => (
-                      <TableRow key={order.id}>
-                        <TableCell>#{order.id}</TableCell>
-                        <TableCell>{order.date}</TableCell>
-                        <TableCell>
-                          {order.products
-                            .map((p) => `${p.name} (${p.quantity})`)
-                            .join(', ')}
-                        </TableCell>
-                        <TableCell align="right">
-                          {order.total.toLocaleString('vi-VN')} ₫
-                        </TableCell>
-                        <TableCell>
-                          <Chip
-                            label={
-                              order.status === 'delivered'
-                                ? 'Đã giao'
-                                : 'Đang xử lý'
-                            }
-                            color={
-                              order.status === 'delivered'
-                                ? 'success'
-                                : 'warning'
-                            }
-                            size="small"
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
             </Box>
           )}
         </DialogContent>
