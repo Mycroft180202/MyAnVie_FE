@@ -189,7 +189,7 @@ const CartPage = () => {
           </Typography>
           <Button
             component={Link}
-            to="/shop"
+            to="/shop/lụa"
             variant="contained"
             color="error"
             sx={{ textTransform: 'none' }}
