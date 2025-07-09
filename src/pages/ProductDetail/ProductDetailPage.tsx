@@ -56,7 +56,6 @@ const ProductDetailPage: React.FC = () => {
         setProduct(data);
         setSelectedImage(data.thumbnailUrl);
         const additionalImages = [
-          '/images/ActualProduct/lua1.png', // Thay bằng link ảnh phụ ,
           '/images/ActualProduct/lua2.png', // Thay bằng link ảnh phụ 2
           '/images/ActualProduct/lua3.png', // Thay bằng link ảnh phụ 3
           '/images/ActualProduct/Scrunchi.jpg', 
