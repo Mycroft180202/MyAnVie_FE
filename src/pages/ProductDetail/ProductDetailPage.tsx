@@ -59,6 +59,8 @@ const ProductDetailPage: React.FC = () => {
           '/images/ActualProduct/lua1.png', // Thay bằng link ảnh phụ ,
           '/images/ActualProduct/lua2.png', // Thay bằng link ảnh phụ 2
           '/images/ActualProduct/lua3.png', // Thay bằng link ảnh phụ 3
+          '/images/ActualProduct/Scrunchi.jpg', 
+
         ];
         setGalleryImages([data.thumbnailUrl, ...additionalImages]);
       } catch (err) {
@@ -164,7 +166,7 @@ const ProductDetailPage: React.FC = () => {
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 onMouseMove={handleMouseMove}
-                sx={{ position: 'relative', cursor: 'crosshair', aspectRatio: '1 / 1',  width: '100%'}}
+                sx={{ position: 'relative', cursor: 'crosshair'}}
               >
                 <CardMedia
                   component="img"
