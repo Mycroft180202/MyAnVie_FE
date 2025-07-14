@@ -72,7 +72,7 @@ const Dashboard = () => {
     const completedOrders = orders.filter(order => [1,2].includes(order.status));
     
     const totalRevenue = completedOrders.reduce((sum, order) => 
-      sum + order.totalAmount + SHIPPING_FEE, 0
+      sum + order.totalAmount , 0
     );
 
     const ordersByStatus = orders.reduce((acc, order) => {
@@ -96,7 +96,7 @@ const Dashboard = () => {
           timeKey = orderDate.format('MM/YYYY');
       }
       
-      acc[timeKey] = (acc[timeKey] || 0) + order.totalAmount + SHIPPING_FEE;
+      acc[timeKey] = (acc[timeKey] || 0) + order.totalAmount;
       return acc;
     }, {} as Record<string, number>);
 
@@ -118,7 +118,7 @@ const Dashboard = () => {
         productId: item.productId,
         productName: item.productName,
         quantity: item.quantity,
-        revenue: (item.price + SHIPPING_FEE) * item.quantity,
+        revenue: (item.price) * item.quantity,
         image: item.productThumbnailUrl
       }))
     ).reduce((acc, item) => {
@@ -150,7 +150,7 @@ const Dashboard = () => {
         };
       }
       acc[order.userId].totalOrders++;
-      acc[order.userId].totalSpent += order.totalAmount + SHIPPING_FEE;
+      acc[order.userId].totalSpent += order.totalAmount ;
       return acc;
     }, {} as Record<string, { fullName: string; email: string; totalOrders: number; totalSpent: number }>);
 
