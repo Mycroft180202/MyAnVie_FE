@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Grid,
@@ -12,6 +12,7 @@ import {
   TableRow,
   ButtonGroup,
   Button,
+  CircularProgress,
 } from '@mui/material';
 import {
   XAxis,
@@ -24,46 +25,134 @@ import {
 } from 'recharts';
 import AdminLayout from '../../layouts/AdminLayout';
 import { useLanguage } from '../../store/LanguageContext';
-
-// Mock data - replace with real API calls
-const revenueData = [
-  { name: 'T1', revenue: 4000 },
-  { name: 'T2', revenue: 3000 },
-  { name: 'T3', revenue: 2000 },
-  { name: 'T4', revenue: 2780 },
-  { name: 'T5', revenue: 1890 },
-  { name: 'T6', revenue: 2390 },
-  { name: 'T7', revenue: 3490 },
-];
-
-const bestSellingProducts = [
-  { id: 1, name: 'Bình gốm hoa văn', sold: 150, revenue: 45000000 },
-  { id: 2, name: 'Khăn lụa thêu tay', sold: 120, revenue: 36000000 },
-  { id: 3, name: 'Giỏ tre đan', sold: 100, revenue: 25000000 },
-];
-
-const topCustomers = [
-  { id: 1, name: 'Nguyễn Văn A', orders: 15, totalSpent: 45000000 },
-  { id: 2, name: 'Trần Thị B', orders: 12, totalSpent: 36000000 },
-  { id: 3, name: 'Lê Văn C', orders: 10, totalSpent: 25000000 },
-];
+import { useAuth } from '../../context/AuthContext';
+import { getMyOrders, OrderDto } from '../../services/orderService';
+import { userService, UserDto } from '../../services/userService';
+import dayjs from 'dayjs';
+import { toast } from 'react-toastify';
 
 const Dashboard = () => {
   const { t } = useLanguage();
+  const { token } = useAuth();
+  const [orders, setOrders] = useState<OrderDto[]>([]);
+  const [users, setUsers] = useState<UserDto[]>([]);
+  const [loading, setLoading] = useState(true);
   const [revenueView, setRevenueView] = useState<'weekly' | 'monthly' | 'yearly'>('monthly');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!token) return;
+        setLoading(true);
+        const [ordersData, usersData] = await Promise.all([
+          getMyOrders(token),
+          userService.getAllUsers()
+        ]);
+        setOrders(ordersData);
+        setUsers(usersData);
+      } catch (error: any) {
+        toast.error(error.message || 'Không thể tải dữ liệu');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [token]);
+
+  const calculateStatistics = () => {
+    const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+
+    const ordersByStatus = orders.reduce((acc, order) => {
+      acc[order.status] = (acc[order.status] || 0) + 1;
+      return acc;
+    }, {} as Record<number, number>);
+
+    const revenueByMonth = orders.reduce((acc, order) => {
+      const month = dayjs(order.orderDate).format('MM/YYYY');
+      acc[month] = (acc[month] || 0) + order.totalAmount;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const productSales = orders.flatMap(order => 
+      order.orderItems.map(item => ({
+        productId: item.productId,
+        productName: item.productName,
+        quantity: item.quantity,
+        revenue: item.price * item.quantity
+      }))
+    ).reduce((acc, item) => {
+      if (!acc[item.productId]) {
+        acc[item.productId] = {
+          name: item.productName,
+          totalQuantity: 0,
+          totalRevenue: 0
+        };
+      }
+      acc[item.productId].totalQuantity += item.quantity;
+      acc[item.productId].totalRevenue += item.revenue;
+      return acc;
+    }, {} as Record<string, { name: string; totalQuantity: number; totalRevenue: number }>);
+
+    const topProducts = Object.values(productSales)
+      .sort((a, b) => b.totalRevenue - a.totalRevenue)
+      .slice(0, 3);
+
+    const customerOrders = orders.reduce((acc, order) => {
+      if (!acc[order.userId]) {
+        acc[order.userId] = {
+          fullName: order.customerFullName,
+          totalOrders: 0,
+          totalSpent: 0
+        };
+      }
+      acc[order.userId].totalOrders++;
+      acc[order.userId].totalSpent += order.totalAmount;
+      return acc;
+    }, {} as Record<string, { fullName: string; totalOrders: number; totalSpent: number }>);
+
+    const topCustomers = Object.entries(customerOrders)
+      .sort(([, a], [, b]) => b.totalSpent - a.totalSpent)
+      .slice(0, 3)
+      .map(([, value]) => value);
+
+    return {
+      totalRevenue,
+      ordersByStatus,
+      revenueByMonth,
+      topProducts,
+      topCustomers
+    };
+  };
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+          <CircularProgress />
+        </Box>
+      </AdminLayout>
+    );
+  }
+
+  const stats = calculateStatistics();
+  const chartData = Object.entries(stats.revenueByMonth).map(([name, revenue]) => ({
+    name,
+    revenue
+  }));
 
   return (
     <AdminLayout>
-      {/* Statistics Cards */}
       <Grid container spacing={3} mb={4}>
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>
-                {t.admin.bestSelling}
+                Tổng doanh thu
               </Typography>
-              <Typography variant="h5">150</Typography>
-              <Typography variant="subtitle2">Bình gốm hoa văn</Typography>
+              <Typography variant="h5">
+                {stats.totalRevenue.toLocaleString('vi-VN')} ₫
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -71,10 +160,11 @@ const Dashboard = () => {
           <Card>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>
-                {t.admin.leastSelling}
+                Đơn hàng mới
               </Typography>
-              <Typography variant="h5">5</Typography>
-              <Typography variant="subtitle2">Giỏ mây vintage</Typography>
+              <Typography variant="h5">
+                {stats.ordersByStatus[0] || 0}
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -82,10 +172,9 @@ const Dashboard = () => {
           <Card>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>
-                {t.admin.topCustomers}
+                Số người dùng
               </Typography>
-              <Typography variant="h5">15</Typography>
-              <Typography variant="subtitle2">Đơn hàng/khách cao nhất</Typography>
+              <Typography variant="h5">{users.length}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -93,20 +182,20 @@ const Dashboard = () => {
           <Card>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>
-                {t.admin.averageAge}
+                Đơn hàng đã giao
               </Typography>
-              <Typography variant="h5">32</Typography>
-              <Typography variant="subtitle2">Tuổi trung bình khách hàng</Typography>
+              <Typography variant="h5">
+                {stats.ordersByStatus[3] || 0}
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
 
-      {/* Revenue Chart */}
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-            <Typography variant="h6">{t.admin.revenue}</Typography>
+            <Typography variant="h6">Doanh thu theo tháng</Typography>
             <ButtonGroup>
               <Button
                 variant={revenueView === 'weekly' ? 'contained' : 'outlined'}
@@ -130,7 +219,7 @@ const Dashboard = () => {
           </Box>
           <Box sx={{ height: 300 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueData}>
+              <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -142,13 +231,12 @@ const Dashboard = () => {
         </CardContent>
       </Card>
 
-      {/* Best Selling Products */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                {t.admin.bestSelling}
+                Sản phẩm bán chạy
               </Typography>
               <Table>
                 <TableHead>
@@ -159,12 +247,12 @@ const Dashboard = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {bestSellingProducts.map((product) => (
-                    <TableRow key={product.id}>
+                  {stats.topProducts.map((product, index) => (
+                    <TableRow key={index}>
                       <TableCell>{product.name}</TableCell>
-                      <TableCell align="right">{product.sold}</TableCell>
+                      <TableCell align="right">{product.totalQuantity}</TableCell>
                       <TableCell align="right">
-                        {product.revenue.toLocaleString('vi-VN')} ₫
+                        {product.totalRevenue.toLocaleString('vi-VN')} ₫
                       </TableCell>
                     </TableRow>
                   ))}
@@ -174,12 +262,11 @@ const Dashboard = () => {
           </Card>
         </Grid>
 
-        {/* Top Customers */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                {t.admin.topCustomers}
+                Khách hàng tiềm năng
               </Typography>
               <Table>
                 <TableHead>
@@ -190,10 +277,10 @@ const Dashboard = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {topCustomers.map((customer) => (
-                    <TableRow key={customer.id}>
-                      <TableCell>{customer.name}</TableCell>
-                      <TableCell align="right">{customer.orders}</TableCell>
+                  {stats.topCustomers.map((customer, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{customer.fullName}</TableCell>
+                      <TableCell align="right">{customer.totalOrders}</TableCell>
                       <TableCell align="right">
                         {customer.totalSpent.toLocaleString('vi-VN')} ₫
                       </TableCell>
