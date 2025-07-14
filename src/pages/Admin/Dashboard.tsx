@@ -68,8 +68,8 @@ const Dashboard = () => {
   }, [token]);
 
   const stats = useMemo(() => {
-    // Chỉ tính doanh thu từ đơn hàng đã giao thành công
-    const completedOrders = orders.filter(order => order.status === 2);
+    // Lấy cả đơn hàng đang giao và đã giao thành công
+    const completedOrders = orders.filter(order => [2, 3].includes(order.status));
     
     const totalRevenue = completedOrders.reduce((sum, order) => 
       sum + order.totalAmount + SHIPPING_FEE, 0
