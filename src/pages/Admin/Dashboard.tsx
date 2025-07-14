@@ -8,8 +8,10 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
+  Paper,
   ButtonGroup,
   Button,
   CircularProgress,
@@ -24,112 +26,16 @@ import {
   Line,
 } from 'recharts';
 import AdminLayout from '../../layouts/AdminLayout';
-// Giả sử bạn có LanguageContext, nếu không có thể xóa dòng này
-// import { useLanguage } from '../../store/LanguageContext'; 
 import { useAuth } from '../../context/AuthContext';
-import { getAllOrders, OrderDto } from '../../services/orderService'; // Sử dụng orderService
+import { getAllOrders, OrderDto } from '../../services/orderService';
 import { userService, UserDto } from '../../services/userService';
 import dayjs from 'dayjs';
 import { toast } from 'react-toastify';
+import { AttachMoney, Group, LocalShipping, Inventory2 } from '@mui/icons-material';
 
-// Tối ưu hóa: đưa hàm tính toán ra ngoài để dễ quản lý
-const calculateStatistics = (
-    orders: OrderDto[], 
-    users: UserDto[], 
-    revenueView: 'weekly' | 'monthly' | 'yearly'
-) => {
-    // LỌC CÁC ĐƠN HÀNG ĐỂ TÍNH DOANH THU: Chỉ lấy đơn "Đang giao" (status 1) và "Đã giao" (status 2)
-    const revenueOrders = orders.filter(order => order.status === 2 || order.status === 3);
-
-    // 1. TÍNH TỔNG DOANH THU từ các đơn đã lọc
-    const totalRevenue = revenueOrders.reduce((sum, order) => sum + order.totalAmount, 0);
-
-    // 2. ĐẾM TỔNG SỐ ĐƠN HÀNG THEO TỪNG TRẠNG THÁI (tính trên tất cả đơn hàng)
-    const ordersByStatus = orders.reduce((acc, order) => {
-        acc[order.status] = (acc[order.status] || 0) + 1;
-        return acc;
-    }, {} as Record<number, number>);
-
-    // 3. TÍNH DOANH THU THEO TUẦN / THÁNG / NĂM cho biểu đồ
-    const revenueByTime = revenueOrders.reduce((acc, order) => {
-        let key = '';
-        if (revenueView === 'monthly') {
-            key = dayjs(order.orderDate).format('YYYY-MM');
-        } else if (revenueView === 'yearly') {
-            key = dayjs(order.orderDate).format('YYYY');
-        } else { // weekly
-            key = dayjs(order.orderDate).startOf('week').format('YYYY-MM-DD');
-        }
-        acc[key] = (acc[key] || 0) + order.totalAmount;
-        return acc;
-    }, {} as Record<string, number>);
-
-    const chartData = Object.entries(revenueByTime)
-      .map(([name, revenue]) => ({ name, revenue }))
-      .sort((a, b) => dayjs(a.name).isAfter(dayjs(b.name)) ? 1 : -1);
-
-
-    // 4. TÍNH DOANH SỐ SẢN PHẨM (dựa trên các đơn hàng tạo ra doanh thu)
-    const productSales = revenueOrders.flatMap(order => 
-        order.orderItems.map(item => ({
-            productId: item.productId,
-            productName: item.productName,
-            quantity: item.quantity,
-            revenue: item.price * item.quantity
-        }))
-    ).reduce((acc, item) => {
-        if (!acc[item.productId]) {
-            acc[item.productId] = {
-                name: item.productName,
-                totalQuantity: 0,
-                totalRevenue: 0
-            };
-        }
-        acc[item.productId].totalQuantity += item.quantity;
-        acc[item.productId].totalRevenue += item.revenue;
-        return acc;
-    }, {} as Record<string, { name: string; totalQuantity: number; totalRevenue: number }>);
-
-    const topProducts = Object.values(productSales)
-        .sort((a, b) => b.totalRevenue - a.totalRevenue)
-        .slice(0, 5); // Hiển thị top 5 sản phẩm
-
-    // 5. TÌM KHÁCH HÀNG TIỀM NĂNG (LOẠI BỎ ADMIN)
-    // Lấy danh sách ID của người dùng không phải admin
-    const customerIdSet = new Set(users.filter(u => u.role !== 1).map(u => u.id));
-
-    const customerOrders = orders
-        .filter(order => customerIdSet.has(order.userId)) // Chỉ lọc các đơn hàng của khách hàng thực sự
-        .reduce((acc, order) => {
-            if (!acc[order.userId]) {
-                acc[order.userId] = {
-                    fullName: order.customerFullName,
-                    totalOrders: 0,
-                    totalSpent: 0
-                };
-            }
-            acc[order.userId].totalOrders++;
-            acc[order.userId].totalSpent += order.totalAmount;
-            return acc;
-        }, {} as Record<string, { fullName: string; totalOrders: number; totalSpent: number }>);
-    
-    const topCustomers = Object.values(customerOrders)
-        .sort((a, b) => b.totalSpent - a.totalSpent)
-        .slice(0, 5); // Hiển thị top 5 khách hàng
-
-    return {
-        totalRevenue,
-        ordersByStatus,
-        chartData,
-        topProducts,
-        topCustomers
-    };
-};
-
+const SHIPPING_FEE = 30000;
 
 const Dashboard = () => {
-  // Giả sử bạn có LanguageContext, nếu không có thể thay thế bằng text bình thường
-  // const { t } = useLanguage(); 
   const { token } = useAuth();
   const [orders, setOrders] = useState<OrderDto[]>([]);
   const [users, setUsers] = useState<UserDto[]>([]);
@@ -141,9 +47,8 @@ const Dashboard = () => {
       try {
         if (!token) return;
         setLoading(true);
-        // Sử dụng Promise.all để gọi 2 API cùng lúc cho hiệu quả
         const [ordersData, usersData] = await Promise.all([
-         getAllOrders(), // Giả sử có hàm getAllOrders trong service
+          getAllOrders(),
           userService.getAllUsers()
         ]);
         setOrders(ordersData);
@@ -156,11 +61,108 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, [token]); // Chỉ fetch lại khi token thay đổi
+  }, [token]);
 
-    // Sử dụng useMemo để tránh tính toán lại các chỉ số ở mỗi lần render
-    // Chỉ tính lại khi orders, users hoặc revenueView thay đổi
-    const stats = useMemo(() => calculateStatistics(orders, users, revenueView), [orders, users, revenueView]);
+  const stats = useMemo(() => {
+    // Chỉ tính doanh thu từ đơn hàng đã giao thành công
+    const completedOrders = orders.filter(order => order.status === 2);
+    
+    const totalRevenue = completedOrders.reduce((sum, order) => 
+      sum + order.totalAmount + SHIPPING_FEE, 0
+    );
+
+    const ordersByStatus = orders.reduce((acc, order) => {
+      acc[order.status] = (acc[order.status] || 0) + 1;
+      return acc;
+    }, {} as Record<number, number>);
+
+    // Tính doanh thu theo thời gian
+    const revenueByTime = completedOrders.reduce((acc, order) => {
+      let timeKey;
+      const orderDate = dayjs(order.orderDate);
+      
+      switch (revenueView) {
+        case 'weekly':
+          //timeKey = 'Tuần ' + orderDate. + ' - ' + orderDate.format('MM/YYYY');
+          break;
+        case 'yearly':
+          timeKey = orderDate.format('YYYY');
+          break;
+        default: // monthly
+          timeKey = orderDate.format('MM/YYYY');
+      }
+      
+      acc[timeKey] = (acc[timeKey] || 0) + order.totalAmount + SHIPPING_FEE;
+      return acc;
+    }, {} as Record<string, number>);
+
+    // Chuyển đổi dữ liệu cho biểu đồ
+    const chartData = Object.entries(revenueByTime)
+      .map(([name, value]) => ({ name, revenue: value }))
+      .sort((a, b) => {
+        if (revenueView === 'weekly') {
+          return dayjs(a.name.split(' - ')[1], 'MM/YYYY')
+            .diff(dayjs(b.name.split(' - ')[1], 'MM/YYYY'));
+        }
+        return dayjs(a.name, revenueView === 'yearly' ? 'YYYY' : 'MM/YYYY')
+          .diff(dayjs(b.name, revenueView === 'yearly' ? 'YYYY' : 'MM/YYYY'));
+      });
+
+    // Thống kê sản phẩm bán chạy
+    const productStats = completedOrders.flatMap(order => 
+      order.orderItems.map(item => ({
+        productId: item.productId,
+        productName: item.productName,
+        quantity: item.quantity,
+        revenue: (item.price + SHIPPING_FEE) * item.quantity,
+        image: item.productThumbnailUrl
+      }))
+    ).reduce((acc, item) => {
+      if (!acc[item.productId]) {
+        acc[item.productId] = {
+          name: item.productName,
+          totalQuantity: 0,
+          totalRevenue: 0,
+          image: item.image
+        };
+      }
+      acc[item.productId].totalQuantity += item.quantity;
+      acc[item.productId].totalRevenue += item.revenue;
+      return acc;
+    }, {} as Record<string, { name: string; totalQuantity: number; totalRevenue: number; image: string }>);
+
+    const topProducts = Object.values(productStats)
+      .sort((a, b) => b.totalRevenue - a.totalRevenue)
+      .slice(0, 5);
+
+    // Thống kê khách hàng
+    const customerStats = completedOrders.reduce((acc, order) => {
+      if (!acc[order.userId]) {
+        acc[order.userId] = {
+          fullName: order.customerFullName,
+          email: order.customerEmail,
+          totalOrders: 0,
+          totalSpent: 0
+        };
+      }
+      acc[order.userId].totalOrders++;
+      acc[order.userId].totalSpent += order.totalAmount + SHIPPING_FEE;
+      return acc;
+    }, {} as Record<string, { fullName: string; email: string; totalOrders: number; totalSpent: number }>);
+
+    const topCustomers = Object.values(customerStats)
+      .sort((a, b) => b.totalSpent - a.totalSpent)
+      .slice(0, 5);
+
+    return {
+      totalRevenue,
+      ordersByStatus,
+      chartData,
+      topProducts,
+      topCustomers,
+      totalCustomers: users.filter(u => u.role !== 1).length
+    };
+  }, [orders, users, revenueView]);
 
   if (loading) {
     return (
@@ -174,125 +176,214 @@ const Dashboard = () => {
 
   return (
     <AdminLayout>
-      <Grid container spacing={3} mb={4}>
-        {/* Tổng doanh thu (Đang giao + Đã giao) */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>Tổng doanh thu</Typography>
-              <Typography variant="h5">{stats.totalRevenue.toLocaleString('vi-VN')} ₫</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        {/* Đơn hàng đang xử lý (status 0) */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>Đơn hàng đang xử lý</Typography>
-              <Typography variant="h5">{stats.ordersByStatus[0] || 0}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        {/* Tổng số khách hàng (trừ Admin) */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>Số khách hàng</Typography>
-              <Typography variant="h5">{users.filter(u => u.role !== 1).length}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        {/* Đơn hàng đã giao (status 2) */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>Đơn hàng đã giao</Typography>
-              <Typography variant="h5">{stats.ordersByStatus[2] || 0}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <Box sx={{ p: 3 }}>
+        {/* Overview Cards */}
+        <Grid container spacing={3} mb={4}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              bgcolor: 'background.default',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <AttachMoney sx={{ fontSize: 40, color: 'primary.main' }} />
+                </Box>
+                <Typography variant="h6" sx={{ mb: 1 }}>Tổng doanh thu</Typography>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                  {stats.totalRevenue.toLocaleString('vi-VN')}₫
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-      {/* BIỂU ĐỒ DOANH THU */}
-      <Card sx={{ mb: 4 }}>
-        <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              bgcolor: 'background.default',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Inventory2 sx={{ fontSize: 40, color: 'warning.main' }} />
+                </Box>
+                <Typography variant="h6" sx={{ mb: 1 }}>Đơn hàng mới</Typography>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'warning.main' }}>
+                  {stats.ordersByStatus[0] || 0}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              bgcolor: 'background.default',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Group sx={{ fontSize: 40, color: 'info.main' }} />
+                </Box>
+                <Typography variant="h6" sx={{ mb: 1 }}>Khách hàng</Typography>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'info.main' }}>
+                  {stats.totalCustomers}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              bgcolor: 'background.default',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <LocalShipping sx={{ fontSize: 40, color: 'success.main' }} />
+                </Box>
+                <Typography variant="h6" sx={{ mb: 1 }}>Đã giao</Typography>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'success.main' }}>
+                  {stats.ordersByStatus[2] || 0}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+
+        {/* Revenue Chart */}
+        <Card sx={{ mb: 4, p: 2, bgcolor: 'background.default' }}>
+          <Box sx={{ px: 2, pb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="h6">Biểu đồ doanh thu</Typography>
-            <ButtonGroup size="small">
-              <Button variant={revenueView === 'weekly' ? 'contained' : 'outlined'} onClick={() => setRevenueView('weekly')}>Tuần</Button>
-              <Button variant={revenueView === 'monthly' ? 'contained' : 'outlined'} onClick={() => setRevenueView('monthly')}>Tháng</Button>
-              <Button variant={revenueView === 'yearly' ? 'contained' : 'outlined'} onClick={() => setRevenueView('yearly')}>Năm</Button>
+            <ButtonGroup size="small" sx={{ '& .MuiButton-root': { px: 3 } }}>
+              <Button
+                variant={revenueView === 'weekly' ? 'contained' : 'outlined'}
+                onClick={() => setRevenueView('weekly')}
+              >
+                Tuần
+              </Button>
+              <Button
+                variant={revenueView === 'monthly' ? 'contained' : 'outlined'}
+                onClick={() => setRevenueView('monthly')}
+              >
+                Tháng
+              </Button>
+              <Button
+                variant={revenueView === 'yearly' ? 'contained' : 'outlined'}
+                onClick={() => setRevenueView('yearly')}
+              >
+                Năm
+              </Button>
             </ButtonGroup>
           </Box>
-          <Box sx={{ height: 300 }}>
-            <ResponsiveContainer width="100%" height="100%">
+          <Box sx={{ height: 300, width: '100%' }}>
+            <ResponsiveContainer>
               <LineChart data={stats.chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis tickFormatter={(value) => new Intl.NumberFormat('vi-VN').format(value as number)} />
-                <Tooltip formatter={(value) => `${(value as number).toLocaleString('vi-VN')} ₫`} />
-                <Line type="monotone" dataKey="revenue" name="Doanh thu" stroke="#8884d8" strokeWidth={2} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                <XAxis 
+                  dataKey="name"
+                  tick={{ fill: '#666' }}
+                  stroke="#eee"
+                />
+                <YAxis
+                  tick={{ fill: '#666' }}
+                  stroke="#eee"
+                  tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
+                />
+                <Tooltip
+                  formatter={(value) => `${Number(value).toLocaleString('vi-VN')}₫`}
+                  contentStyle={{ backgroundColor: 'white', borderRadius: '8px' }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#8884d8"
+                  strokeWidth={2}
+                  dot={{ fill: '#8884d8' }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </Box>
-        </CardContent>
-      </Card>
+        </Card>
 
-      <Grid container spacing={3}>
-        {/* SẢN PHẨM BÁN CHẠY */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>Sản phẩm bán chạy</Typography>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Sản phẩm</TableCell>
-                    <TableCell align="right">Đã bán</TableCell>
-                    <TableCell align="right">Doanh thu</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {stats.topProducts.map((product, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{product.name}</TableCell>
-                      <TableCell align="right">{product.totalQuantity}</TableCell>
-                      <TableCell align="right">{product.totalRevenue.toLocaleString('vi-VN')} ₫</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </Grid>
+        {/* Tables Section */}
+        <Grid container spacing={3}>
+          {/* Top Products */}
+          <Grid item xs={12} md={6}>
+            <Card sx={{ bgcolor: 'background.default' }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>Top Sản phẩm bán chạy</Typography>
+                <TableContainer>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Sản phẩm</TableCell>
+                        <TableCell align="center">Đã bán</TableCell>
+                        <TableCell align="right">Doanh thu</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {stats.topProducts.map((product, index) => (
+                        <TableRow key={index}>
+                          <TableCell>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                              <img
+                                src={product.image}
+                                alt={product.name}
+                                style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: '4px' }}
+                              />
+                              <Typography variant="body2">{product.name}</Typography>
+                            </Box>
+                          </TableCell>
+                          <TableCell align="center">{product.totalQuantity}</TableCell>
+                          <TableCell align="right" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+                            {product.totalRevenue.toLocaleString('vi-VN')}₫
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </CardContent>
+            </Card>
+          </Grid>
 
-        {/* KHÁCH HÀNG TIỀM NĂNG */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>Khách hàng tiềm năng</Typography>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Khách hàng</TableCell>
-                    <TableCell align="right">Số đơn</TableCell>
-                    <TableCell align="right">Tổng chi tiêu</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {stats.topCustomers.map((customer, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{customer.fullName}</TableCell>
-                      <TableCell align="right">{customer.totalOrders}</TableCell>
-                      <TableCell align="right">{customer.totalSpent.toLocaleString('vi-VN')} ₫</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          {/* Top Customers */}
+          <Grid item xs={12} md={6}>
+            <Card sx={{ bgcolor: 'background.default' }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>Top Khách hàng</Typography>
+                <TableContainer>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Khách hàng</TableCell>
+                        <TableCell align="center">Số đơn</TableCell>
+                        <TableCell align="right">Tổng chi tiêu</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {stats.topCustomers.map((customer, index) => (
+                        <TableRow key={index}>
+                          <TableCell>
+                            <Typography variant="body2">{customer.fullName}</Typography>
+                            <Typography variant="caption" color="textSecondary">
+                              {customer.email}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="center">{customer.totalOrders}</TableCell>
+                          <TableCell align="right" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+                            {customer.totalSpent.toLocaleString('vi-VN')}₫
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
     </AdminLayout>
   );
 };
