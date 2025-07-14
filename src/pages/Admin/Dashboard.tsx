@@ -39,7 +39,7 @@ const calculateStatistics = (
     revenueView: 'weekly' | 'monthly' | 'yearly'
 ) => {
     // LỌC CÁC ĐƠN HÀNG ĐỂ TÍNH DOANH THU: Chỉ lấy đơn "Đang giao" (status 1) và "Đã giao" (status 2)
-    const revenueOrders = orders.filter(order => order.status === 1 || order.status === 2);
+    const revenueOrders = orders.filter(order => order.status === 2 || order.status === 3);
 
     // 1. TÍNH TỔNG DOANH THU từ các đơn đã lọc
     const totalRevenue = revenueOrders.reduce((sum, order) => sum + order.totalAmount, 0);
