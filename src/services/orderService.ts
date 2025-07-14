@@ -80,3 +80,19 @@ export const getOrderById = async (orderId: string, token: string): Promise<Orde
     throw new Error(error.response?.data?.message || 'Failed to fetch order');
   }
 }; 
+
+export const getAllOrders = async (): Promise<OrderDto[]> => {
+    try {
+      // Admin cần lấy tất cả đơn hàng từ endpoint gốc `/Orders`
+      const token = localStorage.getItem('token'); // Lấy token của admin
+      const response = await axios.get<OrderDto[]>(`${API_URL}/Orders`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch all orders');
+    }
+  };
