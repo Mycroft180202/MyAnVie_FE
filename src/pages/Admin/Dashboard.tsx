@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { toast } from 'react-toastify';
+import { AttachMoney, Group, LocalShipping, Inventory2 } from '@mui/icons-material';
 import {
   Box,
   Grid,
@@ -30,8 +32,10 @@ import { useAuth } from '../../context/AuthContext';
 import { getAllOrders, OrderDto } from '../../services/orderService';
 import { userService, UserDto } from '../../services/userService';
 import dayjs from 'dayjs';
-import { toast } from 'react-toastify';
-import { AttachMoney, Group, LocalShipping, Inventory2 } from '@mui/icons-material';
+import weekOfYear from 'dayjs/plugin/weekOfYear';
+
+dayjs.extend(weekOfYear);
+
 
 const SHIPPING_FEE = 30000;
 
@@ -83,7 +87,7 @@ const Dashboard = () => {
       
       switch (revenueView) {
         case 'weekly':
-          //timeKey = 'Tuần ' + orderDate. + ' - ' + orderDate.format('MM/YYYY');
+          timeKey = 'Tuần ' + orderDate.week() + ' - ' + orderDate.format('MM/YYYY');
           break;
         case 'yearly':
           timeKey = orderDate.format('YYYY');
