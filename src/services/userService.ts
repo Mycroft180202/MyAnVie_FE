@@ -11,6 +11,17 @@ interface VerificationRequest {
   newPassword: string;
 }
 
+export interface UserDto {
+  id: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  address: string | null;
+  dateOfBirth: string;
+  role: number;
+  createdAt: string;
+}
+
 export const userService = {
   async getCurrentUser(): Promise<User> {
     try {
@@ -74,6 +85,22 @@ export const userService = {
     } catch (error: any) {
       console.error('Verify password change error:', error.response?.data || error.message);
       throw new Error(error.response?.data?.message || 'Không thể xác thực mã hoặc đổi mật khẩu');
+    }
+  },
+
+  async getAllUsers(): Promise<UserDto[]> {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${API_URL}/users`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error('Get all users error:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || 'Không thể lấy danh sách người dùng');
     }
   }
 };

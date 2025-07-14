@@ -79,4 +79,20 @@ export const getOrderById = async (orderId: string, token: string): Promise<Orde
   } catch (error: any) {
     throw new Error(error.response?.data?.message || 'Failed to fetch order');
   }
-}; 
+};
+
+export const updateOrderStatus = async (orderId: string, status: number, token: string): Promise<void> => {
+  try {
+    await axios.put(`${API_URL}/Orders/${orderId}/status`, 
+      { status }, 
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Failed to update order status');
+  }
+};
